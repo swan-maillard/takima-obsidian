@@ -1,0 +1,57 @@
+{
+  "version": 2,
+  "projects": [
+    {
+      "fieldConfig": {},
+      "defaultName": "",
+      "templates": [],
+      "excludedNotes": [],
+      "isDefault": true,
+      "dataSource": {
+        "kind": "folder",
+        "config": {
+          "path": "MASTER 3",
+          "recursive": true
+        }
+      },
+      "newNotesFolder": "MASTER 3",
+      "views": [
+        {
+          "config": {
+            "fitStyle": "cover",
+            "includeFields": [],
+            "coverField": "cover",
+            "cardWidth": 250
+          },
+          "filter": {
+            "conjunction": "and",
+            "conditions": []
+          },
+          "colors": {
+            "conditions": []
+          },
+          "sort": {
+            "criteria": []
+          },
+          "id": "8708f9fa-49da-49ba-be6d-725e7fb4e53c",
+          "name": "Gallery",
+          "type": "gallery"
+        }
+      ],
+      "id": "e35a66e0-de5a-481b-bcb1-94df3263b5db",
+      "name": "MASTER 3"
+    }
+  ],
+  "archives": [],
+  "preferences": {
+    "projectSizeLimit": 1000,
+    "frontmatter": {
+      "quoteStrings": "PLAIN"
+    },
+    "locale": {
+      "firstDayOfWeek": "monday"
+    },
+    "commands": [],
+    "linkBehavior": "open-note"
+  }
+}
