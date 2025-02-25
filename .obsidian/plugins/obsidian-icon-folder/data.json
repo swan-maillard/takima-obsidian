@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
+      "LiLeaf",
+      "LiCoffee",
       "LiImage",
       "LiGitlab",
-      "🐋",
-      "LiBot",
-      "🧑‍🎓"
+      "🐋"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -39,8 +39,22 @@
     "iconName": "LiFolderGit2",
     "iconColor": "#f14f34"
   },
-  "MASTER 3/02 - DevOps.md": "LiBot",
+  "MASTER 3/02 - DevOps.md": {
+    "iconName": "LiBot",
+    "iconColor": "#ffffff"
+  },
   "MASTER 3/03 - Docker.md": "🐋",
-  "MASTER 3/04 - GitLab CI CD.md": "LiGitlab",
-  "COVERS": "LiImage"
+  "MASTER 3/04 - GitLab CI CD.md": {
+    "iconName": "LiGitlab",
+    "iconColor": "#f0850a"
+  },
+  "COVERS": "LiImage",
+  "MASTER 3/05 - Java.md": {
+    "iconName": "LiCoffee",
+    "iconColor": "#647bed"
+  },
+  "MASTER 3/06 - Spring.md": {
+    "iconName": "LiLeaf",
+    "iconColor": "#14d22a"
+  }
 }
