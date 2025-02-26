@@ -1,6 +1,18 @@
 ---
 cover: "[[devops.png]]"
 ---
+# 💠 Table of Contents
+```table-of-contents
+title: 
+style: nestedList # TOC style (nestedList|nestedOrderedList|inlineFirstLevel)
+minLevel: 0 # Include headings from the specified level
+maxLevel: 2 # Include headings up to the specified level
+includeLinks: true # Make headings clickable
+hideWhenEmpty: false # Hide TOC if no headings are found
+debugInConsole: false # Print debug info in Obsidian console
+```
+---
+
 # 💠 What is DevOps?
 
 DevOps is a **set of practices, tools, and a cultural mindset** that aims to **bridge the gap between development (Dev) and operations (Ops)**. It focuses on **automating, integrating, and improving collaboration** between software development teams and IT operations to deliver software faster, more reliably, and with higher quality.
@@ -11,6 +23,8 @@ DevOps is a **set of practices, tools, and a cultural mindset** that aims to **b
 - **Infrastructure as Code (IaC)** – Manages infrastructure through code (e.g., Terraform, Ansible).
 - **Monitoring & Logging** – Ensures system health and performance with tools like Prometheus, Grafana, and ELK.
 - **Collaboration & Automation** – Breaks down silos between teams and automates repetitive tasks.
+
+---
 
 # 💠 **Application Performance Monitoring (APM), Monitoring & Alerting**
 
@@ -24,6 +38,8 @@ Observability is crucial in DevOps to **detect, analyze, and resolve issues** be
     - **Kibana** – Provides visual insights into logs through dashboards.
 - **Datadog** – A powerful **cloud-based APM** that combines metrics, logs, and traces (**but expensive**).
 - **Sentry** – Focused on **error tracking** and application performance monitoring.
+
+---
 
 # 💠 **Provisioning, Environments, Infrastructure & Orchestration**
 
@@ -39,6 +55,8 @@ Infrastructure automation simplifies **deployment, scaling, and configuration ma
     - **Puppet** / **Chef** – Alternative configuration management tools to automate server setup and deployment.
     - **Vagrant** – Used for managing **virtual machine environments**, useful for development and testing.
 
+---
+
 # 💠 **CI/CD, Quality Gates & Pipeline Tools**
 
 CI/CD automates **building, testing, and deploying** software, ensuring **continuous integration and delivery**. Quality gates guarantee only **high-quality** code reaches production.
@@ -51,6 +69,8 @@ CI/CD automates **building, testing, and deploying** software, ensuring **contin
     - **Tekton** – A Kubernetes-based **CI/CD framework** for cloud-native applications.
     - **SonarQube** – A powerful **static code analysis tool**, ensuring code quality and security.
     - **Artifactory** – A **universal artifact repository** for storing build artifacts, Docker images, and dependencies.
+
+---
 
 # 💠 **Security & Compliance in DevOps (DevSecOps)**
 

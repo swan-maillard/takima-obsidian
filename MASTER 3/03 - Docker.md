@@ -1,6 +1,19 @@
 ---
 cover: "[[docker.webp]]"
 ---
+# 💠 Table of Contents
+```table-of-contents
+title: 
+style: nestedList # TOC style (nestedList|nestedOrderedList|inlineFirstLevel)
+minLevel: 0 # Include headings from the specified level
+maxLevel: 2 # Include headings up to the specified level
+includeLinks: true # Make headings clickable
+hideWhenEmpty: false # Hide TOC if no headings are found
+debugInConsole: false # Print debug info in Obsidian console
+```
+
+---
+
 # 💠 What is Docker?
 
 Docker is a **containerization platform** that enables developers to package applications and their dependencies into **lightweight, portable, and self-sufficient containers**. These containers run consistently across different environments, eliminating the "it works on my machine" problem.
@@ -13,9 +26,9 @@ Docker is a **containerization platform** that enables developers to package app
 - **Isolation** – Each container runs independently with its own dependencies.
 - **Fast Deployment** – Containers can start in milliseconds.
 
-<aside> 💡 _Docker only works on UNIX kernel. On Windows, Docker Desktop creates Linux VM to run Docker._
+> 💡 *Docker only works on UNIX kernel. On Windows, Docker Desktop creates Linux VM to run Docker.*
 
-</aside>
+---
 
 # 💠 **Containers vs VM**
 
@@ -27,6 +40,8 @@ Docker is a **containerization platform** that enables developers to package app
 |**Performance**|Requires more resources|More efficient most of the time (except high I/O), shares OS resources|
 |**Portability**|Less portable|High portability across environments|
 
+---
+
 # 💠 **Docker Architecture**
 
 Docker follows a **client-server architecture** consisting of:
@@ -37,23 +52,24 @@ Docker follows a **client-server architecture** consisting of:
 - **Docker Containers** – Running instances of Docker images.
 - **Docker Registry (Docker Hub, Private Registries)** – Stores and distributes Docker images.
 
+---
+
 # 💠 **Basic Commands**
 
-|**Command**|**Description**|
-|---|---|
-|`docker --version`|Check installed Docker version|
-|`docker pull <image>`|Download an image from Docker Hub|
-|`docker images`|List available images on the system|
-|`docker run <image>`|Run a container from an image|
-|`docker ps`|List running containers|
-|`docker ps -a`|List all containers (running & stopped)|
-|`docker stop <container>`|Stop a running container|
-|`docker rm <container>`|Remove a stopped container|
-|`docker rm $(docker ps -a -q)`|Remove all stopped containers|
-|`docker rm -f <container>`|Force remove a container|
-|`docker rmi <image>`|Remove an image|
-|`docker exec -it <container> sh`|Access a running container via terminal|
-
+| **Command**                      | **Description**                         |
+| -------------------------------- | --------------------------------------- |
+| `docker --version`               | Check installed Docker version          |
+| `docker pull <image>`            | Download an image from Docker Hub       |
+| `docker images`                  | List available images on the system     |
+| `docker run <image>`             | Run a container from an image           |
+| `docker ps`                      | List running containers                 |
+| `docker ps -a`                   | List all containers (running & stopped) |
+| `docker stop <container>`        | Stop a running container                |
+| `docker rm <container>`          | Remove a stopped container              |
+| `docker rm $(docker ps -aq)`     | Remove all stopped containers           |
+| `docker rm -f <container>`       | Force remove a container                |
+| `docker rmi <image>`             | Remove an image                         |
+| `docker exec -it <container> sh` | Access a running container via terminal |
 ### **Example:**
 
 ```bash
@@ -62,14 +78,15 @@ docker run -d -p 80:8080 nginx
 
 This runs an **NGINX** container in detached mode (`-d`) and maps **port 80** of the host to **port 8080** of the container.
 
+---
+
 # 💠 **Images & Dockerfiles**
 
 A **Docker Image** is a lightweight, standalone, and executable software package that includes everything needed to run an application (code, runtime, libraries, dependencies, and configuration files).
 
 A **Dockerfile** is a script that contains instructions to build a Docker image. Official images can be found on **Docker Hub** ([https://hub.docker.com/](https://hub.docker.com/)).
 
-### **Example `Dockerfile`:**
-
+### Example `Dockerfile`:
 ```docker
 # Use a base image
 FROM node:18-alpine
@@ -92,22 +109,18 @@ EXPOSE 3000
 ENTRYPOINT ["npm", "start"]
 ```
 
-<aside> _💡 Use an `alpine` or `slim` version for a lightweight image._
+> 💡 *Use an `alpine` or `slim` version for a lightweight image.*
 
-</aside>
+> ⚠️ *Always specify a version tag of the image, otherwise it uses `latest` and can broke with later versions.*
 
-<aside> ⚠️
-
-_Always specify a version tag of the image, otherwise it uses `latest` and can broke with later versions._
-
-</aside>
-
-### **Building and Running an Image**
+### Building and Running an Image
 
 ```bash
 docker build -t myapp .
 docker run -d -p 3000:3000 myapp
 ```
+
+---
 
 # 💠 **Volumes & Persistent Data**
 
@@ -116,7 +129,7 @@ By default, when a container stops, its data is lost. **Docker Volumes** allow d
 1. **Named Volumes** – Managed by Docker, designed for containerized applications.
 2. **Bind Mounts** – Maps a specific host directory to a container directory.
 
-### **Named Volumes**
+## 1. Named Volumes
 
 ```bash
 # Create a named volume
@@ -135,13 +148,9 @@ docker volume ls
 docker volume rm mydata
 ```
 
-<aside> ⚠️
+> ⚠️ *A volume cannot be removed if it is currently being used by any running container.*
 
-_A volume cannot be removed if it is currently being used by any running container._
-
-</aside>
-
-### **Bind Mounts**
+## 2. Bind Mounts
 
 ```bash
 # Run a container with a bind mount attached
@@ -155,16 +164,15 @@ In this case:
 - **`/home/user/data`** (host directory) is mounted into **`/app/data`** (inside the container).
 - Changes made in **`/home/user/data`** on the host will reflect inside the container.
 
-### **Bind Mounts vs Named Volumes**
+## 3. Bind Mounts vs Named Volumes
 
-|**Feature**|**Bind Mount**|**Named Volume**|
-|---|---|---|
-|**Location**|Any host path|Managed by Docker (`/var/lib/docker/volumes/`)|
-|**Persistence**|Exists outside container|More reliable|
-|**Performance**|Slower on some platforms|Optimized by Docker|
-|**Use Case**|Development and config files|Production, databases and stateful apps|
-
-### **When to Use?**
+| **Feature**     | **Bind Mount**               | **Named Volume**                               |
+| --------------- | ---------------------------- | ---------------------------------------------- |
+| **Location**    | Any host path                | Managed by Docker (`/var/lib/docker/volumes/`) |
+| **Persistence** | Exists outside container     | More reliable                                  |
+| **Performance** | Slower on some platforms     | Optimized by Docker                            |
+| **Use Case**    | Development and config files | Production, databases and stateful apps        |
+## 4. When to Use?
 
 |**Scenario**|**Recommended Option**|
 |---|---|
@@ -174,11 +182,13 @@ In this case:
 |Development with live code updates (hot-reload)|**Bind Mount**|
 |Accessing specific system files|**Bind Mount**|
 
+---
+
 # 💠 **Networking**
 
 Docker provides several networking options to manage communication between containers and the outside world.
 
-### **Types of Docker Networks**
+## 1. Types of Docker Networks
 
 |**Network Type**|**Description**|
 |---|---|
@@ -187,7 +197,7 @@ Docker provides several networking options to manage communication between conta
 |**None**|No networking for the container|
 |**Overlay**|Enables networking between multiple Docker hosts (for Swarm mode)|
 
-### **Creating and Using Networks**
+## 2. Creating and Using Networks
 
 ```bash
 docker network create mynetwork
@@ -197,7 +207,11 @@ docker run -d --network=mynetwork --name=app2 myapp
 
 This allows `app1` and `app2` to communicate using their **container names** instead of IP addresses.
 
+---
+
 # 💠 **Docker Compose**
+
+## 1. Example File
 
 A **`docker-compose.yml`** file describes the **services**, **networks**, and **volumes** used by an application. Below is a detailed example:
 
@@ -235,7 +249,7 @@ networks:
 
 > ⚠️ *Some `docker-compose.yml` might have a `version: "3.x"` on the first line. This is now depreciated.*
 
-### **Services**
+## 2. Services
 
 Each service defines a container **running an application**. Key options:
 
@@ -252,26 +266,23 @@ Each service defines a container **running an application**. Key options:
     - `unless-stopped` – Restart unless manually stopped.
     - `on-failure` – Restart only on failure.
 
-### **Volumes**
+## 3. Volumes
 
 Defines **persistent storage** to avoid data loss when containers restart.
 
-### **Networks**
+## 4. Networks
 
 By default, services **share a common network**.
 
 - A **custom network** (e.g., `app_network`) isolates communication between services.
-    
 - You can specify network types:
-    
     ```yaml
     networks:
       app_network:
         driver: bridge  # Default network driver
     ```
-    
 
-### **Common Docker Compose Commands**
+## 5. Common Docker Compose Commands
 
 |**Command**|**Description**|
 |---|---|
@@ -286,7 +297,7 @@ By default, services **share a common network**.
 |`docker-compose exec <service> bash`|Open an interactive shell in a running container.|
 |`docker-compose scale <service>=3`|Scale a service to multiple instances.|
 
-### **Using `docker-compose.override.yml` for Environment-Specific Configurations**
+## 6. Using `docker-compose.override.yml` for Environment-Specific Configurations
 
 Instead of modifying the main `docker-compose.yml` file for different environments (development, testing, production), **Docker Compose allows overriding configurations** using a `docker-compose.override.yml` file :
 
@@ -294,7 +305,6 @@ Instead of modifying the main `docker-compose.yml` file for different environmen
 - Useful for **adding dev-specific settings**, **debugging**, or **modifying configurations without changing the main file**.
 
 **Example: `docker-compose.override.yml` (Development Setup)**
-
 ```yaml
 services:
   app:
@@ -312,22 +322,18 @@ services:
 ```
 
 **Running with an Override**
-
 ```bash
 docker-compose up -d
 ```
-
 - **No extra flags needed** – Compose **automatically detects** and applies overrides.
 - You can specify a different override file:
-
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
-### **Best Practices for Docker Compose**
+## 7. Best Practices for Docker Compose
 
 - Use **health checks** to wait for services to be ready and healthy.
-
 ```yaml
   database:
     healthcheck:
@@ -341,22 +347,22 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 - Use **`docker-compose.override.yml`** to customize different environments without modifying the main file.
 - **Keep Compose files readable & modular** by using external YAML files for complex configurations.
 
+---
+
 # 💠 **Environment Variables**
 
 Environment variables in Docker provide a way to **configure applications dynamically** without modifying the container image. They allow applications to adapt to different environments (e.g., development, staging, production) while keeping sensitive information (like API keys and credentials) **out of the image and source code**.
 
-### **Passing Variables at Runtime**
+## 1. Passing Variables at Runtime
 
 You can pass environment variables directly when running a container:
-
 ```bash
 docker run -e APP_ENV=production -e DEBUG=false myapp
 ```
 
-### **Defining Environment Variables in `docker-compose.yml`**
+## 2. Defining Environment Variables in `docker-compose.yml`
 
 You can define default values inside the `docker-compose.yml`:
-
 ```yaml
 services:
   app:
@@ -365,12 +371,11 @@ services:
       APP_ENV: production
 ```
 
-### **Using an `.env` File**
+## 3. Using an `.env` File
 
 For better management, store variables in an `.env` file:
 
 Then, reference it in `docker-compose.yml`:
-
 ```yaml
 services:
   app:
@@ -379,13 +384,9 @@ services:
       - .env # .env est l'option par défaut
 ```
 
-<aside> ⚠️
+> ⚠️ *`.env` should **never** be sent on a Git repository. Add it to `.gitignore` and create a template file `.env.sample` with empty values.*
 
-`.env` should **never** be sent on a Git repository. Add it to `.gitignore` and create a template file `.env.sample` with empty values.
-
-</aside>
-
-### Set project prefix
+## 4. Set project prefix
 
 You can add a prefix to your project containers, volumes and networks by setting the environment variable `COMPOSE_PROJECT_NAME` :
 
@@ -395,20 +396,20 @@ COMPOSE_PROJECT_NAME=my-project
 
 The containers would for example become `my-project-app`, `my-project-db`, etc.
 
+---
+
 # 💠 **Sensitive Environment Variables**
 
 Storing sensitive data like **passwords, API keys, and credentials** in plain-text environment variables or `.env` files **poses security risks**. To handle sensitive information securely in Docker, consider these approaches:
 
-### **Use Docker Secrets (For Swarm Mode)**
+## 1. Use Docker Secrets (For Swarm Mode)
 
 Docker Secrets is a built-in feature for securely storing and managing sensitive data in **Docker Swarm**.
-
 ```bash
 echo "my-secret-password" | docker secret create db_password -
 ```
 
 Reference it in `docker-compose.yml` (Swarm mode only):
-
 ```yaml
 services:
   database:
@@ -422,7 +423,7 @@ secrets:
 
 Inside the container, the secret will be available as a **file** in `/run/secrets/db_password`, making it more secure than environment variables.
 
-### **Use External Secret Management Tools**
+## 2. Use External Secret Management Tools
 
 For **non-Swarm deployments**, use **external secret managers**:
 
@@ -430,28 +431,29 @@ For **non-Swarm deployments**, use **external secret managers**:
 - **AWS Secrets Manager** – Manage credentials securely in AWS-based environments.
 - **Azure Key Vault** or **Google Secret Manager** – Similar managed solutions for cloud environments.
 
-### **Avoid Exposing Sensitive Data**
+## 3. Avoid Exposing Sensitive Data
 
 - **Never store secrets inside Docker images** (`Dockerfile`, `.env`, or `docker-compose.yml`).
-    
 - **Use runtime-only injection** (`docker run -e API_KEY=$API_KEY myapp`) instead of hardcoding.
-    
 - **Check environment variables inside a running container**:
-    
     ```bash
     docker exec mycontainer printenv
     ```
-    
 - **Restrict access** to environment files (`chmod 600 .env`).
-    
+
+---
 
 # 💠 Containers Repository ✍️
 
 To be completed…
 
+---
+
 # 💠 Setup HTTPS ✍️
 
 To be completed…
+
+---
 
 # 💠 **Orchestration**
 
@@ -474,115 +476,87 @@ kubectl create deployment web --image=nginx
 kubectl expose deployment web --port=80 --type=LoadBalancer
 ```
 
-<aside> ⚠️
+> ⚠️ *Docker Swarm is simpler than Kubernetes but not recommanded for a production environment. Kubernetes offers advanced features like auto-scaling, rolling updates, self-healing capabilities, etc.*
 
-_Docker Swarm is simpler than Kubernetes but not recommanded for a production environment. Kubernetes offers advanced features like auto-scaling, rolling updates, self-healing capabilities, etc._
-
-</aside>
+---
 
 # 💠 **Security Best Practices**
 
-### **Use Trusted & Minimal Images**
+## 1. Use Trusted & Minimal Images
 
 - Prefer **official images** with an alpine or slim version (`nginx:alpine` > `nginx:latest`).
-    
 - Regularly **update images** to patch vulnerabilities.
-    
 - Scan images with **Trivy**, **Grype**, or **Docker Scan**:
-    
     ```bash
     trivy image myapp
     ```
-    
 
-### **Limit Privileges & Isolate Containers**
+## 2. Limit Privileges & Isolate Containers
 
 - Avoid running as `root`, use a **non-root user** in the `Dockerfile`:
-    
     ```docker
     RUN adduser --system appuser
     USER appuser
     ```
     
 - Use `-read-only` and `-cap-drop` to **restrict permissions:**
-    
     ```bash
     docker run --read-only --cap-drop=ALL myapp
     ```
     
-    <aside> 💡
+> *💡`--read-only` runs the container in read-only mode, meaning no files can be modified inside the container*
     
-    `*--read-only` runs the container in read-only mode, meaning no files can be modified inside the container*
-    
-    </aside>
-    
-    <aside> 💡
-    
-    `*--cat-drop=ALL` drops all Linux capabilities, ensuring least privilege execution*
-    
-    </aside>
-    
+> *💡`-cat-drop=ALL` drops all Linux capabilities, ensuring least privilege execution*
+
 - Run **rootless Docker** for added security:
-    
     ```bash
     dockerd --rootless
     ```
-    
 
-### **Restrict Networking & Limit Exposure**
+## 3. Restrict Networking & Limit Exposure
 
 - Use **custom bridge networks** instead of `default`:
-    
     ```bash
     docker network create secure_net
     docker run --network=secure_net myapp
     ```
     
 - Avoid exposing unnecessary ports (`p` flag).
-    
 - Block outbound traffic if not required:
-    
     ```bash
     docker network create --internal secure_net
     ```
-    
 
-### **Enforce Resource Limits**
+## 4. Enforce Resource Limits
 
 - Prevent resource exhaustion:
-    
     ```bash
     docker run --memory=500m --cpus=1 myapp
     ```
     
 - Use `-tmpfs` for temporary files:
-    
     ```bash
     docker run --tmpfs /tmp myapp
     ```
-    
 
-### **Secure the Docker Daemon**
+## 5. Secure the Docker Daemon
 
 - **Disable the daemon socket exposure** (`/var/run/docker.sock`):
-    
     ```bash
     sudo chmod 600 /var/run/docker.sock
     ```
     
 - Enable **TLS authentication** for secure API access.
-    
 
-### **Remove Unused Resources**
+## 6. Remove Unused Resources
 
 - Regular cleanup prevents attack vectors:
-    
     ```bash
     docker system prune -a
     docker volume prune
     ```
-    
 
+---
 # 💠 Tips and Tricks
 
 - Install [https://github.com/jesseduffield/lazydocker](https://github.com/jesseduffield/lazydocker) on Linux terminal to manage Docker containers

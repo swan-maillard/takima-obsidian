@@ -11,27 +11,28 @@ includeLinks: true # Make headings clickable
 hideWhenEmpty: true # Hide TOC if no headings are found
 debugInConsole: false # Print debug info in Obsidian console
 ```
+---
 
 # 💠 Core Java Concepts
 
-### Object-Oriented Programming (OOP)
+## 1. Object-Oriented Programming (OOP)
 
 - **Encapsulation**: Group related data and methods within a class.
 - **Inheritance**: Extend functionality by inheriting properties and methods from a parent class.
 - **Polymorphism**: Use a single interface or method to represent different underlying forms.
 - **Abstraction**: Focus on essential qualities of an entity by hiding implementation details.
 
-### Primitive vs Reference Types
+## 2. Primitive vs Reference Types
 
 - **Primitive Types**: `int`, `double`, `char`, `boolean`, etc. (store values directly).
 - **Reference Types**: `String`, custom objects, arrays, etc. (store references to objects in memory and can be `null`).
 
-### Static vs Instance Members
+## 3. Static vs Instance Members
 
 - **Static**: Belong to the class itself (shared by all instances).
 - **Instance**: Belong to specific objects created from a class.
 
-### Exception Handling
+## 4. Exception Handling
 
 - **Checked vs Unchecked Exceptions**:
     - _Checked_: Must be declared or handled explicitly.
@@ -40,12 +41,11 @@ debugInConsole: false # Print debug info in Obsidian console
 - **try-with-resources**: Automates closing of resources (implementing `AutoCloseable`), preventing resource leaks.
 - **throws**: Declares an exception may be thrown by a method.
 - **throw**: Explicitly generates an exception in code.
-Co
-### Generics
+## 5. Generics
 
 - Use type parameters (`<T>`) for collections and methods to achieve type safety and reduce casts.
 
-### Lambda Expressions & Functional Interfaces
+## 6. Lambda Expressions & Functional Interfaces
 
 - **Lambda Expressions**: Simplified syntax for implementing single-abstract-method interfaces.
 - **Functional Interfaces**: Interfaces with exactly one abstract method (e.g., `Consumer<T>`, `Function<T,R>`, `Predicate<T>`, `Supplier<T>`).
@@ -54,7 +54,7 @@ Co
 
 # 💠 SOLID and DRY Principles
 
-### 1. SOLID
+## 1. SOLID
 
 - **S (Single Responsibility)**: A class should have only one reason to change.
 - **O (Open/Closed)**: Classes are open for extension but closed for modification.
@@ -62,8 +62,7 @@ Co
 - **I (Interface Segregation)**: Provide small, client-specific interfaces rather than large, general-purpose ones.
 - **D (Dependency Inversion)**: Depend on abstractions, not on concrete implementations.
 
-
-### 2. DRY (Don't Repeat Yourself)
+## 2. DRY (Don't Repeat Yourself)
 
 - Avoid code duplication by extracting common functionality into methods, classes, or libraries.
 - Employ abstraction and modularization to keep code clean and maintainable.
@@ -72,7 +71,7 @@ Co
 
 # 💠 Equals and HashCode
 
-### Equals
+## 1. Equals
 
 - Must satisfy **reflexivity**, **symmetry**, **transitivity**, and **consistency**.
 - By default, `Object.equals()` compares memory addresses.
@@ -94,7 +93,7 @@ Co
     ```
     
 
-### HashCode
+## 2. HashCode
 
 - If you override `equals`, you must also override `hashCode`.
 - Hash collisions are possible, so aim for a balanced hash function to minimize collisions.
@@ -103,7 +102,7 @@ Co
 ---
 
 # 💠 Collections
-### 1. List
+## 1. List
 
 - **Purpose**: Ordered collection that allows duplicates.
 - **Common Implementations**:
@@ -113,7 +112,7 @@ Co
 	- `ArrayList` is typically preferred for most scenarios where random access is common.
 	- `LinkedList` can be beneficial if you frequently insert or remove elements at the beginning or middle, and random access is less common.
 
-### 2. Set
+## 2. Set
 
 - **Purpose**: Collection that disallows duplicate elements.
 - **Common Implementations**:
@@ -125,7 +124,7 @@ Co
 	- Use `LinkedHashSet` when you need to preserve the order in which elements were inserted.
 	- Use `TreeSet` when you need a sorted set or if you need to quickly retrieve elements in ascending or descending order.
 
-### 3. Map
+## 3. Map
 
 - **Purpose**: Key-value pair storage with fast lookups by key.
 - **Common Implementations**:
@@ -137,7 +136,7 @@ Co
 	- `LinkedHashMap` is useful if you need to iterate keys/values in insertion order (for example, in caching scenarios).
 	- `TreeMap` is ideal when you need to iterate over keys in sorted order or quickly fetch subsets of keys (e.g., in a range).
 
-### 4. Queue
+## 4. Queue
 
 - **Purpose**: FIFO (First-In-First-Out) or specialized ordering of elements.
 - **Common Implementations**:
@@ -147,7 +146,7 @@ Co
 	- Use `PriorityQueue` when elements need to be processed based on priority instead of pure insertion order.
 	- Use `ArrayDeque` for stack-like (LIFO) or queue-like (FIFO) operations with minimal overhead.
 
-### 5. Concurrent Collections
+## 5. Concurrent Collections
 
 - **Purpose**: Thread-safe collections designed for concurrency.
 - **Common Implementations**:
@@ -162,12 +161,12 @@ Co
 
 # 💠 Streams API
 
-### 1. Creating a Stream
+## 1. Creating a Stream
 - From a **Collection**: `collection.stream()` or `collection.parallelStream()`
 - From **arrays**: `Arrays.stream(array)`
 - Via **static methods**: `Stream.of(...)`, `Stream.generate(...)`, `Stream.iterate(...)`
 
-### 2. Intermediate Operations
+## 2. Intermediate Operations
 
 These operations return a new `Stream` and are lazily evaluated. Examples include:
 
@@ -179,7 +178,7 @@ These operations return a new `Stream` and are lazily evaluated. Examples includ
 
 No actual processing takes place until a **terminal operation** is invoked.
 
-### 3. Terminal Operations
+## 3. Terminal Operations
 
 These operations trigger the _evaluation_ of the stream and typically produce a result or side-effect. Examples include:
 
@@ -189,24 +188,23 @@ These operations trigger the _evaluation_ of the stream and typically produce a 
 - `count()`: Returns the number of elements in the stream.
 - `findFirst()`, `findAny()`: Retrieves an element from the stream that matches a condition (if any).
 
-### 4. Parallel Streams
+## 4. Parallel Streams
 
 - Using `parallelStream()` (or `stream().parallel()`) can leverage multiple CPU cores.
 - **Caution**: Parallel performance gains are not guaranteed. Always measure. Avoid shared mutable state, as it can cause concurrency issues or degrade performance if synchronization is required.
 
-### 5. Common Collectors
+## 5. Common Collectors
 
 - **`Collectors.toList()`**: Gathers stream elements into a `List`.
 - **`Collectors.toSet()`**: Gathers stream elements into a `Set` (duplicates discarded).
 - **`Collectors.groupingBy(Function)`**: Groups stream elements into a `Map<K, List<V>>`.
 - **`Collectors.joining(String delimiter)`**: Concatenates string representations of the elements using a given delimiter.
 
-### 6. Optional
+## 6. Optional
 
 `Optional<T>` is a container object that may or may not contain a non-null value. It helps reduce `NullPointerException` by forcing the caller to explicitly deal with the possibility of an absent value.
 
 Key methods:
-
 - `Optional.of(value)`: Creates an `Optional` for a non-null value.
 - `Optional.empty()`: Represents a missing value.
 - `orElse(T other)`: Returns the contained value or `other` if empty.
@@ -214,7 +212,6 @@ Key methods:
 - `orElseThrow(Supplier<? extends Throwable> exceptionSupplier)`: Throws the provided exception if empty.
 - `map(Function)`, `flatMap(Function)`: Transforms the contained value if present.
 - `filter(Predicate)`: Returns an `Optional` describing the value if it matches, otherwise empty.
-
 
 ---
 
@@ -236,51 +233,39 @@ Java’s `java.util.concurrent` package provides high-level abstractions for man
     - **WorkStealingPool** (Java 8+): Uses a fork-join pool internally for parallelism.
 
 ### Submitting Tasks
-
 - **execute(Runnable task)**: Submits a `Runnable` with no return value.
 - **submit(Callable task)**: Submits a `Callable` that returns a `Future<V>`; the `Future` can be used to check task status, retrieve results, or handle exceptions.
 
 ### Graceful Shutdown
-
 - **shutdown()**: Initiates an orderly shutdown where new tasks are not accepted, but previously submitted tasks are allowed to complete.
 - **shutdownNow()**: Attempts to stop all actively executing tasks and halts the processing of waiting tasks.
 - **awaitTermination(long timeout, TimeUnit unit)**: Blocks until all tasks have completed execution after a shutdown request, or the timeout occurs, or the current thread is interrupted—whichever happens first.
 
 ### Handling Exceptions & Futures
-
 When using `submit(...)`, any exception in the `Callable` is captured and can be re-thrown when calling `future.get()`. This approach makes it simpler to handle and log errors that occur in separate threads.
-
 
 ## 2. Synchronization & Thread Safety
 
 When multiple threads share mutable state, conflicts can arise if updates or reads happen at the same time. Java provides several mechanisms to coordinate access and ensure data integrity.
 
 ### Synchronized
-
 - Placing the `synchronized` keyword on a method or block ensures only one thread can enter that section at a time, effectively serializing access to the critical section.
-    
     ```java
     public synchronized void increment() {
         count++;
     }
     ```
-    
-- **Drawback**: Synchronization can cause contention, reducing parallelism.
+> :LiAlertTriangle: ***Drawback**: Synchronization can cause contention, reducing parallelism.*
 
 ### Volatile
-
 - Declaring a variable as `volatile` ensures visibility of changes to that variable across threads; every read sees the latest write.
-    
     ```java
     private volatile boolean running = true;
     ```
-    
-- **Caution**: `volatile` does **not** provide atomicity; it only guarantees that updates are immediately visible to other threads. Complex operations (like `count++`) are not inherently thread-safe.
+> :LiAlertTriangle: ***Caution**: `volatile` does **not** provide atomicity; it only guarantees that updates are immediately visible to other threads. Complex operations (like `count++`) are not inherently thread-safe.*
 
 ### Atomic Classes
-
 - **`AtomicInteger`, `AtomicBoolean`, `AtomicReference`**, etc., offer thread-safe operations on single variables without using locks.
-    
     ```java
     private AtomicInteger count = new AtomicInteger(0);
     
@@ -288,23 +273,20 @@ When multiple threads share mutable state, conflicts can arise if updates or rea
         count.incrementAndGet(); // an atomic operation
     }
     ```
-    
 - Atomic classes can perform compound actions (e.g., compare-and-swap) atomically, which may be more efficient than using `synchronized` for single-variable operations.
 
 ### Best Practices
-
 1. **Identify Shared Mutable State**: Whenever threads access and modify the same objects, you need a strategy (locks, atomics, etc.) to prevent race conditions.
 2. **Minimize Lock Scope**: Keep synchronized sections as small as possible to reduce contention.
 3. **Use Thread-Safe Collections**: Java provides concurrent variants (e.g., `ConcurrentHashMap`, `CopyOnWriteArrayList`) that handle synchronization internally.
 4. **Avoid Unnecessary Synchronization**: Overuse can lead to performance bottlenecks and deadlocks.
 5. **Prefer Higher-Level Abstractions**: Whenever possible, use the concurrency utilities (`ExecutorService`, concurrent collections, etc.) instead of manual thread manipulation.
 
-
 ---
 
 # 💠 Config and Maven
 
-## pom.xml
+## 1. pom.xml
 
 The `pom.xml` (Project Object Model) file is the core of a Maven project. It contains:
 
@@ -315,7 +297,7 @@ The `pom.xml` (Project Object Model) file is the core of a Maven project. It con
 - **Plugins**: Tools to perform tasks like code coverage, packaging, or code analysis.
 - **Repositories**: Defines where Maven will look for dependencies (e.g., Maven Central).
 
-### Version Properties
+## 2. Version Properties
 
 Using **properties** in the `pom.xml` allows you to avoid repeating version numbers for dependencies or plugins. This approach makes upgrades easier because you only need to update a single property in the `<properties>` section:
 
@@ -337,7 +319,7 @@ Then reference them in dependencies:
 
 This ensures version consistency and centralizes version management.
 
-## Dependency Scopes
+## 3. Dependency Scopes
 
 Maven defines several **scopes** that control the classpath and visibility of a dependency throughout different phases of the build lifecycle:
 
@@ -356,38 +338,37 @@ Maven defines several **scopes** that control the classpath and visibility of a 
 6. **import**
     - Used when importing dependency **management** from another POM.
     
-## Common Maven Commands
+## 4. Common Maven Commands
 
 These are some frequently used Maven goals:
 
 1. **mvn compile**  
     Compiles your main source code and places compiled `.class` files in `target/classes`.
-    
+
 2. **mvn test**  
     Executes your unit tests, typically found in `src/test/java`, using frameworks like JUnit.
-    
+
 3. **mvn package**  
     Packages your compiled code into a distribution format, such as a `.jar` or `.war` file, placed in `target/`.
-    
+
 4. **mvn install**  
     Installs the packaged artifact into your local Maven repository (`~/.m2/repository`), making it available for other local projects.
-    
+
 5. **mvn clean**  
     Deletes the `target/` directory, removing all previously compiled artifacts.
-    
+
 6. **mvn clean package**  
     Combines `clean` and `package` in one step, ensuring a fresh build.
-    
+
 7. **mvn dependency:tree**  
     Prints the dependency tree, helping you detect clashes in transitive dependencies or version conflicts.
-    
 
 
 ---
 
 # 💠 Memory Management
 
-## JVM Memory Model
+## 1. JVM Memory Model
 
 When you run a Java application, the JVM divides its memory into distinct areas, each with a specific purpose:
 
@@ -414,7 +395,7 @@ When you run a Java application, the JVM divides its memory into distinct areas,
         - Not governed by the Java GC.
         - Must be carefully managed when using native code or libraries that allocate memory off-heap.
 
-## Garbage Collection (GC) Algorithms
+## 2. Garbage Collection (GC) Algorithms
 
 Garbage collection automatically frees memory by removing objects no longer reachable by active references. Different GC algorithms have different trade-offs in terms of throughput, latency, and memory footprint:
 
@@ -438,7 +419,7 @@ Garbage collection automatically frees memory by removing objects no longer reac
     - **Pros**: Designed for large heaps and aims for predictable, short pause times.
     - **Cons**: More complex tuning parameters, though defaults often work well for many applications.
 
-## Tools for Memory Management
+## 3. Tools for Memory Management
 
 Diagnosing memory issues and performance bottlenecks often involves gathering data about how your application uses the heap, threads, and CPU resources. Java provides several powerful tools for these tasks:
 
@@ -447,21 +428,20 @@ Diagnosing memory issues and performance bottlenecks often involves gathering da
         ```bash
         jmap -dump:live,file=heapdump.hprof <PID>
         ```
-    
+
 2. **Thread Dump Analysis**
     - **`jstack`**: Command-line tool that prints the stack traces of all threads in a JVM. Helpful for diagnosing deadlocks or identifying performance bottlenecks in thread execution.
         ```bash
         jstack <PID> > threaddump.txt
         ```
     - **VisualVM**: A graphical tool (included in most JDK distributions) to inspect the current thread states, CPU usage, and memory usage in real time.
-    
+
 3. **Profilers**
     - **JProfiler**: A commercial tool offering powerful CPU and memory profiling capabilities, thread analysis, and more.
     - **VisualVM**: Bundled with OpenJDK/Oracle JDK, allowing you to profile CPU and memory usage, take heap/thread dumps, and monitor GC activity.
     - **Java Flight Recorder (JFR)**: A low-overhead, event-based profiler integrated into the JVM. It collects detailed diagnostic and profiling data, which can be viewed in **Java Mission Control**.
 
-
-### Best Practices
+## 4. Best Practices
 
 1. **Choose an Appropriate GC**: Evaluate your application’s requirements around throughput vs. latency. Start with the G1 collector for most modern Java applications unless your use case clearly favors another algorithm.
 
