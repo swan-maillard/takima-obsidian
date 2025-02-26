@@ -40,7 +40,7 @@ debugInConsole: false # Print debug info in Obsidian console
 - **try-with-resources**: Automates closing of resources (implementing `AutoCloseable`), preventing resource leaks.
 - **throws**: Declares an exception may be thrown by a method.
 - **throw**: Explicitly generates an exception in code.
-
+Co
 ### Generics
 
 - Use type parameters (`<T>`) for collections and methods to achieve type safety and reduce casts.
@@ -302,7 +302,7 @@ When multiple threads share mutable state, conflicts can arise if updates or rea
 
 ---
 
-# 💠 Build & Dependency Management with Maven
+# 💠 Config and Maven
 
 ## pom.xml
 

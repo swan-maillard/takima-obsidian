@@ -6,6 +6,7 @@ cover: "[[spring.png]]"
 - Explain Profiles (for example, having several implementations, configs, etc)
 - Explain Tomcat, threads in memory, reactive programming
 - AOP, custom aspects, custom annotations
+- @Conditional...
 
 ## 1. Core Concepts
 
