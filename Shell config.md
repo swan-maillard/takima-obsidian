@@ -8,6 +8,7 @@
 - fzf: https://github.com/junegunn/fzf
 	- forgit: https://github.com/wfxr/forgit
 	- fzf-tab: https://github.com/Aloxaf/fzf-tab
-	- many scripts
-- bat
-- fd
+	- custom scripts for **ls** and **fv**
+- bat (better cat)
+- fd (finder)
+- eza (better ls)
