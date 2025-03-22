@@ -4,11 +4,18 @@
 - lazydocker: https://github.com/jesseduffield/lazydocker
 - lazygit: https://github.com/jesseduffield/lazygit
 - tig: https://github.com/jonas/tig
-- you should use: https://github.com/MichaelAquilina/zsh-you-should-use
+- zsh you should use: https://github.com/MichaelAquilina/zsh-you-should-use
 - fzf: https://github.com/junegunn/fzf
 	- forgit: https://github.com/wfxr/forgit
 	- fzf-tab: https://github.com/Aloxaf/fzf-tab
+<<<<<<< HEAD
 	- custom scripts for **ls** and **fv**
 - bat (better cat)
 - fd (finder)
 - eza (better ls)
+=======
+	- many scripts
+- bat
+- fd
+- eza
+>>>>>>> 2cb3425 (vault backup: 2025-03-22 14:55:42)
