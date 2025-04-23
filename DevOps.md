@@ -1,3 +1,3 @@
 - GitLab Container Registry
 - GitLab pager
-- 
+-  Dependency proxy gitlab
