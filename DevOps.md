@@ -1,3 +1,2 @@
-- GitLab Container Registry
-- GitLab pager
--  Dependency proxy gitlab
+https://docs.gitlab.com/ci/pipelines/settings/
+
