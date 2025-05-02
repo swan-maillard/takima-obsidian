@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
+      "LiDatabaseZap",
       "LiLeaf",
       "LiCoffee",
       "LiImage",
-      "LiGitlab",
-      "🐋"
+      "LiGitlab"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -56,5 +56,6 @@
   "MASTER 3/06 - Spring.md": {
     "iconName": "LiLeaf",
     "iconColor": "#14d22a"
-  }
+  },
+  "MASTER 3/08 - Spring JPA.md": "LiDatabaseZap"
 }
