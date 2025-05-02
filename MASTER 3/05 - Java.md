@@ -15,12 +15,17 @@ debugInConsole: false # Print debug info in Obsidian console
 
 # 💠 Core Java Concepts
 
+**Compiled** in bytecode => **Interpreted** by JVM 
+	=> **CROSS-PLATFORM**
+	=> Handles memory
+	=> Garbage Collector
+
 ## 1. Object-Oriented Programming (OOP)
 
-- **Encapsulation**: Group related data and methods within a class.
-- **Inheritance**: Extend functionality by inheriting properties and methods from a parent class.
-- **Polymorphism**: Use a single interface or method to represent different underlying forms.
-- **Abstraction**: Focus on essential qualities of an entity by hiding implementation details.
+- **Encapsulation**: **Group** related data and **intern logic / components** => **Control the visibility / access** => Generalize behavior
+- **Inheritance**: Extend functionality by inheriting properties and methods from a parent class => **Generalize behavior** => **Specialize behavior**
+- **Polymorphism**: Redefining behavior of a method => **Overloading** / **Inheritance** / **Genericity** => Main interest is **Re-usability of code / Avoid duplication**
+- **Abstraction**: Focus on essential qualities of an entity by hiding implementation details => Defines a **contract** hiding the complexity, useful with several implementations
 
 ## 2. Primitive vs Reference Types
 
@@ -55,10 +60,11 @@ debugInConsole: false # Print debug info in Obsidian console
 # 💠 SOLID and DRY Principles
 
 ## 1. SOLID
+=> Important principle of OOP  -> Best practices, improves maintainability
 
 - **S (Single Responsibility)**: A class should have only one reason to change.
 - **O (Open/Closed)**: Classes are open for extension but closed for modification.
-- **L (Liskov Substitution)**: Subtypes should be interchangeable with their base types without altering correctness.
+- **L (Liskov Substitution)**: Subtypes should be interchangeable with their base types without altering correctness => **Parent class can be replaced by child**
 - **I (Interface Segregation)**: Provide small, client-specific interfaces rather than large, general-purpose ones.
 - **D (Dependency Inversion)**: Depend on abstractions, not on concrete implementations.
 
@@ -367,6 +373,8 @@ These are some frequently used Maven goals:
 ---
 
 # 💠 Memory Management
+
+**JVM** is a **Virtual Machine** able to run compiled bytecode of langages such as **Java**, **Kotlin** or **Scala** (Example of JVM: **GraalVM** with good opti, **Hotspot** by default)
 
 ## 1. JVM Memory Model
 
