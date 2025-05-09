@@ -12,7 +12,6 @@ cover: "[[spring.png]]"
 
 **Modules:**
 - **Spring Core**
-- **Spring Context**
 - **Aspect-Oriented Programming (AOP)** – Separates cross-cutting concerns (logging, security, transactions).  
 - **Spring MVC** – A robust web framework for RESTful and traditional web apps.  
 - **Spring Boot** – Simplifies setup with auto-configuration, embedded servers, and production-ready features.  
@@ -103,7 +102,7 @@ Spring Core is the **central module** of the Spring Framework, providing the ess
 - **Centralizes configuration** (XML, annotations, or Java config)  
 - **Enables testability** via mockable dependencies  
 - **Provides consistent API** to access resources and environment  
-- 
+
 ---
 ## **3. Spring Boot**  
 
