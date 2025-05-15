@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
+      "LiHardDriveDownload",
       "LiDatabaseZap",
       "LiLeaf",
       "LiCoffee",
-      "LiImage",
-      "LiGitlab"
+      "LiImage"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -57,5 +57,12 @@
     "iconName": "LiLeaf",
     "iconColor": "#14d22a"
   },
-  "MASTER 3/08 - Spring JPA.md": "LiDatabaseZap"
+  "MASTER 3/08 - Spring JPA.md": {
+    "iconName": "LiDatabaseZap",
+    "iconColor": "#fed234"
+  },
+  "MASTER 3/09 - REST.md": {
+    "iconName": "LiHardDriveDownload",
+    "iconColor": "#ac00db"
+  }
 }
