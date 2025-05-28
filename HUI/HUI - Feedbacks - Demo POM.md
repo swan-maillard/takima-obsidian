@@ -11,7 +11,7 @@
 
 ### List of feedbacks
 - The "validation alert" is not intuitive => We should rather use a button at the same level as "Create" and "Import" with the number of feedbacks in parenthesis
-- Improve responsivity
+- Improve responsivity => Doesn't work on CHROME => Fixed by Chris ?
 	- ![[Pasted image 20250527173314.png]]
 
 ### Creation
