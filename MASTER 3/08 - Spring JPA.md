@@ -1,17 +1,29 @@
 ---
 cover: "[[spring.png]]"
 ---
-# Java Persistence: ORM & JPA Fundamentals
 
-## 🏗️ Core Concepts
-**ORM (Object-Relational Mapping)**
+# 💠Table of Contents
+```table-of-contents
+title: 
+style: nestedList # TOC style (nestedList|nestedOrderedList|inlineFirstLevel)
+minLevel: 0 # Include headings from the specified level
+maxLevel: 2 # Include headings up to the specified level
+includeLinks: true # Make headings clickable
+hideWhenEmpty: false # Hide TOC if no headings are found
+debugInConsole: false # Print debug info in Obsidian console
+```
+---
+
+# 💠 Core Concepts
+
+## 1. **ORM (Object-Relational Mapping)**
 - Technique converting data between OOP systems and relational databases
 - Benefits:
   - No manual SQL writing
   - Database-agnostic code
   - Object-oriented data manipulation
 
-**JPA (Java Persistence API)**
+## 2. **JPA (Java Persistence API)**
 - Standard Java specification for ORM (JSR 338)
 - Current version: **JPA 3.1** (Jakarta EE 9+)
 - Implementations:
@@ -19,13 +31,13 @@ cover: "[[spring.png]]"
   - EclipseLink
   - OpenJPA
 
-Hibernate arrived **before** JPA
+#### ⚠️ Hibernate arrived **before** JPA
 
 ---
 
-## 🧩 Key JPA Components
+# 💠 Key JPA Components
 
-**Entities**
+## 1. **Entities**
 ```java
 @Entity
 public class Product {
@@ -39,7 +51,7 @@ public class Product {
 }```
 
 
-**Annotations Cheatsheet**
+## 2. **Annotations Cheatsheet**
 
 | Annotation | Purpose |
 |------------|---------|
@@ -51,13 +63,11 @@ public class Product {
 | `@OneToMany`/`@ManyToOne` | Relationship mappings |
 
 
-Let me expand on both the Entity Manager/Persistence Context and the N+1 problem in detail:
-
 ---
 
-## 🔄 **Entity Manager & Persistence Context - Deep Dive**
+# **💠 Entity Manager & Persistence Context**
 
-### **Core Concept**
+## 1. Entity Manager
 The `EntityManager` is your gateway to JPA operations, and the **Persistence Context** is its memory where it tracks entity states.
 
 ```java
@@ -69,21 +79,23 @@ EntityManager em = emf.createEntityManager(); // Creates a persistence context
 
 Better to use **EntityManager** to be implementation agnostic
 
-### **Entity Lifecycle States**
-1. **New (Transient)** 
+The app has a **pool of connection** (eg. HIKARI) => By default **10 connections**
+
+## 2. **Entity Lifecycle States**
+#### **New (Transient)** 
    - Object created but not associated with persistence context
    ```java
    Product p = new Product(); // Transient state
    ```
 
-2. **Managed (Persistent)**
+#### **Managed (Persistent)**
    - Object attached to persistence context (tracked for changes)
    ```java
    em.persist(p); // Now managed
    p.setPrice(100); // Change automatically tracked!
    ```
 
-3. **Detached**
+#### **Detached**
    - Object was managed but lost connection (after `close()` or `clear()`)
    - Useful to give back the connection if there is a big computation to be done and you don't want to "take in hostage" the connection
    ```java
@@ -91,31 +103,28 @@ Better to use **EntityManager** to be implementation agnostic
    p.setPrice(200); // Change NOT tracked
    ```
 
-4. **Removed**
+#### **Removed**
    - Scheduled for deletion from database
    ```java
    em.remove(p); // Will be deleted on flush
    ```
 
-Data is persisted when **FLUSH** (often done automatically)
-
-### **Critical Behaviors**
+## 3. **Critical Behaviors**
 - **Automatic Dirty Checking**: Managed entities auto-detect changes
+- Data is persisted when **FLUSH** (often done automatically)
 - **Flush Modes**: When SQL executes (`AUTO`, `COMMIT`, `ALWAYS`(not very performant),  manual `flush()`)
 - **1st Level Cache**: Persistence context acts as a transaction-scoped cache
 
-The app has a **pool of connection** (eg. HIKARI) => By default **10 connections**
 
 ---
-## Transactional
+# 💠 Transactional
 
-### **Core Transaction Concepts**
-Transactions ensure ACID (Atomicity, Consistency, Isolation, Durability) operations:
-A => Atomic (all or nothing)
-C => Coherent (stay in coherent state, linked to atomic)
-I => Isolation ()
-D => Durability (in time)
-
+## 1. **Transaction Concepts**
+Transactions ensure **ACID** operations:
+- **A – Atomicity**: All operations within a transaction are completed successfully, or none are. It's "all or nothing."
+- **C – Consistency**: A transaction brings the database from one valid state to another, maintaining all defined rules and constraints.
+- **I – Isolation**: Concurrent transactions do not interfere with each other. Each transaction appears to run independently until committed.
+- **D – Durability**: Once a transaction is committed, its results are permanent—even in the event of a system failure.
 
 ```java
 @Transactional
@@ -127,7 +136,7 @@ public void placeOrder(Order order) {
 }
 ```
 
-### **Transaction Boundaries**
+## 2. **Transaction Boundaries**
 1. **Container-Managed** (Spring/JEE)
    - Declared via `@Transactional`
    - Automatically handled by framework
@@ -145,31 +154,30 @@ public void placeOrder(Order order) {
    }
    ```
 
-### **Isolation Levels**
-| Level | Behavior |
-|-------|----------|
-| `READ_UNCOMMITTED` | Dirty reads allowed |
-| `READ_COMMITTED` (Default) | Prevents dirty reads |
-| `REPEATABLE_READ` | Prevents non-repeatable reads |
-| `SERIALIZABLE` | Full isolation (slowest) |
+## 3. **Isolation Levels**
+| Level                      | Behavior                      |
+| -------------------------- | ----------------------------- |
+| `READ_UNCOMMITTED`         | Dirty reads allowed           |
+| `READ_COMMITTED` (Default) | Prevents dirty reads          |
+| `REPEATABLE_READ`          | Prevents non-repeatable reads |
+| `SERIALIZABLE`             | Full isolation (slowest)      |
 
 Configure in Spring:
 ```java
 @Transactional(isolation = Isolation.REPEATABLE_READ)
 ```
 
-### **Common Pitfalls**
+### 4. **Common Pitfalls**
 1. **Self-Invocation** (calling `@Transactional` methods within same class)
 2. **Long Transactions** holding database connections
-3. **Wrong Propagation** causing unexpected rollbacks
-4. **Open Persistence Context** with lazy loading after transaction ends
-5. **Open-in-view** => By default true, keeps transaction context open
+3. **Open Persistence Context** with lazy loading after transaction ends
+4. **Open-in-view** => By default true, keeps transaction context open
 
 ---
 
-## Proxies
+# 💠 Proxies
 
-#### **1. Proxy-Based Transaction Management**
+## **1. Proxy-Based Transaction Management**
 - **JDK Dynamic Proxy**: Used when beans implement interfaces (default for Spring AOP)
 - **CGLIB Proxy**: Used when beans don't implement interfaces (requires `proxyTargetClass=true`)
 
@@ -183,7 +191,7 @@ public class OrderService {
 }
 ```
 
-#### **2. How It Works Internally**
+## **2. How It Works Internally**
 1. **Proxy Creation**: Spring wraps the `OrderService` in a proxy.
 2. **Method Interception**: When `placeOrder()` is called, the proxy:
    - **Starts a transaction** (if needed)
@@ -191,8 +199,8 @@ public class OrderService {
    - **Commits on success** or **rolls back on exception**
 3. **AOP Advice**: The proxy applies `@Transactional` behavior via **around advice**.
 
-#### **3. Key Implications**
-- **Self-Invocation Bypasses Proxy**  
+## **3. Key Implications**
+#### **Self-Invocation Bypasses Proxy**  
   → Calling `@Transactional` methods **internally** (without proxy) skips transaction management:
   ```java
   public void process() {
@@ -201,21 +209,22 @@ public class OrderService {
   ```
   **Fix**: Inject proxy or use `AopContext.currentProxy()`.
 
-- **Proxy vs. Real Object**  
+#### **Proxy vs. Real Object**  
   → `this` refers to the real instance, not the proxy.
 
-- **Visibility Matters**  
+#### **Visibility Matters**  
   → `private` methods **cannot** be transactional (AOP can't proxy them).
 
-#### **5. Performance Considerations**
+## **4. Performance Considerations**
 - Proxy creation happens at startup (minimal runtime overhead).
 - Use `@Transactional` at **class level** for all public methods if needed.
 - Prefer **interface-based proxies** (JDK) for better compatibility.
 
 ---
 
-### 🤝 Relationships
-**Association Types**
+# 💠 Relationships
+
+## 1. **Association Types**
 ```java
 // 1:1 => FETCH
 @OneToOne
@@ -234,66 +243,50 @@ private Order order;
 private List<Category> categories;
 ```
 
-**Cascade Types**
+## 2. **Cascade Types**
 - `PERSIST`, `MERGE`, `REMOVE`, `REFRESH`, `DETACH`, `ALL`
+
+## 3. **LazyInitializationException**
+Occurs when a lazily-loaded association is accessed **outside of an active persistence context** (e.g., outside a transaction or after the session is closed).
 
 ---
 
-## 🚨 **The N+1 Problem
+# 💠 **The N+1 Problem
 
-### **What Happens?**
+## 1. **What Happens?**
 When fetching entities with relationships, JPA may generate:
 - **1 query** for the parent entity
 - **N additional queries** (one per child) if relationships are lazy-loaded
 
-### **Example Scenario**
-```java
-@Entity
-public class Order {
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY)
-    private List<OrderItem> items;
-}
-
-// Later...
-List<Order> orders = em.createQuery("SELECT o FROM Order o").getResultList();
-
-for (Order o : orders) {
-    o.getItems().size(); // Triggers N additional queries!
-}
-```
-
-### **Why It's Bad**
+## 2. **Why It's Bad**
 - 100 Orders → 101 queries (1 + 100)
 - Severe performance penalty
 
-### **Solutions**
+## 3. **Solutions**
 
-1. **JOIN FETCH (JPQL)**
+#### **JOIN FETCH (JPQL)**
    ```java
    SELECT o FROM Order o JOIN FETCH o.items
    ```
    - Single query with join
 
-2. **EntityGraph**
+#### **EntityGraph**
    ```java
    @EntityGraph(attributePaths = {"items"})
    List<Order> findAll();
    ```
 
-3. **DTO Projections**
+#### **DTO Projections**
    ```java
    SELECT new com.dto.OrderDTO(o.id, o.date, i.name) 
    FROM Order o JOIN o.items i
    ```
    - Avoids entity loading entirely
 
-### LAZY common issues
-=> LAZY INIT EXCEPTIONS
-
 ---
 
-### ⚙️ Querying
-**JPQL (Java Persistence Query Language)**
+# 💠 Querying
+## 1. **JPQL (Java Persistence Query Language)**
 ```java
 TypedQuery<Product> q = em.createQuery(
     "SELECT p FROM Product p WHERE p.price > :minPrice", 
@@ -302,39 +295,10 @@ TypedQuery<Product> q = em.createQuery(
 q.setParameter("minPrice", 500.0);
 ```
 
-**Criteria API (Type-safe queries)**
+## 2. **Criteria API (Type-safe queries)**
 ```java
 CriteriaBuilder cb = em.getCriteriaBuilder();
 CriteriaQuery<Product> cq = cb.createQuery(Product.class);
 Root<Product> product = cq.from(Product.class);
 cq.where(cb.gt(product.get("price"), 500.0));
 ```
-
-
----
-
-### 🚀 Advanced Topics
-**Caching**
-- First-level (Persistence Context)
-- Second-level (Shared cache)
-- Query cache
-
-**Performance Tips**
-- Use `@BatchSize` for N+1 problems
-- Prefer `JOIN FETCH` for eager loading
-- Consider DTO projections
-
-**Spring Data JPA**
-```java
-public interface ProductRepository extends JpaRepository<Product, Long> {
-    List<Product> findByPriceGreaterThan(double price);
-}```
-
----
-
-### 📝 Best Practices
-1. Always manage transactions
-2. Avoid entity serialization (use DTOs)
-3. Monitor generated SQL
-4. Use lazy loading judiciously
-5. Keep bidirectional relationships synchronized

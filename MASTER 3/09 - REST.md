@@ -1,4 +1,15 @@
-## **1. What is REST?** 
+# 💠Table of Contents
+```table-of-contents
+title: 
+style: nestedList # TOC style (nestedList|nestedOrderedList|inlineFirstLevel)
+minLevel: 0 # Include headings from the specified level
+maxLevel: 2 # Include headings up to the specified level
+includeLinks: true # Make headings clickable
+hideWhenEmpty: false # Hide TOC if no headings are found
+debugInConsole: false # Print debug info in Obsidian console
+```
+
+# **💠 What is REST?** 
 
 - **REST (Representational State Transfer)** is an **architectural style** for building scalable and maintainable web services.  
 
@@ -10,35 +21,34 @@
 
 ---
 
-## **2. The  Key Principles of REST
+# **💠 Key principles
 
 REST APIs must adhere to these  **core constraints** to be truly RESTful:  
-
-#### **2. Statelessness**  
+## **1. Statelessness**  
 - **No server-side session state**: Each request must contain **all necessary data** (e.g., authentication tokens, request parameters).  
 - **Benefits**:  
   - Improves **scalability** (servers don’t store client context).  
   - Simplifies **load balancing** (any server can handle any request).  
 
-#### **3. Cacheability**  
+## **2. Cache-ability**  
 - Responses must **explicitly define** if they can be cached (via HTTP headers like `Cache-Control`).  
 - **Benefits**:  
   - Reduces server load (clients reuse cached responses).  
   - Improves performance (e.g., `GET /products` can be cached).  
 
-#### **4. Uniform Interface**  
+## **3. Uniform Interface**  
 A consistent way to interact with resources:  
 - **Resource Identification**: Each resource has a **unique URI** (e.g., `/users/123`).  
 - **Resource Manipulation via Representations**: Clients interact via **representations** (JSON, XML) rather than direct data access.  
 - **Self-descriptive Messages**: Requests/responses include metadata (e.g., `Content-Type: application/json`).  
 
-#### **5. Content Negotiation**
+## **4. Content Negotiation**
 - Clients and servers agree on representation format via:
 	- `Accept` header (client preferences)
     - `Content-Type` header (actual format)
 - Supports multiple formats (JSON, XML, YAML, etc.)
 
-#### **6. Layered System**  
+## **5. Layered System**  
 - Clients interact with an **intermediary layer** (e.g., API gateways, proxies) without knowing backend complexity.  
 - **Benefits**:  
   - Enables **security layers** (firewalls, rate limiting).  
@@ -46,7 +56,7 @@ A consistent way to interact with resources:
 
 ---
 
-## **3. REST vs. SOAP**  
+# **💠 REST vs. SOAP**  
 
 **SOAP**, originally an acronym for **Simple Object Access Protocol**, is a messaging protocol specification for exchanging structured information in the implementation of web services It uses XML for data format.
 
@@ -60,7 +70,7 @@ A consistent way to interact with resources:
 
 ---
 
-## **4. HTTP Methods in REST**  
+# **💠 HTTP Methods in REST**  
 
 | Method  | Description                      | Idempotent? | Safe? |
 | ------- | -------------------------------- | ----------- | ----- |
@@ -77,7 +87,7 @@ A consistent way to interact with resources:
 
 ---
 
-## **5. RESTful URI Design Best Practices**  
+# **💠 RESTful URI Design Best Practices**  
 
 - Use **nouns** (not verbs) for resources:  
   - ✅ `/users` (Good)  
@@ -91,7 +101,7 @@ A consistent way to interact with resources:
 
 ---
 
-## **6. Status Codes in REST**  
+# **💠 Status Codes in REST**  
 
 There are five classes defined by the standard:
 
@@ -115,20 +125,20 @@ There are five classes defined by the standard:
 
 ---
 
-## **7. Request & Response Headers**  
+# **💠 Request & Response Headers**  
 
-- **Common Request Headers**:  
+## 1. **Common Request Headers**:  
   - `Accept`: Defines expected response format (`application/json`, `application/xml`).  
   - `Content-Type`: Specifies request body format.  
   - `Authorization`: For authentication (e.g., `Bearer <token>`).  
   
-- **Common Response Headers**:  
+## 2. **Common Response Headers**:  
   - `Content-Type`: Format of the response body.  
   - `Cache-Control`: Caching directives.  
 
 ---
 
-## **8. Authentication in REST APIs** 
+# **💠 Authentication in REST APIs** 
 
 - **Basic Auth**: `Authorization: Basic <base64(username:password)>` (Not secure without HTTPS).  
 - **Bearer Token (JWT)**: `Authorization: Bearer <token>`.  
@@ -137,7 +147,7 @@ There are five classes defined by the standard:
 
 ---
 
-## **9. HATEOAS (Hypermedia as the Engine of Application State)**  
+# **💠 HATEOAS (Hypermedia as the Engine of Application State)**  
 
 - Responses include **links** to related actions (e.g., `next`, `prev`).  
 - Example:  
@@ -154,15 +164,13 @@ There are five classes defined by the standard:
 
 ---
 
-## **10. Common Interview Questions**  
+# **💠 Versioning**  
 
-1. **What makes an API RESTful?**  
-   - Follows REST principles (stateless, uniform interface, etc.).  
-2. **Difference between PUT and PATCH?**  
-   - PUT replaces the entire resource; PATCH updates partially.  
-3. **How to handle versioning in REST APIs?**  
-   - URL path (`/v1/users`), headers (`Accept: application/vnd.company.v1+json`).  
-4. **What is idempotency? Why is it important?**  
-   - Ensures repeated calls don’t cause unintended side effects (critical for retries).  
-5. **How does REST differ from GraphQL/gRPC?**  
-   - REST uses fixed endpoints, while GraphQL allows query flexibility.  
+Useful for mobile development for instance.
+
+## 1. URL Path
+URL path (`/v1/users`)
+## 2. Headers
+Headers (`Accept: application/vnd.company.v1+json`).  
+## 3. Retro-compatibility
+Add the new way but make the previous way still functionnal.
