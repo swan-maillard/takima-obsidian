@@ -1,3 +1,6 @@
+---
+cover: "[[rest.webp]]"
+---
 # 💠Table of Contents
 ```table-of-contents
 title: 

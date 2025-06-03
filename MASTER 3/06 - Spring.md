@@ -131,14 +131,19 @@ Spring Core is the **central module** of the Spring Framework, providing the ess
   - Use `@AutoConfiguration` + `@Conditional` for custom rules  
 
 ## **2. Starter Packs
-- **Starter Dependencies**:  
-  ```xml
-  <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
-  </dependency>
-  ```
-  - Brings in Hibernate, Spring Data JPA, JDBC, and connection pool automatically  
+
+Spring Boot uses **starter dependencies** to simplify configuration and speed up project setup. These **opinionated dependency bundles** automatically bring in everything needed for a particular use case, reducing the need for manual setup or XML-based configuration.
+
+Here are some essential Spring Boot starters you’ll use across most projects:
+
+| Starter                                                 | Purpose                                                                               |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **spring-boot-starter-web**                             | For building RESTful web applications using Spring MVC and embedded Tomcat.           |
+| **spring-boot-starter-data-jpa**                        | Simplifies database access using Spring Data and Hibernate.                           |
+| **spring-boot-starter-security**                        | Adds basic security setup with Spring Security (e.g., login form, password encoding). |
+| **spring-boot-starter-test**                            | Includes JUnit, Mockito, Spring Test, and AssertJ for unit/integration testing.       |
+| **spring-boot-starter-validation**                      | Adds support for bean validation (Hibernate Validator is the default).                |
+| **spring-boot-starter-actuator**                        | Provides production-ready monitoring endpoints (health, metrics, env).                |
 
 ## **3. Embedded Servers**
 

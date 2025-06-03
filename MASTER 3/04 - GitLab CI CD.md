@@ -1,7 +1,6 @@
 ---
 cover: "[[gitlabcicd.webp]]"
 ---
-
 # 💠 Table of Contents
 ```table-of-contents
 title: 

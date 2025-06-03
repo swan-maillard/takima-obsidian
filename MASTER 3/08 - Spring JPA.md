@@ -1,5 +1,5 @@
 ---
-cover: "[[spring.png]]"
+cover: "[[spring_jpa.png]]"
 ---
 
 # 💠Table of Contents
