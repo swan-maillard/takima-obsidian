@@ -12,6 +12,8 @@ hideWhenEmpty: false # Hide TOC if no headings are found
 debugInConsole: false # Print debug info in Obsidian console
 ```
 
+---
+
 # **💠 What is REST?** 
 
 - **REST (Representational State Transfer)** is an **architectural style** for building scalable and maintainable web services.  
@@ -167,13 +169,32 @@ There are five classes defined by the standard:
 
 ---
 
-# **💠 Versioning**  
+# 💠 **Versioning**
 
-Useful for mobile development for instance.
+Versioning helps manage **changes in APIs** without breaking existing clients. It is especially important in **mobile and frontend-backend development**, where old versions must continue working.
 
-## 1. URL Path
-URL path (`/v1/users`)
-## 2. Headers
-Headers (`Accept: application/vnd.company.v1+json`).  
-## 3. Retro-compatibility
-Add the new way but make the previous way still functionnal.
+## 1. URL Path Versioning
+
+Include the version in the URL.  
+
+```
+GET /v1/users
+```
+
+## 2. Header Versioning
+
+Specify the version in the `Accept` header.  
+
+```
+Accept: application/vnd.company.v1+json
+```
+
+✅ Keeps URLs clean.  
+❌ Slightly more complex for clients and caching.
+
+## 3. Backward Compatibility
+
+When adding new features or changes:
+- Keep the **old version working**.
+- Introduce the **new version in parallel**.
+- Avoid breaking existing clients suddenly.

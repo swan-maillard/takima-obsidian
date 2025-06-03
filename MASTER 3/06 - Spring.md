@@ -1,7 +1,6 @@
 ---
 cover: "[[spring.png]]"
 ---
-
 # 💠Table of Contents
 ```table-of-contents
 title: 

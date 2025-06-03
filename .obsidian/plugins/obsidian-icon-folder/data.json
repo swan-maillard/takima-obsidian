@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
+      "🗿",
+      "💃",
       "LiScreenShare",
       "LiCoffee",
-      "LiBookOpenText",
-      "LiNewspaper",
-      "LiHardDriveDownload"
+      "LiBookOpenText"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -48,7 +48,6 @@
     "iconName": "LiGitlab",
     "iconColor": "#f0850a"
   },
-  "COVERS": "LiImage",
   "MASTER 3/05 - Java.md": {
     "iconName": "LiCoffee",
     "iconColor": "#647bed"
@@ -68,5 +67,8 @@
   "MASTER 3/10 - JavaScript.md": {
     "iconName": "LiScreenShare",
     "iconColor": "#fdff70"
-  }
+  },
+  "MASTER 3/COVERS": "LiImage",
+  "Misc": "💃",
+  "HUI": "🗿"
 }
