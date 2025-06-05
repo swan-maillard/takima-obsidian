@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
+      "👔",
       "🗿",
       "💃",
       "LiScreenShare",
-      "LiCoffee",
-      "LiBookOpenText"
+      "LiCoffee"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -70,5 +70,6 @@
   },
   "MASTER 3/COVERS": "LiImage",
   "Misc": "💃",
-  "HUI": "🗿"
+  "HUI": "🗿",
+  "Entretien client.md": "👔"
 }

@@ -98,8 +98,6 @@ class ServiceA {
 
 ---
 
----
-
 # **💠 Spring Core**
 
 Spring Core is the **central module** of the Spring Framework, providing the essential infrastructure for **dependency injection (DI)** and **Inversion of Control (IoC)**. At its heart is the **IoC Container**, which manages the lifecycle of Java objects (beans) and wires dependencies automatically.  

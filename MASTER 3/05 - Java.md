@@ -24,7 +24,7 @@ debugInConsole: false # Print debug info in Obsidian console
 
 - **Encapsulation**: **Group** related data and **intern logic / components** => **Control the visibility / access** => Generalize behavior
 - **Inheritance**: Extend functionality by inheriting properties and methods from a parent class => **Generalize behavior** => **Specialize behavior**
-- **Polymorphism**: Redefining behavior of a method => **Overloading** / **Inheritance** / **Genericity** => Main interest is **Re-usability of code / Avoid duplication**
+- **Polymorphism**: Redefining behavior of a method => **Overloading** / **Overriding** / **Genericity** => Main interest is **Re-usability of code / Avoid duplication**
 - **Abstraction**: Focus on essential qualities of an entity by hiding implementation details => Defines a **contract** hiding the complexity, useful with several implementations
 
 ## 2. Primitive vs Reference Types
@@ -130,18 +130,6 @@ debugInConsole: false # Print debug info in Obsidian console
 	- Use `LinkedHashSet` when you need to preserve the order in which elements were inserted.
 	- Use `TreeSet` when you need a sorted set or if you need to quickly retrieve elements in ascending or descending order.
 
-## 3. Map
-
-- **Purpose**: Key-value pair storage with fast lookups by key.
-- **Common Implementations**:
-    - `HashMap`: Backed by a hash table. Average O(1) insertion and lookup. No ordering guarantees on keys.
-    - `LinkedHashMap`: Maintains a doubly-linked list of the entries, preserving insertion order (or access order, if configured). Slightly higher overhead than `HashMap`.
-    - `TreeMap`: Backed by a Red-Black tree. Keys are stored in a sorted order. Insertion, removal, and lookup run in O(log n) time.
-- **Use Cases**:
-	- `HashMap` is typically preferred for general-purpose key-value storage with fast lookups.
-	- `LinkedHashMap` is useful if you need to iterate keys/values in insertion order (for example, in caching scenarios).
-	- `TreeMap` is ideal when you need to iterate over keys in sorted order or quickly fetch subsets of keys (e.g., in a range).
-
 ## 4. Queue
 
 - **Purpose**: FIFO (First-In-First-Out) or specialized ordering of elements.
@@ -162,6 +150,21 @@ debugInConsole: false # Print debug info in Obsidian console
 	- Use `ConcurrentHashMap` when multiple threads need simultaneous read/write access to a shared map.
 	- Use `CopyOnWriteArrayList` in highly concurrent environments when reads vastly outnumber writes (like maintaining a list of listeners).
 
+---
+
+# 💠 Map
+
+⚠ Maps are **NOT** Collections
+
+- **Purpose**: Key-value pair storage with fast lookups by key.
+- **Common Implementations**:
+    - `HashMap`: Backed by a hash table. Average O(1) insertion and lookup. No ordering guarantees on keys.
+    - `LinkedHashMap`: Maintains a doubly-linked list of the entries, preserving insertion order (or access order, if configured). Slightly higher overhead than `HashMap`.
+    - `TreeMap`: Backed by a Red-Black tree. Keys are stored in a sorted order. Insertion, removal, and lookup run in O(log n) time.
+- **Use Cases**:
+	- `HashMap` is typically preferred for general-purpose key-value storage with fast lookups.
+	- `LinkedHashMap` is useful if you need to iterate keys/values in insertion order (for example, in caching scenarios).
+	- `TreeMap` is ideal when you need to iterate over keys in sorted order or quickly fetch subsets of keys (e.g., in a range).
 
 ---
 
