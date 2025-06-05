@@ -35,29 +35,18 @@ REST APIs must adhere to these  **core constraints** to be truly RESTful:
   - Improves **scalability** (servers don’t store client context).  
   - Simplifies **load balancing** (any server can handle any request).  
 
-## **2. Cache-ability**  
-- Responses must **explicitly define** if they can be cached (via HTTP headers like `Cache-Control`).  
-- **Benefits**:  
-  - Reduces server load (clients reuse cached responses).  
-  - Improves performance (e.g., `GET /products` can be cached).  
-
-## **3. Uniform Interface**  
+## **2. Uniform Interface**  
 A consistent way to interact with resources:  
 - **Resource Identification**: Each resource has a **unique URI** (e.g., `/users/123`).  
 - **Resource Manipulation via Representations**: Clients interact via **representations** (JSON, XML) rather than direct data access.  
 - **Self-descriptive Messages**: Requests/responses include metadata (e.g., `Content-Type: application/json`).  
 
-## **4. Content Negotiation**
+## **3. Content Negotiation**
 - Clients and servers agree on representation format via:
 	- `Accept` header (client preferences)
     - `Content-Type` header (actual format)
 - Supports multiple formats (JSON, XML, YAML, etc.)
 
-## **5. Layered System**  
-- Clients interact with an **intermediary layer** (e.g., API gateways, proxies) without knowing backend complexity.  
-- **Benefits**:  
-  - Enables **security layers** (firewalls, rate limiting).  
-  - Supports **scalability** (load balancers, CDNs).  
 
 ---
 

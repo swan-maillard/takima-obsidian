@@ -64,7 +64,7 @@ debugInConsole: false # Print debug info in Obsidian console
 
 - **S (Single Responsibility)**: A class should have only one reason to change.
 - **O (Open/Closed)**: Classes are open for extension but closed for modification.
-- **L (Liskov Substitution)**: Subtypes should be interchangeable with their base types without altering correctness => **Parent class can be replaced by child**
+- **L (Liskov Substitution)**: objects of a superclass should be able to be replaced with objects of a subclass without affecting the correctness of the program => **Parent class can be replaced by child**
 - **I (Interface Segregation)**: Provide small, client-specific interfaces rather than large, general-purpose ones.
 - **D (Dependency Inversion)**: Depend on abstractions, not on concrete implementations.
 
