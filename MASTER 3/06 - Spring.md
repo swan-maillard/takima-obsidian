@@ -262,3 +262,46 @@ public class LoggingAspect {
 }
 
 ```
+
+
+# 💠 **Testing**
+
+Spring provides strong support for both **unit** and **integration testing**, making it easy to test application components in isolation or within a real runtime context.
+
+## 1. Unit Tests
+- Focused on **isolated components** (e.g., service, utility, controller logic).
+- Should not rely on Spring context or external systems.
+- Use **mocking** to simulate dependencies.
+- Uses **JUnit** (`@Test`)
+- Uses **Mockito**:
+    - `@Mock` to create mock objects.
+    - `@InjectMocks` to inject them into the class under test.
+    - `when().thenReturn()` to define mock behavior.
+
+## 2. Integration Tests
+- **Integration testing** in Spring ensures that multiple components work **correctly together** within a **real runtime environment** (e.g., services + repositories + database).
+- Unlike unit tests, integration tests load a **real or partial Spring context** and often interact with real infrastructure components.
+- Use `@SpringBootTest` to load the full Spring context.
+- Support embedded or containerized databases (e.g., **H2**, **PostgreSQL** via TestContainers)
+
+## 3. TestContainers
+- **Lightweight Docker containers** launched during tests.
+- Ideal for **real external services** (e.g., PostgreSQL, Redis, Kafka).
+- Works well with JUnit and Spring Boot.
+
+## 4. End-to-End (E2E) Tests
+- Simulate real user scenarios across the whole stack.
+- Often use tools like **Selenium**.
+- Helpful for validating controller behavior and web layer responses.
+- Clean up data with:
+	- `@Sql`: Run scripts before/after tests to **insert or delete data**.
+	- `@Transactional`: Rolls back DB state after each test (not recommended).
+
+## 5. Load and Stress Tests
+- **Load Tests**: Simulate normal usage at expected scale, using **Gatling**.
+- **Stress Tests**: Push system beyond limits to find failure thresholds.
+
+## 6. TDD (Test Driven Development)
+- **Write tests first** to , then implement just enough code to pass them.
+- Cycle: **Test fails -> Write Code → Test passes → Refactor**
+- Promotes better design, documentation, and confidence in code changes.

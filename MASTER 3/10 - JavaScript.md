@@ -20,7 +20,7 @@ JavaScript is a **scripting language** that is **dynamically typed**, **prototyp
 
 ## 1. Core Characteristics:
 - **Dynamically Typed**: Types are assigned at runtime.
-- **Prototype-Oriented OOP**: Objects can inherit directly from other objects, not classes.
+- **Prototype-Oriented OOP**: Instead of defining blueprints (classes), you create a **prototype object**, and other objects are cloned or extended from it.
 - **Single-Threaded with Event Loop**: Manages async operations using a non-blocking model.
 - **Standardized by ECMAScript (ES)**: One new version released annually (ES2025 is the latest).
     
@@ -50,33 +50,6 @@ JavaScript is a **scripting language** that is **dynamically typed**, **prototyp
 - **Modules**: `import/export`
 - **Async/Await**: Cleaner async code.
 - **Symbol**, **BigInt**: New primitive types for uniqueness and large numbers.
-
----
-
-# 💠 Primitives in JavaScript
-
-JavaScript has **7 primitive types**:
-- `string`
-- `number`
-- `boolean`
-- `null`
-- `undefined`
-- `symbol` (unique, immutable)
-- `bigint` (for arbitrarily large integers)
-
-> Everything else (arrays, functions, objects) is of type `object`.
-
----
-
-# 💠 Equality in JS
-
-- `==` → Loose equality (does type coercion)
-- `===` → Strict equality (no coercion, preferred)
-
-```js
-0 == '0'   // true
-0 === '0'  // false
-```
 
 ---
 
@@ -132,51 +105,21 @@ const data = await fetchData();
 
 The DOM is a **tree-like representation** of the structure of a web page.
 
-## 1. Key API Functions:
-- `document.getElementById()`
-- `document.querySelector()`
-- `element.addEventListener()`
-- `element.classList.add/remove`
-- `fetch()` for making API calls
-- `localStorage` for client-side persistence
+Browsers provide the **DOM API**, as well as the **BOM API** (Browser Object Model) which comes with the **Fetch API** and **WebSockets API**.
 
 ---
 
 # 💠 Bundlers & Build Tools
 
 Bundlers improve JS performance and compatibility.
+Common bundlers are **Webpack**, **Rollup** (used by Vite) or **Parcel**
 
-## 1. What They Do
+What they do:
 - Combine multiple JS/CSS/assets into fewer files.
 - **Transpile** modern JS or TypeScript → older JS (via Babel, ESBuild).
 - Enable `import` of non-JS assets (images, styles).
-- Optimize output: **tree shaking**, **minification**, **code splitting**.
+- Optimize output: **tree shaking**, **minification**, **obfuscation**, **code splitting**.
 
-## 2. Common Bundlers
-- **Webpack**: Most flexible, config-heavy.
-- **Vite**: Lightning-fast dev experience.
-- **Rollup**: Best for libraries.
-- **Parcel**, **Turbopack**
-
-> Some bundlers also provide hot-reload, HMR, and plugin ecosystems.
-
----
-
-# 💠 TypeScript (TS)
-
-**TypeScript** is a statically typed superset of JavaScript compiled into plain JS.
-
-## 1. Key Features
-- **Static Typing**: Types are checked at compile-time.
-- **Interfaces**, **Type Aliases**: Define the shape of data.
-- **Enums**, **Generics**, **Decorators** (experimental).
-- **Type Inference** and **Narrowing**
-- **Great Tooling**: IntelliSense, autocompletion, type safety.
-
-## 2. Notes
-- All types are **erased** during transpilation.
-- Latest version: **5.8.2**
-- Interoperates smoothly with JavaScript code.
 
 ---
 
@@ -189,13 +132,26 @@ A **polyfill** is a piece of code (usually JS) that **emulates a modern feature*
 
 ---
 
+# 💠 TypeScript (TS)
+
+**TypeScript** is a statically typed superset of JavaScript compiled into plain JS.
+
+- **Static Typing**: Types are checked at compile-time.
+- **Interfaces**, **Type Aliases**: Define the shape of data.
+- **Enums**, **Generics**, **Decorators** (experimental).
+- **Type Inference** and **Narrowing**
+- **Great Tooling**: IntelliSense, autocompletion, type safety.
+- Interpolates with JS code.
+
+
+---
+
 # 💠 Frameworks & Libraries
 
 ## 1. Frameworks
 - **Angular**: Complete app framework with DI, forms, routing.
 - **Vue.js**: Lightweight, reactive UI framework.
 - **Next.js**: React-based with SSR, API routes, full-stack capabilities.
-    
 
 ## 2. Libraries
 - **React**: Library for building UIs (component-based).
@@ -208,15 +164,6 @@ A **polyfill** is a piece of code (usually JS) that **emulates a modern feature*
 | A library is a tool                          | A framework is a full structure    |
 | You use it when you need it                  | It tells you how to build your app |
 | You write the main code and call the library | The framework calls your code      |
-
-
----
-
-# 💠 CSS & Styling in JS
-
-## 1. Tailwind vs Sass:
-- **Tailwind**: Utility-first, atomic CSS, great DX.
-- **Sass**: Preprocessor for CSS with variables, nesting.
 
 ---
 
@@ -234,14 +181,3 @@ A **polyfill** is a piece of code (usually JS) that **emulates a modern feature*
 - **Jest**: All-in-one unit/integration test runner.
 - **Vitest**: Fast Vite-native test framework.
 - **Cypress**, **Playwright**: End-to-end testing in real browsers.
-
----
-
-# 💠 Craftsmanship & Best Practices
-
-- Modular code, reusable components.
-- Clean separation of concerns (logic, view, data).
-- Functional programming principles.
-- Refactor often to reduce tech debt.
-- Apply design patterns where needed (e.g., Observer, Factory, Module).
-- Embrace team workflows: code reviews, pair programming.
