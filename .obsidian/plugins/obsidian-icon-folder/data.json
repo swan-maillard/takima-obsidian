@@ -6,19 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
-<<<<<<< HEAD
       "👔",
       "🗿",
       "💃",
       "LiScreenShare",
       "LiCoffee"
-=======
-      "LiLeaf",
-      "LiCoffee",
-      "LiImage",
-      "LiGitlab",
-      "🐋"
->>>>>>> a18a5b6 (vault backup: 2025-06-05 19:52:30)
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -63,7 +55,6 @@
   "MASTER 3/06 - Spring.md": {
     "iconName": "LiLeaf",
     "iconColor": "#14d22a"
-<<<<<<< HEAD
   },
   "MASTER 3/08 - Spring JPA.md": {
     "iconName": "LiDatabaseZap",
@@ -81,7 +72,4 @@
   "Misc": "💃",
   "HUI": "🗿",
   "Entretien client.md": "👔"
-=======
-  }
->>>>>>> a18a5b6 (vault backup: 2025-06-05 19:52:30)
 }
