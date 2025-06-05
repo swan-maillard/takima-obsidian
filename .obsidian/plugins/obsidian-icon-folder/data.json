@@ -56,10 +56,6 @@
     "iconName": "LiLeaf",
     "iconColor": "#14d22a"
   },
-  "MASTER 3/08 - Spring JPA.md": {
-    "iconName": "LiDatabaseZap",
-    "iconColor": "#fed234"
-  },
   "MASTER 3/09 - REST.md": {
     "iconName": "LiHardDriveDownload",
     "iconColor": "#ac00db"
@@ -71,5 +67,9 @@
   "MASTER 3/COVERS": "LiImage",
   "Misc": "💃",
   "HUI": "🗿",
-  "Entretien client.md": "👔"
+  "Entretien client.md": "👔",
+  "MASTER 3/08 - Spring Data JPA.md": {
+    "iconName": "LiDatabaseZap",
+    "iconColor": "#fed234"
+  }
 }

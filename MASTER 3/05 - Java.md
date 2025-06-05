@@ -15,45 +15,36 @@ debugInConsole: false # Print debug info in Obsidian console
 
 # 💠 Core Java Concepts
 
-**Compiled** in bytecode => **Interpreted** by JVM 
-	=> **CROSS-PLATFORM**
-	=> Handles memory
-	=> Garbage Collector
+## 1. Main Versions
+- Last version: **24**
+- LTS: **11**, **17**, **21**
 
-## 1. Object-Oriented Programming (OOP)
+## 2. Object-Oriented Programming (OOP)
+OOP is a **programming paradigm** based on objects, which represents concepts.
+Based on 4 main principles:
 
 - **Encapsulation**: **Group** related data and **intern logic / components** => **Control the visibility / access** => Generalize behavior
-- **Inheritance**: Extend functionality by inheriting properties and methods from a parent class => **Generalize behavior** => **Specialize behavior**
-- **Polymorphism**: Redefining behavior of a method => **Overloading** / **Overriding** / **Genericity** => Main interest is **Re-usability of code / Avoid duplication**
-- **Abstraction**: Focus on essential qualities of an entity by hiding implementation details => Defines a **contract** hiding the complexity, useful with several implementations
 
-## 2. Primitive vs Reference Types
+- **Inheritance**: Extend functionality by inheriting properties and methods from a parent class =>  **Specialize behavior** => **Avoids code duplication**
 
-- **Primitive Types**: `int`, `double`, `char`, `boolean`, etc. (store values directly).
-- **Reference Types**: `String`, custom objects, arrays, etc. (store references to objects in memory and can be `null`).
+- **Polymorphism**: Use objects of different classes but derived from a same class uniformly => **Overloading** / **Overriding** / **Genericity** => **Avoid code duplication**
 
-## 3. Static vs Instance Members
+- **Abstraction**: Focus on essential qualities of an entity by **hiding implementation details** => Defines a **contract** hiding the complexity, useful with several implementations
 
-- **Static**: Belong to the class itself (shared by all instances).
-- **Instance**: Belong to specific objects created from a class.
+## 3. JVM (Java Virtual Machine)
+- **Compiles** source code into **bytecode**
+- **Bytecode** is a platform-independent, intermediate representation
+- The **JVM** interprets or compiles bytecode at runtime on any system with a compatible JVM
+- This enables **cross-platform** compatibility:  
+    → _"Write once, run anywhere"_—the same bytecode runs on Windows, macOS, Linux, etc.
+- JVM handles **memory management
+- Includes a **Garbage Collector** to automatically reclaim unused memory
 
-## 4. Exception Handling
-
+## 3. Exception Handling
 - **Checked vs Unchecked Exceptions**:
     - _Checked_: Must be declared or handled explicitly.
     - _Unchecked_: Runtime exceptions that do not require explicit handling.
-- **try-catch-finally**: Primary mechanism to catch and handle exceptions.
 - **try-with-resources**: Automates closing of resources (implementing `AutoCloseable`), preventing resource leaks.
-- **throws**: Declares an exception may be thrown by a method.
-- **throw**: Explicitly generates an exception in code.
-## 5. Generics
-
-- Use type parameters (`<T>`) for collections and methods to achieve type safety and reduce casts.
-
-## 6. Lambda Expressions & Functional Interfaces
-
-- **Lambda Expressions**: Simplified syntax for implementing single-abstract-method interfaces.
-- **Functional Interfaces**: Interfaces with exactly one abstract method (e.g., `Consumer<T>`, `Function<T,R>`, `Predicate<T>`, `Supplier<T>`).
 
 ---
 
@@ -69,7 +60,6 @@ debugInConsole: false # Print debug info in Obsidian console
 - **D (Dependency Inversion)**: Depend on abstractions, not on concrete implementations.
 
 ## 2. DRY (Don't Repeat Yourself)
-
 - Avoid code duplication by extracting common functionality into methods, classes, or libraries.
 - Employ abstraction and modularization to keep code clean and maintainable.
 
@@ -77,33 +67,19 @@ debugInConsole: false # Print debug info in Obsidian console
 
 # 💠 Equals and HashCode
 
-## 1. Equals
+## 1. Contract
+- If 2 objects are **equals** then they have the **same hash code**
+- If 2 objects have the **same hash code** they are **not necessarily equals**
+- Failing to override both methods consistently can cause **unexpected behavior** in hash-based collections (e.g., a `HashMap` may not find a key that exists).
 
-- Must satisfy **reflexivity**, **symmetry**, **transitivity**, and **consistency**.
+## 1. Equals
 - By default, `Object.equals()` compares memory addresses.
 - When overriding `equals`, ensure you properly compare field values and check type compatibility.
-- Example:
-    
-    ```java
-    public class MyClass {
-        private String s;
-        private float x;
-    
-        @Override
-        public boolean equals(Object o) {
-            return o instanceof MyClass other
-                    && other.x == this.x
-                    && other.s.equals(this.s);
-        }
-    }
-    ```
-    
-
 ## 2. HashCode
+- By default, `Object.hashCode()` hashes memory address.
+- It is used in **hash-based collections** like `HashMap`, `HashSet`, and `Hashtable` to determine the **bucket location** for storing objects.
+- **Hash collisions** are possible, so aim for a balanced hash function to minimize collisions.
 
-- If you override `equals`, you must also override `hashCode`.
-- Hash collisions are possible, so aim for a balanced hash function to minimize collisions.
-- Tools like **EqualsVerifier** help ensure correct implementations.
 
 ---
 
@@ -114,10 +90,6 @@ debugInConsole: false # Print debug info in Obsidian console
 - **Common Implementations**:
     - `ArrayList`: Backed by a dynamic array. Provides fast random access (amortized O(1) for `get`, O(1) average for adding at the end). Insertions/removals in the middle can be costly (O(n)).
     - `LinkedList`: Uses a doubly-linked list. Offers faster insertions/removals at the ends (O(1)) but slower random access (O(n) for `get`).
-- **Use Cases**:
-	- `ArrayList` is typically preferred for most scenarios where random access is common.
-	- `LinkedList` can be beneficial if you frequently insert or remove elements at the beginning or middle, and random access is less common.
-
 ## 2. Set
 
 - **Purpose**: Collection that disallows duplicate elements.
@@ -125,30 +97,12 @@ debugInConsole: false # Print debug info in Obsidian console
     - `HashSet`: Backed by a hash table. Offers average O(1) insertion, removal, and lookup. Elements are not stored in any particular order.
     - `LinkedHashSet`: Preserves insertion order of elements. Slightly higher overhead than `HashSet` due to maintaining a doubly-linked list of entries.
     - `TreeSet`: Backed by a Red-Black tree. Stores elements in a sorted order. Operations like insertion, removal, and lookup run in O(log n) time.
-- **Use Cases**:
-	- Use `HashSet` when fast insertion and lookup are needed, and order does not matter.
-	- Use `LinkedHashSet` when you need to preserve the order in which elements were inserted.
-	- Use `TreeSet` when you need a sorted set or if you need to quickly retrieve elements in ascending or descending order.
-
-## 4. Queue
+## 3. Queue
 
 - **Purpose**: FIFO (First-In-First-Out) or specialized ordering of elements.
 - **Common Implementations**:
     - `PriorityQueue`: Orders elements based on their natural ordering or a custom `Comparator`. Insertion is O(log n), and retrieval of the highest/lowest priority element is O(log n).
     - `ArrayDeque` (a type of `Deque`): Can function as a stack (LIFO) or a queue (FIFO). Provides O(1) amortized insertion/removal from both ends.
-- **Use Cases**:
-	- Use `PriorityQueue` when elements need to be processed based on priority instead of pure insertion order.
-	- Use `ArrayDeque` for stack-like (LIFO) or queue-like (FIFO) operations with minimal overhead.
-
-## 5. Concurrent Collections
-
-- **Purpose**: Thread-safe collections designed for concurrency.
-- **Common Implementations**:
-    - `ConcurrentHashMap`: Allows concurrent read/write operations without explicit synchronization in most cases. Threads can safely update different parts of the map.
-    - `CopyOnWriteArrayList`: An array-backed list that creates a fresh copy of the underlying array upon each modification. Ideal for mostly-read scenarios with few writes.
-- **Use Cases**:
-	- Use `ConcurrentHashMap` when multiple threads need simultaneous read/write access to a shared map.
-	- Use `CopyOnWriteArrayList` in highly concurrent environments when reads vastly outnumber writes (like maintaining a list of listeners).
 
 ---
 
@@ -161,10 +115,6 @@ debugInConsole: false # Print debug info in Obsidian console
     - `HashMap`: Backed by a hash table. Average O(1) insertion and lookup. No ordering guarantees on keys.
     - `LinkedHashMap`: Maintains a doubly-linked list of the entries, preserving insertion order (or access order, if configured). Slightly higher overhead than `HashMap`.
     - `TreeMap`: Backed by a Red-Black tree. Keys are stored in a sorted order. Insertion, removal, and lookup run in O(log n) time.
-- **Use Cases**:
-	- `HashMap` is typically preferred for general-purpose key-value storage with fast lookups.
-	- `LinkedHashMap` is useful if you need to iterate keys/values in insertion order (for example, in caching scenarios).
-	- `TreeMap` is ideal when you need to iterate over keys in sorted order or quickly fetch subsets of keys (e.g., in a range).
 
 ---
 
@@ -213,15 +163,6 @@ These operations trigger the _evaluation_ of the stream and typically produce a 
 
 `Optional<T>` is a container object that may or may not contain a non-null value. It helps reduce `NullPointerException` by forcing the caller to explicitly deal with the possibility of an absent value.
 
-Key methods:
-- `Optional.of(value)`: Creates an `Optional` for a non-null value.
-- `Optional.empty()`: Represents a missing value.
-- `orElse(T other)`: Returns the contained value or `other` if empty.
-- `orElseGet(Supplier<? extends T> supplier)`: Lazily supplies an alternate value if empty.
-- `orElseThrow(Supplier<? extends Throwable> exceptionSupplier)`: Throws the provided exception if empty.
-- `map(Function)`, `flatMap(Function)`: Transforms the contained value if present.
-- `filter(Predicate)`: Returns an `Optional` describing the value if it matches, otherwise empty.
-
 ---
 
 # 💠 Multithreading
@@ -244,11 +185,6 @@ Java’s `java.util.concurrent` package provides high-level abstractions for man
 ### Submitting Tasks
 - **execute(Runnable task)**: Submits a `Runnable` with no return value.
 - **submit(Callable task)**: Submits a `Callable` that returns a `Future<V>`; the `Future` can be used to check task status, retrieve results, or handle exceptions.
-
-### Graceful Shutdown
-- **shutdown()**: Initiates an orderly shutdown where new tasks are not accepted, but previously submitted tasks are allowed to complete.
-- **shutdownNow()**: Attempts to stop all actively executing tasks and halts the processing of waiting tasks.
-- **awaitTermination(long timeout, TimeUnit unit)**: Blocks until all tasks have completed execution after a shutdown request, or the timeout occurs, or the current thread is interrupted—whichever happens first.
 
 ### Handling Exceptions & Futures
 When using `submit(...)`, any exception in the `Callable` is captured and can be re-thrown when calling `future.get()`. This approach makes it simpler to handle and log errors that occur in separate threads.
@@ -283,13 +219,6 @@ When multiple threads share mutable state, conflicts can arise if updates or rea
     }
     ```
 - Atomic classes can perform compound actions (e.g., compare-and-swap) atomically, which may be more efficient than using `synchronized` for single-variable operations.
-
-### Best Practices
-1. **Identify Shared Mutable State**: Whenever threads access and modify the same objects, you need a strategy (locks, atomics, etc.) to prevent race conditions.
-2. **Minimize Lock Scope**: Keep synchronized sections as small as possible to reduce contention.
-3. **Use Thread-Safe Collections**: Java provides concurrent variants (e.g., `ConcurrentHashMap`, `CopyOnWriteArrayList`) that handle synchronization internally.
-4. **Avoid Unnecessary Synchronization**: Overuse can lead to performance bottlenecks and deadlocks.
-5. **Prefer Higher-Level Abstractions**: Whenever possible, use the concurrency utilities (`ExecutorService`, concurrent collections, etc.) instead of manual thread manipulation.
 
 ---
 
@@ -350,114 +279,96 @@ Maven defines several **scopes** that control the classpath and visibility of a 
 ## 4. Common Maven Commands
 
 These are some frequently used Maven goals:
-
 1. **mvn compile**  
     Compiles your main source code and places compiled `.class` files in `target/classes`.
-
 2. **mvn test**  
     Executes your unit tests, typically found in `src/test/java`, using frameworks like JUnit.
-
 3. **mvn package**  
     Packages your compiled code into a distribution format, such as a `.jar` or `.war` file, placed in `target/`.
-
 4. **mvn install**  
     Installs the packaged artifact into your local Maven repository (`~/.m2/repository`), making it available for other local projects.
-
 5. **mvn clean**  
     Deletes the `target/` directory, removing all previously compiled artifacts.
-
 6. **mvn clean package**  
     Combines `clean` and `package` in one step, ensuring a fresh build.
-
 7. **mvn dependency:tree**  
     Prints the dependency tree, helping you detect clashes in transitive dependencies or version conflicts.
 
 
 ---
 
-# 💠 Memory Management
+# 💠 JVM
 
-**JVM** is a **Virtual Machine** able to run compiled bytecode of langages such as **Java**, **Kotlin** or **Scala** (Example of JVM: **GraalVM** with good opti, **Hotspot** by default)
+**JVM** is a **Virtual Machine** able to run compiled bytecode of langages such as **Java**, **Kotlin** or **Scala** (Example of JVM: **GraalVM** with good opti, **Hotspot (Oracle)** by default)
 
 ## 1. JVM Memory Model
-
 When you run a Java application, the JVM divides its memory into distinct areas, each with a specific purpose:
 
 1. **Heap**
-    - **Purpose**: Stores dynamically allocated objects and arrays.
-    - **Characteristics**:
-        - Every new object in Java is allocated on the heap (unless it’s optimized away via escape analysis).
-        - Managed by the GC, which deallocates objects that are no longer reachable by any thread.
-        - The largest memory region in most JVM configurations.
+    - Stores dynamically allocated objects and arrays.
+    - Managed by GC, when no more reference from the stack OR cyclic references.
+    - Largest memory region (80%)
 2. **Stack**
-    - **Purpose**: Holds stack frames for each thread, containing local variables, method parameters, and references to objects on the heap.
-    - **Characteristics**:
-        - Each thread has its own stack, so data on one thread’s stack is not visible to other threads.
-        - Automatically allocated and freed as methods are invoked and return.
-        - Size is typically fixed or can be configured. If the stack exceeds its limit, you may encounter a `StackOverflowError`.
+    - Holds stack frames for each thread, containing local variables, method parameters, and references to objects on the heap.
 3. **Metaspace**
-    - **Purpose**: Stores class metadata (such as class structures, methods, and constant pools).
-    - **Characteristics**:
-        - Class loading/unloading affects Metaspace usage.
-        - Mismanagement (e.g., loading too many classes) can lead to memory leaks in Metaspace.
-4. **Native Memory**
-    - **Purpose**: Memory allocated outside the JVM heap for lower-level resources, such as direct byte buffers, or by native libraries (e.g., JNI calls).
-    - **Characteristics**:
-        - Not governed by the Java GC.
-        - Must be carefully managed when using native code or libraries that allocate memory off-heap.
+    - Stores class metadata (such as class structures, methods, and constant pools).
+
 
 ## 2. Garbage Collection (GC) Algorithms
+Garbage collection automatically frees memory by removing objects no longer reachable by active references. 
 
-Garbage collection automatically frees memory by removing objects no longer reachable by active references. Different GC algorithms have different trade-offs in terms of throughput, latency, and memory footprint:
+1. **CMS (Concurrent Mark-Sweep)**
+	- Introduced at the **begining**
+	- Depreciated in **Java 9**
+    - **How it works**: New objects are placed in **Eden**, then are placed into **Survivor space**, then into **Old Generation** and is then cleaned by the CMS GC
 
-1. **Serial GC**
-    - **How it works**: Uses a single thread for all GC tasks.
-    - **Pros**: Simple, with minimal overhead and works well with small heaps (few hundred MB).
-    - **Cons**: Application is paused during GC; not ideal for larger heaps or multi-core systems.
+2. **G1 GC
+    - Introduced in **Java 7/8**
+    - Depreciated in **Java 14**
+ 3. **ZGC**
+	 - Introduced in **Java 11/15**
+
+
+---
+
+# 💠 Differences with Kotlin
+
+## 1. Versions
+| Feature             | Java                    | Kotlin                |
+| ------------------- | ----------------------- | --------------------- |
+| Initial Release     | 1995                    | 2011                  |
+| Current LTS Version | Java 17 / Java 21 (LTS) | Kotlin 2.0+           |
+| Developed by        | Oracle                  | JetBrains             |
+
+## 2. Key Differences
+- **Null Safety**  
+	- Java allows `null` by default, which often leads to `NullPointerException` (NPE).  
+    - Kotlin avoids this by making `null` handling **explicit**—you must declare a variable nullable using `?` and handle it safely.
+
+- **Data Classes**  
+    - Kotlin provides `data class` which **automatically generates** simple data-holding class with minimal code.
+
+- **Syntax and Conciseness**  
+    - Java tends to be more verbose due to its boilerplate-heavy syntax.  
+    - Kotlin is designed to be **concise and expressive**, reducing the amount of code you write (e.g., no need for semicolons, simple getters/setters).
+
+- **Extension Functions**  .  
+    - Kotlin allows you to write **extension functions** that behave like native methods on existing classes.
+
+- **Coroutines for Concurrency**  
+    - Java uses threads, executors, and external libraries (like `CompletableFuture`) for concurrency.  
+    - Kotlin has **built-in coroutines**, which offer a **lightweight and simpler** approach to asynchronous programming.
+
+- **Checked Exceptions**  
+    - Java forces you to handle or declare **checked exceptions**, which can lead to verbose code.  
+    - Kotlin does **not have checked exceptions**, simplifying error handling but requiring more discipline.
+
+- **Default and Named Arguments**  
+    - Kotlin supports **default arguments** and **named parameters**, which simplifies function calls.
+
+- **Functional Programming Support**  
+    - Java added lambdas and streams in Java 8, but functional features are still limited.  
+    - Kotlin was designed with **functional programming in mind**, offering features like higher-order functions, `map`, `filter`, `fold`, etc.
     
-2. **Parallel GC**
-    - **How it works**: Multiple threads perform the collection in parallel, typically reducing total GC time.
-    - **Pros**: Higher throughput because more CPU cores can be used for GC.
-    - **Cons**: Can still introduce noticeable pause times, although usually shorter than Serial GC.
-    
-3. **CMS (Concurrent Mark-Sweep)**
-    - **How it works**: Performs most of its GC work concurrently with the application, aiming to reduce long pauses.
-    - **Pros**: Good for applications needing low latency.
-    - **Cons**: More CPU overhead to track concurrent activity. It might leave some memory fragments (because it’s a mark-sweep), and it can still have “stop-the-world” phases for final remark or cleanup.
-
-4. **G1 GC (Garbage First)**
-    - **How it works**: Splits the heap into regions and collects them incrementally, focusing on regions with the most garbage first.
-    - **Pros**: Designed for large heaps and aims for predictable, short pause times.
-    - **Cons**: More complex tuning parameters, though defaults often work well for many applications.
-
-## 3. Tools for Memory Management
-
-Diagnosing memory issues and performance bottlenecks often involves gathering data about how your application uses the heap, threads, and CPU resources. Java provides several powerful tools for these tasks:
-
-1. **Heap Dump Analysis**
-    - **`jmap`**: Command-line utility for generating heap dumps of a running JVM.
-        ```bash
-        jmap -dump:live,file=heapdump.hprof <PID>
-        ```
-
-2. **Thread Dump Analysis**
-    - **`jstack`**: Command-line tool that prints the stack traces of all threads in a JVM. Helpful for diagnosing deadlocks or identifying performance bottlenecks in thread execution.
-        ```bash
-        jstack <PID> > threaddump.txt
-        ```
-    - **VisualVM**: A graphical tool (included in most JDK distributions) to inspect the current thread states, CPU usage, and memory usage in real time.
-
-3. **Profilers**
-    - **JProfiler**: A commercial tool offering powerful CPU and memory profiling capabilities, thread analysis, and more.
-    - **VisualVM**: Bundled with OpenJDK/Oracle JDK, allowing you to profile CPU and memory usage, take heap/thread dumps, and monitor GC activity.
-    - **Java Flight Recorder (JFR)**: A low-overhead, event-based profiler integrated into the JVM. It collects detailed diagnostic and profiling data, which can be viewed in **Java Mission Control**.
-
-## 4. Best Practices
-
-1. **Choose an Appropriate GC**: Evaluate your application’s requirements around throughput vs. latency. Start with the G1 collector for most modern Java applications unless your use case clearly favors another algorithm.
-
-2. **Use Proper JVM Flags**: Tweak heap size (`-Xmx`, `-Xms`), Metaspace size (`-XX:MaxMetaspaceSize`), and GC-specific options (`-XX:+UseG1GC`, `-XX:+UseZGC`) based on workload profiles.
-    
-3. **Profile in Production-like Environments**: Profilers and heap dumps in development may differ significantly from actual loads. Performance bottlenecks or memory leaks might only appear under real-world stress.
-    
-4. **Watch Out for Metaspace Leaks**: Dynamic class loading (e.g., in frameworks, OSGi modules, or reflection-heavy libraries) can cause Metaspace to grow. Ensure classes are unloaded properly.
+- **Interoperability with Java**  
+    - Kotlin is **100% interoperable** with Java—existing Java libraries and frameworks work seamlessly.  

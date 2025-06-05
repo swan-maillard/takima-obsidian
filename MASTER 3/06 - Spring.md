@@ -15,213 +15,170 @@ debugInConsole: false # Print debug info in Obsidian console
 
 # **💠  Core Spring Concepts**  
 
-## **1. What is Spring?**  
+## 1. Versions
+- Latest is **Spring Framework 6.x**
+- Released with **Spring Boot 3.x**
 
-**Spring** is a powerful, open-source **Java framework** designed to simplify enterprise application development. It provides a comprehensive programming and configuration model for building **scalable, modular, and maintainable** applications. Spring’s core features include:  
+## 2. What is Spring?  
+**Spring** is an open-source **Java framework** used for easily building **applications**. It promotes clean architecture with **loose coupling**, **modularity**, and **testability**.
 
-- **Inversion of Control (IoC)** – Manages object creation and dependencies automatically.  
-- **Dependency Injection (DI)** – Promotes loose coupling by injecting dependencies rather than hardcoding them.  
+- **Inversion of Control (IoC)** – The container controls object creation and lifecycle instead of the application code.
+- **Dependency Injection (DI)** – Objects receive their dependencies from the container, not by creating them internally. This supports **loose coupling** and easier testing.
 
 **Modules:**
-- **Spring Core**
-- **Aspect-Oriented Programming (AOP)** – Separates cross-cutting concerns (logging, security, transactions).  
-- **Spring MVC** – A robust web framework for RESTful and traditional web apps.  
-- **Spring Boot** – Simplifies setup with auto-configuration, embedded servers, and production-ready features.  
-- **Spring Data** – Streamlines database access (JPA, MongoDB, Redis).  
-- **Spring Security** – Handles authentication, authorization, and security threats.  
+- **Spring Core** - Provides fundamental features like IoC and DI.
+- **Spring AOP (Aspect-Oriented Programming)** – Enables modular handling of behaviors that affect multiple classes.
+- **Spring MVC** – Web framework based on Model-View-Controller design.
+- **Spring Boot** – Auto-configures Spring applications to reduce boilerplate setup.
+- **Spring Data** – Simplifies data access for relational and NoSQL databases.
+- **Spring Security** – Manages authentication and authorization.  
 
-## **2. Why Use Spring?**  
+## 3. IoC & DI in Spring  
 
-1. **Modularity & Flexibility**  
-   - Use only the modules you need (Core, MVC, Security, Data, etc.).  
-   - Integrates seamlessly with other frameworks (Hibernate, Kafka, Quartz).  
+#### **Inversion of Control (IoC)**  
+- The **IoC container** manages the **lifecycle of objects (beans)** — including creation, wiring, and destruction.
+- Developers define beans using annotations like `@Component`, `@Service`, or `@Bean`.
+- The framework **injects dependencies** and controls execution flow — a reversal from traditional programming where you create and manage objects manually.
+- In short: **Your code is called by the framework**, not the other way around.
+#### **Dependency Injection (DI)**  
+- **Dependencies are passed in by the container**, not created inside the class.
+- Eliminates manual instantiation (`new`) and tight coupling.
 
-2. **Productivity Boost**  
-   - Reduces boilerplate code (e.g., JDBC, JPA).  
-   - Spring Boot’s auto-configuration speeds up development.  
-
-3. **Testability**  
-   - DI makes unit testing easier (mock dependencies).  
-   - `@SpringBootTest` simplifies integration testing.  
-
-## **3. IoC & DI in Spring**  
-
-### **Inversion of Control (IoC)**  
-- **Framework-managed** object lifecycle (creation, wiring, destruction)  
-- **Developer declares** beans (`@Component`, `@Bean`), **Spring Container** handles the rest  
-- **Flip of control**: Framework calls your code (vs. you calling libraries)  
-
-### **Dependency Injection (DI)**  
-- **Dependencies provided externally** => No need to instantiate anymore
-- **Primary types**:  
-  - **Constructor injection** (✅ Preferred: immutable, testable)  
-  - Setter injection  
-  - Field injection (❌ Avoid: harder to test)  
-
-### **Why It Matters**  
-- **Loose coupling**: Classes depend on abstractions (interfaces), not concrete implementations  
-- **Easy testing**: Mock dependencies via constructor args  
-- **Modular design**: Swap implementations without code changes (e.g., `@Profile`)  
-- **Cleaner code**: No `new` keyword littered everywhere  
-
-### **Example**  
-```java
-// Without Spring ❌  
-class ServiceA {  
-    private ServiceB b = new ServiceB();  // Tight coupling  
-}  
-
-// With Spring DI ✅  
-@Service  
-class ServiceA {  
-    private final ServiceB b;  
-    public ServiceA(ServiceB b) {  // Injected  
-        this.b = b;  
-    }  
-}  
-```
-
-## **4. Bean Scopes**  
-| Scope         | Description |  
-|--------------|------------|  
-| `singleton` (Default) | One instance per container. |  
-| `prototype` | New instance per request. |  
-| `request` | One per HTTP request (web). |  
-| `session` | One per user session (web). |  
-
-## **5. Configuration Styles**  
-| Method          | Example |  
-|----------------|---------|  
-| **XML** | `<bean id="service" class="com.example.Service"/>` |  
-| **Annotations** | `@Component`, `@Service`, `@Repository` |  
-| **Java Config** | `@Configuration` + `@Bean` methods |  
+#### **Why It Matters**  
+- **Loose Coupling**
+    - Classes depend on **interfaces or abstractions**, not concrete implementations.
+- **Testability**
+    - Easily inject **mock dependencies** in unit tests via constructor arguments.
+- **Flexibility**
+    - Swap implementations using features like `@Profile` or configuration changes — no code rewrites.
+- **Cleaner, Maintainable Code**
+    - Code is focused on **business logic**, not wiring objects or managing lifecycle manually.  
 
 ---
 
 # **💠 Spring Core**
 
-Spring Core is the **central module** of the Spring Framework, providing the essential infrastructure for **dependency injection (DI)** and **Inversion of Control (IoC)**. At its heart is the **IoC Container**, which manages the lifecycle of Java objects (beans) and wires dependencies automatically.  
+**Spring Core** is the foundational module of the Spring Framework. It provides the essential infrastructure for **Dependency Injection (DI)** and **Inversion of Control (IoC)**. 
+
+The centerpiece is the **IoC Container**, which manages the lifecycle of objects (called **beans**) and automatically wires their dependencies.
 
 ## 1. **Key Components**  
-- **BeanFactory**: Basic container interface for bean instantiation and wiring.  
-- **ApplicationContext**: Advanced container (extends `BeanFactory`) with additional features like:  
-  - Internationalization (`MessageSource`)  
-  - Event publication (`ApplicationEventPublisher`)  
-  - Resource loading (`ResourceLoader`)  
-- **Bean Scopes**: Controls bean lifecycle (`singleton`, `prototype`, request, session).  
 
-## **2. Why It Matters**  
-- **Decouples components** through DI (no hardcoded dependencies)  
-- **Centralizes configuration** (XML, annotations, or Java config)  
-- **Enables testability** via mockable dependencies  
-- **Provides consistent API** to access resources and environment  
+- **BeanFactory**  
+    The basic container interface responsible for **instantiating**, **configuring**, and **managing beans**.  
+- **ApplicationContext**  
+    An extension of `BeanFactory` that adds more enterprise-level features.
+	Typically used in real-world applications.
+- **Bean Scopes**  
+	Define the lifecycle and visibility of beans in the container.
+
+## 2. **Bean Scopes**  
+
+| Scope                            | Description                 |
+| -------------------------------- | --------------------------- |
+| `singleton` (Default)            | One instance per container. |
+| `prototype`                      | New instance per request.   |
+| `request` *(only for SpringMVC)* | One per HTTP request (web). |
+| `session` *(only for SpringMVC)* | One per user session (web). |
+
 
 ---
 # **💠 Spring Boot**  
 
-## **1. Auto-Configuration Magic**
-- **Conditional Bean Loading**:  
-  - Uses `@Conditional` variants (e.g., `@ConditionalOnClass`, `@ConditionalOnProperty`)  
-  - Example: Auto-configures `DataSource` only if `spring.datasource.url` is set  
-- **Custom Auto-Configuration**:  
-  - Create `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`  
-  - Use `@AutoConfiguration` + `@Conditional` for custom rules  
+**Spring Boot** is an opinionated framework built on top of Spring that **simplifies application setup and development** by providing auto-configuration. It allows developers to create production-ready Spring applications with minimal configuration and no XML.
 
-## **2. Starter Packs
+It build a **fat jar** (uber-jar): a single JAR file that contains:
+- The application code
+- All required dependencies
+- An embedded server (e.g., Tomcat) if it's a web app
+It doesn't contain the **JVM**.
 
-Spring Boot uses **starter dependencies** to simplify configuration and speed up project setup. These **opinionated dependency bundles** automatically bring in everything needed for a particular use case, reducing the need for manual setup or XML-based configuration.
+It's latest version is **Spring Boot 3.x** which works with **Sprung Framework 6.x**.
 
-Here are some essential Spring Boot starters you’ll use across most projects:
+## 1. @SpringBootApplication
 
-| Starter                            | Purpose                                                                               |
-| ---------------------------------- | ------------------------------------------------------------------------------------- |
-| **spring-boot-starter-web**        | For building RESTful web applications using Spring MVC and embedded Tomcat.           |
-| **spring-boot-starter-data-jpa**   | Simplifies database access using Spring Data and Hibernate.                           |
-| **spring-boot-starter-security**   | Adds basic security setup with Spring Security (e.g., login form, password encoding). |
-| **spring-boot-starter-test**       | Includes JUnit, Mockito, Spring Test, and AssertJ for unit/integration testing.       |
-| **spring-boot-starter-validation** | Adds support for bean validation (Hibernate Validator is the default).                |
-| **spring-boot-starter-actuator**   | Provides production-ready monitoring endpoints (health, metrics, env).                |
+**`@SpringBootApplication`** is used to bootstrap the Spring Boot application. It annotates the **main class** of the project.
+It enables auto-configuration and component scanning in the package and sub-packages.
 
-## **3. Embedded Servers**
+It is a **combination** of the following annotations:
 
-**Tomcat** is brought by the **spring-boot-starter-web**.
+-  **`@Configuration`**
+	- Marks a class as a **source of bean definitions** for the application context.    
+	- Used to define beans via `@Bean` methods.
+	
+-  **`@EnableAutoConfiguration`**
+	- Enables Spring Boot’s **auto-configuration** mechanism.
+	- Automatically configures beans based on classpath, other beans, and property settings.
 
-| Server   | Default Port | Key Feature                 | Best For             |
-| -------- | ------------ | --------------------------- | -------------------- |
-| Tomcat   | 8080         | Servlet 5.0 (Jakarta EE 9+) | Traditional web apps |
-| Jetty    | 8080         | Lightweight, async support  | Reactive/High-load   |
-| Undertow | 8080         | Non-blocking, low memory    | Microservices        |
+- **`@ComponentScan`**
+	- Tells Spring where to look for **components**, **services**, **repositories**, and **controllers** to register as beans.
+	- Automatically scans the package of the annotated class and sub-packages.
 
-## **4. Actuator Endpoints**
+## 2. Starter Packs
+**Starters** are curated sets of Maven/Gradle dependencies that provide a **ready-to-use setup** for common features (e.g., web, JPA, security).
 
-| Endpoint   | Description                        | Security Consideration |     |
-| ---------- | ---------------------------------- | ---------------------- | --- |
-| `/health`  | App status (DB, disk space)        | Often exposed publicly |     |
-| `/metrics` | JVM, HTTP stats (Prometheus-ready) | Restrict to admins     |     |
-| `/env`     | All configuration properties       | Highly sensitive       |     |
-| `/beans`   | List all Spring beans              | Debugging only         |     |
+They abstract away complex dependency management, making project setup fast and standardized.
 
+| Starter                            | Purpose                                                                                   |
+| ---------------------------------- | ----------------------------------------------------------------------------------------- |
+| **spring-boot-starter-web**        | For building RESTful web applications using **Spring MVC** and embedded **Tomcat**.       |
+| **spring-boot-starter-data-jpa**   | Simplifies database access using **Spring Data** and **Hibernate**.                       |
+| **spring-boot-starter-security**   | Adds basic security setup with **Spring Security** (e.g., login form, password encoding). |
+| **spring-boot-starter-test**       | Includes **JUnit, Mockito, Spring Test, and AssertJ** for unit/integration testing.       |
+| **spring-boot-starter-validation** | Adds support for bean validation (**Hibernate Validator** is the default).                |
+| **spring-boot-starter-actuator**   | Provides production-ready monitoring endpoints (**health**, **metrics**, **env**).        |
+
+## 3. Parent POM
+- Spring Boot provides a **parent POM** (`spring-boot-starter-parent`) that manages **dependency versions**, plugin configurations, and defaults.
+- Using the parent POM avoids version conflicts and simplifies Maven configuration.
+- It also includes settings for building executable jars and other best practices.
 
 ---
 
 # **💠 Spring MVC & REST**  
 
-## **1. Core Architecture**
+## 1. Web Services
+**Web Services** allow applications to communicate with each other over a network using standard protocols like **HTTP**.
+They expose functionality or data to other systems through **APIs**.
 
-### **Front Controller Pattern:**
-- `DispatcherServlet` (Central controller)
-  - Handles all HTTP requests
-  - Delegates to controllers via `HandlerMapping`
-  - Processes results via `ViewResolver`
+## 2. Core Architecture
+Spring MVC uses a single Servlet called **DispatcherServlet** to handle HTTP requests.
 
-### **Request Lifecycle:**
-1. Request → DispatcherServlet
-2. HandlerMapping selects controller
-3. Controller processes request
-4. Returns ModelAndView
-5. ViewResolver renders response
+A **Servlet** is a **server-side Java component** that runs inside a **Servlet container** (like Tomcat) and acts as a **middle layer** between a client and the server.
+#### Request Lifecycle:
+1. **Client sends request** → Handled by `DispatcherServlet`.
+2. **`HandlerMapping`** identifies appropriate controller method.
+3. **Controller** processes logic and returns data (or view).
+4. **`ViewResolver`** renders HTML (for MVC) or response body (for REST).
 
-## **2. Key Components**
+## 3. Annotations
+- `@RestController`
+    - Combines `@Controller` + `@ResponseBody`.
+    - Returns **JSON or XML** (not a view).
 
-| Component        | Purpose        | Annotation/Interface             |
-| ---------------- | -------------- | -------------------------------- |
-| Controller       | Business logic | `@Controller`, `@RestController` |
-| HandlerMapping   | Route requests | `@RequestMapping`                |
-| ViewResolver     | Renders views  | `InternalResourceViewResolver`   |
-| Model            | Carries data   | `Model`, `ModelMap`              |
-| MessageConverter | Serialization  | `HttpMessageConverter`           |
+- `@RequestMapping`
+    - General-purpose mapping of URL + method (GET, POST, etc.).
 
-## **3. REST Implementation**
+- `@GetMapping`, `@PostMapping`, `@PutMapping`, `@DeleteMapping`
+    - Shorthand annotations for RESTful HTTP verbs.
 
-### **Essential Annotations:**
-```java
-@RestController
-@RequestMapping("/api/v1")
-public class UserController {
+- `@PathVariable`
+    - Binds URL path segments to method parameters.
+    - Example: `/users/{id}` → `@PathVariable Long id`
 
-    @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
-        // Implementation
-    }
+- `@RequestParam`
+    - Binds query parameters (e.g., `/search?q=abc`).
 
-    @PostMapping("/users")
-    public User createUser(@Valid @RequestBody UserDto userDto) {
-        // Implementation
-    }
+- `@RequestBody`
+    - Automatically deserializes JSON/XML request into a Java object.
 
-    @PutMapping("/users/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
-        // Implementation
-    }
+- `@ResponseBody`
+    - Serializes method return value directly into the HTTP response.
 
-    @DeleteMapping("/users/{id}")
-    public void deleteUser(@PathVariable Long id) {
-        // Implementation
-    }
-}
-```
+- `@Valid`
+	- Automatically validates request based on DTO annotations
 
-### **Exception Handling:**
+## 4. Exception Handling
 - Global exception handler:
   ```java
   @ControllerAdvice
@@ -235,17 +192,9 @@ public class UserController {
   }
   ```
 
-### **Validation:**
-```java
-@PostMapping("/users")
-public User createUser(@Valid @RequestBody UserDto userDto) {
-    // Automatically validates based on UserDto annotations
-}
-```
+## 5. Performance Optimization
 
-## **6. Performance Optimization**
-
-1. **Caching:**
+1. **Caching with `Cacheable`:**
    ```java
    @GetMapping("/users/{id}")
    @Cacheable("users")
@@ -254,7 +203,7 @@ public User createUser(@Valid @RequestBody UserDto userDto) {
    }
    ```
 
-2. **Pagination:**
+2. **Pagination with `Pageable`:**
    ```java
    @GetMapping("/users")
    public Page<User> getUsers(Pageable pageable) {
@@ -263,94 +212,53 @@ public User createUser(@Valid @RequestBody UserDto userDto) {
    ```
    Request: `GET /users?page=0&size=20&sort=name,asc`
 
+3. **Threads and Virtual Threads:**
+	- **Spring** uses **platform threads** for some use cases, such as Tomcat worker threads
+	- With **Spring Boot** it is possible to enable **Virtual Threads** for **Spring MVC** which use less resources.
+
 ---
 
 # **💠 Spring AOP (Aspect-Oriented Programming)**  
 
-Spring AOP enables **modularization of cross-cutting concerns**—functionality that spans multiple layers of an application (e.g., logging, security, transactions). Unlike OOP, which organizes code into hierarchies, AOP **"weaves"** additional behavior into existing code **without modifying the original classes**.  
+Spring AOP allows you to **modularize cross-cutting concerns** like logging, transactions, and security — adding behavior **without changing existing code**.
 
-## 1. **Key Concepts**  
-- **Aspect**: A module encapsulating cross-cutting logic (e.g., `LoggingAspect`).  
-- **Advice**: The action taken by an aspect (e.g., `@Before`, `@After`, `@Around`).  
-- **Pointcut**: A predicate defining where advice should be applied (e.g., `execution(* com.example.service.*.*(..))`).  
-- **Join Point**: A specific point in execution (e.g., method invocation).  
+## **1. Core Concepts**
+- **Aspect** – Class that contains cross-cutting logic (`@Aspect`)
+- **Advice** – Code to run at specific points (e.g., `@Before`, `@Around`)
+- **Pointcut** – Expression that selects where advice applies
+- **Join Point** – A method execution where advice can run (Spring AOP only supports method-level join points)
 
-## **2. Aspect**
-An aspect is a modular unit that encapsulates cross-cutting concerns. It's implemented as a regular Java class annotated with `@Aspect`. Aspects contain:
-- Advice (the what)
-- Pointcuts (the where)
-- Introductions (adding new behavior to classes)
+## **2. Advice Types**
 
-Example:
+| Type              | Annotation    | When It Runs                     |
+| ----------------- | ------------- | -------------------------------- |
+| `@Before`         | Before method | Before execution                 |
+| `@AfterReturning` | On success    | After method returns             |
+| `@AfterThrowing`  | On exception  | If method throws                 |
+| `@After`          | Always        | After method (finally)           |
+| `@Around`         | Wraps method  | Controls before/after and result |
+
+## **3. Pointcuts**
+
+Used to define **where** advice applies. Common syntax:
+
+```java
+@Around("execution(* com.example.service.*.*(..))")
+public void serviceMethods() {}
+```
+- `execution()` – Match method signatures
+- `within()` – Match classes or packages
+- `@annotation()` – Match based on annotations
+
+## **4. Aspect Example**
 ```java
 @Aspect
 @Component
-public class TransactionAspect {
-    // Contains advice and pointcut definitions
+public class LoggingAspect {
+    @Before("serviceMethods()")
+    public void log(JoinPoint jp) {
+        System.out.println("Called: " + jp.getSignature().getName());
+    }
 }
-```
 
-Key Characteristics:
-- Reusable across application
-- Configurable through Spring
-- Can be ordered using `@Order` annotation
-
-## **3. Advice**
-Advice defines both:
-- The action to be taken
-- When that action should execute
-
-Spring supports five advice types:
-
-| Advice Type     | Annotation        | Execution Timing                   |
-| --------------- | ----------------- | ---------------------------------- |
-| Before          | `@Before`         | Just before method execution       |
-| After Returning | `@AfterReturning` | After successful method completion |
-| After Throwing  | `@AfterThrowing`  | When method throws exception       |
-| After (Finally) | `@After`          | After method (always executes)     |
-| Around          | `@Around`         | Wraps entire method invocation     |
-
-## **4. Pointcut**
-Pointcuts define where advice should be applied using expressions. Spring supports two approaches:
-
-**A. Execution Designators**
-```java
-@Pointcut("execution(public * com.example.service.*.*(..))")
-public void servicePublicMethods() {}
-
-@Pointcut("within(@org.springframework.stereotype.Service *)")
-public void serviceClassMethods() {}
-```
-
-**B. Combination Operators**
-```java
-@Pointcut("servicePublicMethods() && serviceClassMethods()")
-public void combinedPointcut() {}
-```
-
-Common Pointcut Expressions:
-- `execution([modifiers] return-type [declaring-type].method-name(params))`
-- `within(package.or.class)`
-- `@annotation(annotation-type)`
-- `bean(bean-name-or-pattern)`
-
-## **5. Join Point**
-A join point represents a specific point in program execution where advice can be applied. In Spring AOP, join points are always method executions.
-
-Join Point Metadata Access:
-```java
-@Before("serviceMethods()")
-public void logMethodDetails(JoinPoint jp) {
-    // Get method signature
-    String methodName = jp.getSignature().getName();
-    
-    // Get method arguments
-    Object[] args = jp.getArgs();
-    
-    // Get target object
-    Object target = jp.getTarget();
-    
-    // Get proxy object
-    Object proxy = jp.getThis();
-}
 ```
