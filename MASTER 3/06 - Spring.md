@@ -93,7 +93,7 @@ It build a **fat jar** (uber-jar): a single JAR file that contains:
 - An embedded server (e.g., Tomcat) if it's a web app
 It doesn't contain the **JVM**.
 
-It's latest version is **Spring Boot 3.x** which works with **Sprung Framework 6.x**.
+It's latest version is **Spring Boot 3.x** which works with **Spring Framework 6.x**.
 
 ## 1. @SpringBootApplication
 

@@ -37,7 +37,7 @@ Based on 4 main principles:
 - The **JVM** interprets or compiles bytecode at runtime on any system with a compatible JVM
 - This enables **cross-platform** compatibility:  
     → _"Write once, run anywhere"_—the same bytecode runs on Windows, macOS, Linux, etc.
-- JVM handles **memory management
+- JVM handles **memory management**
 - Includes a **Garbage Collector** to automatically reclaim unused memory
 
 ## 3. Exception Handling
@@ -76,6 +76,7 @@ Based on 4 main principles:
 - By default, `Object.equals()` compares memory addresses.
 - When overriding `equals`, ensure you properly compare field values and check type compatibility.
 ## 2. HashCode
+- You must redefine **HashCode** if **Equals** was changed.
 - By default, `Object.hashCode()` hashes memory address.
 - It is used in **hash-based collections** like `HashMap`, `HashSet`, and `Hashtable` to determine the **bucket location** for storing objects.
 - **Hash collisions** are possible, so aim for a balanced hash function to minimize collisions.
@@ -322,7 +323,7 @@ Garbage collection automatically frees memory by removing objects no longer reac
 	- Depreciated in **Java 9**
     - **How it works**: New objects are placed in **Eden**, then are placed into **Survivor space**, then into **Old Generation** and is then cleaned by the CMS GC
 
-2. **G1 GC
+2. **G1 GC**
     - Introduced in **Java 7/8**
     - Depreciated in **Java 14**
  3. **ZGC**
@@ -352,7 +353,7 @@ Garbage collection automatically frees memory by removing objects no longer reac
     - Java tends to be more verbose due to its boilerplate-heavy syntax.  
     - Kotlin is designed to be **concise and expressive**, reducing the amount of code you write (e.g., no need for semicolons, simple getters/setters).
 
-- **Extension Functions**  .  
+- **Extension Functions** 
     - Kotlin allows you to write **extension functions** that behave like native methods on existing classes.
 
 - **Coroutines for Concurrency**  
