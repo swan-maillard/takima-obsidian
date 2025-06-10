@@ -11,8 +11,7 @@ debugInConsole: false # Print debug info in Obsidian console
 
 ## **Résumé**
 
-_(15–20 lignes en français puis en anglais)_  
-Résumé du contexte, des objectifs, des travaux réalisés, des résultats obtenus et des perspectives.
+Ce rapport présente le travail réalisé dans le cadre de mon Projet de Fin d’Études (PFE) chez Takima, une ESN basée à Paris. J'ai été intégré à l’équipe en charge du développement de l’application interne HUI, un outil de gestion RH et managérial. J’ai participé à son amélioration continue à travers trois axes principaux : la création d’un module de feedbacks pour les consultants, l’amélioration du module de gestion des entretiens, et l’optimisation des pipelines CI/CD. Ce projet, en plus d'apporter une valeur ajoutée à l'entreprise et à faire monter en compétence les consultants, contribue à un meilleur suivi des consultants, plus gratifiant. Ce rapport détaille le déroulement du stage sur les 6 mois, l’ensemble des choix techniques que j'ai pu effectuer, et les résultats que j'ai fourni à l'issu du PFE. Enfin, j'explorerai les évolutions futures des projets auxquels j'ai participé.
 
 ---
 
