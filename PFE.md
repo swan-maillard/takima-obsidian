@@ -172,33 +172,43 @@ Chez Takima, ces pratiques sont largement adoptées. Les pipelines GitLab CI son
 
 #### **Objectifs et besoins fonctionnels**
 
-Le besoin exprimé par les managers de Takima est de pouvoir **tracer des retours qualitatifs réguliers** sur leurs consultants, en dehors des entretiens RH classiques. Cela permet un **suivi plus fin et continu** de la performance et de la progression, tout en facilitant la préparation des entretiens futurs.
+Afin de mieux pouvoir suivre les consultants tout au long de leur carrière, qu'ils soient en interne ou chez un client, Takima a exprimé le besoin de pouvoir remplir des feedbacks sur les consultants. Ces feedbacks doivent permettre de tracer des retours qualitatifs réguliers sur les employés, en dehors des entretiens annuels classiques. Ils doivent pouvoir être remplis par les managers internes à Takima, mais également par les clients chez lesquels se trouvent le consultant. De tels feedbacks - qu'ils soient positifs ou négatifs - permettent un suivi plus fin et continu de la performance et de la progression de chaque employé, et facilitent la préparation des entretiens futurs.
 
-Les exigences fonctionnelles incluent :
+Au moment où j'ai intégré le projet, la prise de feedback était gérée via un classeur Google Sheets, partagé par la direction des opérations. Les managers pouvaient remplir leurs commentaires via un formulaire Google Form, et chaque feedback devait ensuite être traité et transféré dans le Google Sheet par un.e responsable.
 
-- La possibilité pour un manager d’ajouter un **feedback horodaté** à un consultant.
-    
-- L’affichage de ces feedbacks dans la **timeline HUI**, intégrée aux autres événements RH.
-    
-- Une interface simple, intégrée au back-office manager.
-    
-- Une gestion fine des droits d’accès et de modification (feedback visible uniquement par le manager et l’équipe RH).
-    
+Nous avons organisé des réunions avec les utilisateurs finaux afin de correctement définir le besoin, et ensuite concevoir les différentes user stories. Chaque user story correspond à une fonctionnalité du module, et peut être assimilé à un "parcours utilisateur" : tel utilisateur ayant tel droit, pourra voir telle page, et effectuer telle action qui aura telle répercussion sur le reste du système. Les user stories sont définies en tant que ticket dans l'application Jira. 
+Lors des cérémonies de Poker Planning, nous estimons la complexité de chaque ticket afin de pouvoir planifier notre sprint (période de 2 semaines de travail) et ainsi chiffrer un devis auprès du client. Ici, le client est Takima, donc nous ne chiffrons par réellement de devis, mais cette méthode de travail nous entraîne pour les missions chez des clients.
 
-#### **Spécification des interfaces et de la base de données**
+Nous avons donc pu définir les exigences fonctionnelles suivantes :
+- Un manager peut créer un feedback sur un consultant. Le manager peut également jouer le rôle de rapporteur, et inscrire un feedback au nom du client.
+- Un feedback est horodaté. Les dates de création et de dernière modification sont enregistrées.
+- Les feedbacks doivent pouvoir être rédigé à un format "Notion-like". Notion est une application de prise de note possédant un éditeur augmenté : il est possible de formater le texte (gras, italique, etc.), de rajouter des titres et des sections, des url, des extraits de code, des images, etc. Notion est largement adopté au sein de Takima, et les managers souhaitent pouvoir utiliser toutes ses fonctionnalités lors de la rédaction d'un feedback.
+- Lorsqu'un feedback est créé, il est enregistré à l'état de "brouillon".
+- Un feedback peut être marqué par un tag `warning` s'il est prioritaire.
+- Un feedback peut être marqué par des tags de catégories.
+- Certains employés ont le rôle de "validateur de feedback". Ils ont donc accès à une interface listant tous les feedback émis.
+- Il est possible de filtrer les feedbacks sur différents champs, tels que le nom du consultant concerné, l'état du feedback ou les tags appliqués.
+- Un validateur doit pouvoir automatiquement valider les feedback qu'il rédige, sans passer par l'état brouillon.
+- Un validateur a également accès à une interface de validation. Cette interface permet de naviguer parmi les feedback à l'état brouillon. Il est alors possible de :
+	- Refuser le feedback s'il ne suit pas les politiques de l'entreprise. Un feedback ne doit pas porter de jugement de valeur. Il doit seulement faire état de faits.
+	- Valider le feedback s'il est jugé acceptable.
+	- Modifier puis valider le feedback, si une simple modification est suffisante pour le rendre acceptable.
+- Un feedback refusé doit être supprimé de la base de donnée. En effet, un consultant peut réclamer à tout moment l'intégralité des informations que Takima possède à son sujet. Dans ce contexte, et pour respecter les règles RGPD, il n'est pas possible de conserver des feedbacks qui ont été refusés car ne respectent pas les politiques de l'entreprise.
+- Enfin, il faut pouvoir importer un document csv contenant les feedbacks des années précédentes. Le contenu du csv doit automatiquement être convertit au format Notion-like afin d'être cohérent avec le reste de l'application.
 
-Une nouvelle entité `Feedback` a été introduite dans le modèle de données. Elle contient :
+#### **Conception technique**
 
-- `id` (UUID)
-    
-- `consultant_id` (référence au collaborateur concerné)
-    
-- `manager_id` (auteur du feedback)
-    
-- `date` (date de création)
-    
-- `commentaire` (contenu du feedback)
-    
+Avant de me lancer dans le développement, j'ai dû réfléchir à la conception technique des feedbacks, notamment leur intégration dans la base de données. L'entité `Feedback` a été introduite dans le modèle de données et contient :
+- `id` (L'UUID du feedback)
+- `subject_id` (référence au consultant concerné)
+- `advisor_id`(référence à l'auteur du feedback)
+- `creator_id` (référence au rapporteur du feedback)
+- `feedback_content` (contenu du feedback au format Notion-like)
+- `feedback_state` (état du feedback : brouillon, refusé, validé ou validé après modification)
+- `feedback_context` (contexte dans lequel le feedback a été écrit : mission, formation, etc.)
+ - `creation_date` (date de création)
+ - `last_modification_date` (date de dernière modification)
+- `last_modification_user_id` (référence à l'uti)
 - `tag` (facultatif : performance, communication, technique, etc.)
     
 
