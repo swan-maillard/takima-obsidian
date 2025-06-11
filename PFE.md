@@ -206,11 +206,19 @@ Avant de me lancer dans le développement, j'ai dû réfléchir à la conception
 - `feedback_content` (contenu du feedback au format Notion-like)
 - `feedback_state` (état du feedback : brouillon, refusé, validé ou validé après modification)
 - `feedback_context` (contexte dans lequel le feedback a été écrit : mission, formation, etc.)
- - `creation_date` (date de création)
- - `last_modification_date` (date de dernière modification)
-- `last_modification_user_id` (référence à l'uti)
-- `tag` (facultatif : performance, communication, technique, etc.)
-    
+- `creation_date` (date de création)
+-  `last_modification_date` (date de dernière modification)
+- `last_modification_user_id` (référence à l'utilisateur ayant effectué la dernière modification)
+- `is_warning` (vrai si le feedback est annoté du tag `warning`)
+- `tags` (liste facultative des tags associés au feedback)
+
+Du côté API, il a également fallu concevoir les différents endpoints accessibles. Un endpoint permet de lier un URL à un contrôleur dont le but est d'effectuer des actions spécifiques et de renvoyer au client une réponse formatée. Nous utilisons le type d'architecture REST pour la conception de notre API, qui doit par conséquent suivre certaines bonnes pratiques :
+- L'API doit exposer des **resources identifiables**. Dans le cas du module de feedback, la resource manipulée est le **feedback**, identifiable via son UUID.
+- Les requêtes doivent suivre un certain formalisme avec les verbes d'actions HTTP : **POST** pour créer un feedback, **PUT** pour le modifier, **DELETE** pour le supprimer, etc.
+- Les contrôleurs doivent renvoyer les codes HTTP prévisibles selon l'action effectuée : **200** pour un succès, **201** pour une création, **404** pour une resource introuvable, etc.
+
+Les endpoints à développer sont donc les suivants :
+- **GET /feedbacks** (renvoie la liste des feedbacks)
 
 Sur le front-end, un **formulaire React/TypeScript** permet la création et l’affichage des feedbacks dans un composant réutilisable. L'intégration avec l’API a été réalisée en suivant les conventions REST existantes.
 
