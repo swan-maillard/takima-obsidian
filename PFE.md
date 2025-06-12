@@ -218,42 +218,67 @@ Du côté API, il a également fallu concevoir les différents endpoints accessi
 - Les contrôleurs doivent renvoyer les codes HTTP prévisibles selon l'action effectuée : **200** pour un succès, **201** pour une création, **404** pour une resource introuvable, etc.
 
 Les endpoints à développer sont donc les suivants :
-- **GET /feedbacks** (renvoie la liste des feedbacks)
+- **GET /feedbacks?page={page}&size={size}** (renvoie une liste paginée des feedbacks)
+- **POST /feedbacks** (création d'un feedback)
+- **PUT /feedbacks/{id}** (validation, refus ou modification d'un feedback)
 
-Sur le front-end, un **formulaire React/TypeScript** permet la création et l’affichage des feedbacks dans un composant réutilisable. L'intégration avec l’API a été réalisée en suivant les conventions REST existantes.
+Enfin, côté front-end, il a fallu créer de nouveaux composants. Le framework **React** utilisé sur HUI permet de créer des composants réutilisables dans diverses parties de l'application, et ainsi de rendre le code plus concis et maintenable. Les ajouts et modifications front que j'ai effectuées sont les suivantes :
+- Ajout d'une page de création d'un feedback via un formulaire
+- Ajout d'une page listant les feedbacks
+- Ajout d'une page permettant de modifier et valider les feedbacks. Cette page contient :
+	- Un encart avec la liste des feedbacks à valider,
+	- Un encart avec les informations sur le feedback sélectionné, un champ de contenu modifiable au format Notion-like, et des boutons de validation et refus,
+	- Des flèches pour naviguer entre les différents feedbacks à valider.
+
 
 #### **Développement**
 
-Le développement a été découpé en user stories, intégrées à un sprint Scrum. Le back-end Kotlin a été étendu pour exposer les endpoints `POST`, `GET` et `DELETE` liés aux feedbacks. Côté front, l’accent a été mis sur l’expérience utilisateur et l’intégration fluide avec la timeline existante.
+Le développement du module a duré environ deux mois. J’ai avancé progressivement en suivant les user stories définies au début du projet, en lien avec les utilisateurs finaux. Chaque fonctionnalité était liée à un ticket Jira qu’on estimait pendant les poker plannings. Pas mal d’allers-retours ont été nécessaires, surtout pour ajuster certains comportements métiers ou l’interface, en fonction des retours à la fin de chaque sprint.
+
+Un des points un peu techniques a été l’intégration de l’éditeur Notion-like. On voulait vraiment garder l’expérience de rédaction qu’ont les managers dans Notion, donc j’ai dû chercher un éditeur React qui permette ça, et le customiser pour qu’il gère les cas qu’on voulait : mise en forme, tags, extraits de code, etc. L’import CSV a aussi demandé pas mal d’attention, notamment pour convertir proprement le contenu au format Notion-like.
+
+La gestion des rôles (créateur, rapporteur, validateur) et des transitions d’état entre brouillon, validé, refusé, etc., a été un autre sujet important. Il fallait que tout soit cohérent, sans laisser la possibilité de contourner les règles par erreur ou oubli.
 
 #### **Tests et validation**
 
-Les tests incluent :
+Côté qualité, j’ai suivi la politique de couverture de tests à 80 %, mesurée avec SonarQube. Les tests unitaires ont été écrits pour les services et les repositories côté back. J’ai aussi ajouté des tests front pour vérifier que les bons éléments s’affichaient selon le rôle de l’utilisateur, et que les actions déclenchaient bien les bons appels API.
 
-- **Tests unitaires back-end** (service et repository)
-    
-- **Tests front-end** (affichage conditionnel, interactions)
-    
-- **Tests de bout en bout** manuels sur staging
-    
-- **Code review et QA par un pair**
-    
+En plus des tests automatisés, j’ai fait des tests manuels complets sur l’environnement de staging, en simulant les différents parcours utilisateurs (création, validation, refus, etc.). Chaque ticket passait aussi par une phase de code review et de QA avec un autre membre de l’équipe. En théorie, on vise zéro bug en prod, mais dans la réalité il y a eu quelques petits retours après le déploiement. Heureusement, les retours des managers ont été rapides, ce qui a permis de corriger rapidement.
 
-Le module a été validé et déployé en production après une phase d’essai sur un environnement restreint.
+Le module est maintenant en prod, et les managers ont commencé à l’utiliser pour suivre les consultants. Les premiers retours sont globalement positifs, notamment sur l’ergonomie de la page de validation.
 
+#### **Évolutions futures**
+
+À terme, l’idée serait d’intégrer les feedbacks dans les entretiens annuels et les entretiens d’objectifs. Ça permettrait aux managers d’avoir une vue directe des retours précédents pendant la préparation de l’entretien, et de mieux suivre l’évolution du consultant dans le temps.
+
+Une autre évolution prévue concerne le système de validation. Aujourd’hui, un feedback ne peut être modifié que par une seule personne à la fois, ce qui peut vite devenir bloquant. On réfléchit à un système qui permettrait à plusieurs validateurs d’intervenir en parallèle sans conflit (genre gestion de verrou ou édition concurrente). Il y a aussi l’idée d’ajouter des stats ou des indicateurs globaux à partir des feedbacks, mais ça demandera sans doute une autre phase de conception.
 
 ### **3.2 Amélioration du module des entretiens**
 
 #### **Analyse de l’existant**
 
-Le module des entretiens existait déjà, mais souffrait de plusieurs limitations :
+Un module d'entretiens, et plus généralement d'événements, avait déjà été développé sur Hui avant mon arrivée sur le projet. Ce module permet de créer des événements entre des employés (par exemple un entretien entre un manager et son consultant), puis de gérer tout le cycle de vie de l'événement. 
 
-- Interface peu intuitive (manque de filtres, surcharge d’information)
-    
-- Difficulté à relier les différents types d’entretien entre eux (objectifs, suivi, annuel)
-    
-- Mauvaise gestion de l’historique (modifications non tracées, peu d’exports possibles)
-    
+Il existe plusieurs types d'événements gérés par Hui :
+- Les **Entretiens d'Objectifs** ont lieu tous les ans entre un manager et son consultant. Cet entretien a pour but de faire un tour d'horizon de ce que le consultant a réalisé durant l'année, ainsi que des possibles difficultés qu'il a pu traverser. C'est également le moment pour le consultant de négocier son augmentation de salaire et de définir ses objectifs pour l'année à venir.
+- Les **Entretiens Professionnels** ont lieu tous les deux ans, généralement entre un représentant RH et un employé. Ces entretiens sont imposés par la loi. Il s'agit alors de discuter de l'évolution professionnelle de l'employé, afin de déterminer les différents axes sur lesquels Takima peut agir pour contribuer à cette évolution. Tous les **6 ans**, l'entretien professionnel est plus conséquent, afin de faire un bilan plus global sur la carrière de l'employé et de réfléchir son évolution à plus long terme.
+- Les **Entretiens de Suivi** ont lieu tous les 4 mois. Il s'agit d'un entretien entre un manager et un consultant, plus court que les 3 précédents. L'objectif de l'entretien de suivi est de garder contact avec le consultant tout au long de l'année, et d'être capable de réagir si celui-ci a des problèmes chez le client pour lequel il travail. Certains consultants bénéficient d'un **suivi de carrière allégé**, auquel cas ils ne font plus l'objet d'un suivi régulier, et c'est au manager et au consultant d'organiser ces entretiens quand ils le souhaitent.
+- Les **One to One** sont des entretiens informels entre deux employés. Ils ne font pas l'objet d'un suivi quelconque et peuvent porter sur n'importe quel sujet.
+- Les **Team Buildings** sont des événements ludiques entre un manager et une équipe afin de renforcer leurs cohésion et d'apprendre à se connaître davantage.
+
+Chaque manager peut accéder à la liste de ses événements avec ses managés, et y appliquer des filtres. Une fois un événement créé, il doit passer par une série d'étapes. Prenons l'exemple d'un entretien d'objectif :
+1. Au moment de créer un entretien d'objectif, le manager doit spécifier le consultant concerné, la description de l'entretien, et des notes facultatives.
+2. Une fois créé, l'entretien passe à l'étape "Brouillon". Le manager peut alors décider de modifier les participants, la description, ou les notes, puis de passer à l'étape "Rédaction".
+3. En passant à l'étape "Rédaction", un document d'entretien Google Docs est automatiquement généré depuis un template. Le manager doit alors pré-remplir ce document en prévision de l'entretien. Il peut également faire une demande d'accompagnement, par exemple s'il s'agit du premier entretien qu'il anime.
+4. Une fois la phase "Rédaction" terminée, le manager doit déterminer la date et l'heure de l'entretien afin de passer à la phase "Planifiée".
+5. Lorsque l'entretien a été effectué entre les 2 partis, l'événement entre dans sa phase de "Signature". Il faut alors attendre que le manager et le consultant signe un document électronique attestant que l'entretien a eu lieu. Cette signature est automatiquement gérée via l'API Dropbox Sign. Une fois signé, le manager peut rentrer dans la phase de "Debrief".
+6. Le manager est alors invité à remplir un Google Form pour débriefer l'entretien. Lorsqu'il a terminé, alors seulement l'entretien est considéré comme "Terminé".
+
+Construit sur le module de gestion des événements, un module de **campagne d'entretien** a également été mis en place. Ce module permet de créer des campagnes pour les entretiens d'objectifs et professionnels. Ces campagnes visent à simplifier les processus d'entretiens, en les étalant automatiquement sur une période donnée. Les managers n'ont alors plus besoin de créer leurs entretiens individuellement : tous les champs seront pré-remplis au moment de la création d'une campagne.
+
+A l'heure actuelle, le module de campagne n'a été intégré qu'aux entretiens d'objectifs, mais il est prévu de l'intégrer également aux entretiens professionnels dans le future proche.
+
+Un nouveau besoin est ressorti de ce module d'entretien. Un rôle important au sein de Takima est celui de TOM (Tutors of Managers). Les TOM ont pour objectifs de guider et gérer les managers Takima. Sur HUI, les TOM ont accès à une page "Dashboard Manager", sur laquelle ils peuvent voir la liste de tous les managers Takima. Ils peuvent ensuite accéder aux informations détaillées de chaque manager. Pour offrir une vue globale des avancements de chaque entretien, les TOM souhaiteraient pouvoir visualiser les statuts des entretiens entre chaque manager et ses consultants.
 
 #### **Cahier des charges**
 
@@ -268,25 +293,20 @@ Les améliorations souhaitées comprenaient :
 - **Amélioration du PDF export** pour les entretiens
     
 
-#### **Choix techniques**
+#### **Conception technique**
 
 La structure de la base a été revue pour introduire une **entité `EntretienType`**. Un système d’`AuditLog` générique a été mis en place côté back pour historiser les actions critiques (création, modification, suppression).
 
 Côté front, le composant React a été refactoré pour utiliser `React Hook Form` et des hooks personnalisés, facilitant la lisibilité et la maintenance.
 
-#### **Implémentation**
+#### **Développement**
 
 Le projet a été réparti sur deux sprints. Une migration Flyway a été introduite pour adapter la base de données. La logique métier a été découplée dans des services dédiés pour améliorer la testabilité.
 
-#### **Résultats obtenus**
+#### **Tests et validation**
 
-- **Expérience utilisateur fortement améliorée**
-    
-- **Gain de temps pour les managers** lors de la saisie et de la consultation
-    
-- Meilleure **traçabilité** des données RH
-    
-- **Retours utilisateurs positifs** dès le premier mois d'utilisation
+
+#### **Evolutions futures**
 
 
 ### **3.3 Optimisation des pipelines CI/CD**
