@@ -48,13 +48,13 @@ Ce rapport est découpé en six grandes parties. Je vais d'abord présenter le d
 
 ## **1. Déroulement du stage**
 
-### **1.1. Welcome Pool**
+### **1.1 Welcome Pool**
 
 La première semaine du stage a commencée par la **Welcome Pool**, une semaine d'intégration intensive commune à tous les nouveaux stagiaires. Nous sommes une dizaine de stagiaires a être arrivés en février. Répartis en équipes de quatre, nous avons dû développer et déployer une application simple en utilisant JEE (Java Entreprise Edition) sans utiliser de gestionnaire de dépendances, et sans être guidé. A la fin de la semaine, nous avons effectué une simulation de présentation client, afin d'évaluer nos compétences techniques et relationnelles.
 
 La Welcome Pool, bien qu'intensive, nous a permis de nous familiariser directement avec l’exigence de Takima mais a également permis de renforcer la cohésion d'équipe avec les autres stagiaires.
 
-### **1.2. Formation approfondie**
+### **1.2 Formation approfondie**
 
 Les deux mois suivants la Welcome Pool, j'ai eu la chance de participer à la formation **Master 3** de Takima, qui consiste en une mise à niveau intense centrées sur les différentes thématiques importantes aux consultants en développement web.
 
@@ -71,7 +71,7 @@ Nous avons ainsi été formé sur les technologies suivantes :
 Les cours et les revues de code étaient assurées par des développeurs seniors qui partageaient non seulement leurs compétences techniques, mais aussi leurs années de bonnes pratiques concrètes.
 Bien que cette formation ne fasse pas à proprement parler de mon Projet de Fin d'Etudes, elle a largement consolidé mon socle technique et m'a permis d'acquérir de nombreux bons réflexes.
 
-### **1.3. Intégration au projet HUI
+### **1.3 Intégration au projet HUI
 
 Début avril, j'ai finalement intégré l'équipe en charge de **HUI** afin de commencer mon PFE. Comme expliqué dans l'introduction, HUI est une application interne centralisant les événements clés de la carrière des consultants afin d'assurer le suivi RH et managérial.
 
@@ -99,7 +99,7 @@ De plus, chaque jour un différent membre de l'équipe est assigné en tant que 
 
 ## **2. État de l’art et étude de l’existant**
 
-### **2.1 Solutions du marché**
+### **2.1 Solutions sur le marché**
 
 Aujourd'hui, le marché de la gestion d'entreprise offre plusieurs solutions logicielles pour la gestion RH et managériale. Ces solutions sont progressivement apparues suite au besoin qui s'est fait ressentir de la part des entreprises d'avoir une vision plus globale de leurs employés, et de pouvoir correctement les suivre et récompenser leurs efforts. Parmi les solutions les plus connues, on peut citer :
 
@@ -149,20 +149,21 @@ Lorsque j'ai rejoint le projet, HUI était déjà déployée fonctionnelle, dép
 
 ### **2.4 Pratiques DevOps et CI/CD en entreprise**
 
-Les pratiques DevOps ont pour objectif de rapprocher les équipes de développement (Dev) et d’exploitation (Ops) pour accélérer les cycles de développement et fiabiliser les livraisons.
+Les pratiques DevOps ont pour objectif d'accélérer les cycles de développements et de fiabiliser les livraisons en automatisant les tâches qui ne sont pas directement liées au développement. En général, ces pratiques s'appuient sur des **pipelines CI/CD (Continuous Integration / Continuous Deployment)**. Ces pipelines ont pour objectif de :
 
-En entreprise, ces pratiques s’appuient généralement sur des **pipelines CI/CD (Continuous Integration / Continuous Deployment)** automatisés. Leur rôle est de :
+- **Intégrer en continu** les nouvelles fonctionnalités développées en s'assurant de leur bon fonctionnement en faisant passer des tests automatisés ou en effectuant des analyses statiques de la qualité de code.
 
-- **Intégrer en continu** les nouvelles fonctionnalités, en assurant leur bon fonctionnement via des tests automatisés.
-    
-- **Déployer automatiquement** les applications dans des environnements de test, de préproduction ou de production, selon des règles prédéfinies.
-    
-- **Réduire les erreurs humaines** et les délais entre la création d’une fonctionnalité et sa disponibilité pour les utilisateurs.
-    
-- **Améliorer la traçabilité** et la reproductibilité des déploiements.
-    
+- **Déployer automatiquement** les applications dans des environnements de test, de préproduction et de production en s'assurant de la cohérence entre les différents environnements.
 
-Chez Takima, ces pratiques sont largement adoptées. Les pipelines GitLab CI sont utilisés quotidiennement, avec des jobs dédiés au build, aux tests, à l’analyse statique de code (SonarQube), au packaging (Docker) et au déploiement (Kubernetes via Helm Charts et ArgoCD).
+- **Réduire les erreurs humaines** car les tâches effectuées par les pipelines sont répétitives, et peuvent parfois mener à des erreurs des opérateurs lorsqu'elles ne sont pas réalisées automatiquement. 
+
+- **Réduire les délais** entre l'ajout d'une nouvelle fonctionnalité ou d'un correctif et de sa disponibilité pour les utilisateurs finaux.
+
+- **Améliorer la traçabilité** et la reproductibilité des tests et des déploiements..
+
+Chez Takima, les pipelines CI/CD sont mises en place avec **Gitlab CI** qui permet de définir les comportements pour chaque étape de la pipeline, de la compilation au déploiement. Sur HUI, les pipelines sont utilisées quotidiennement : lorsqu'une branche (qui correspond à une fonctionnalité, une amélioration tech ou un correctif) est poussée sur Gitlab, une pipeline se déclenche automatiquement avec des jobs dédiés au build, aux tests, à l'analyse statique du code (analyse SonarQube) et au packaging (création d'image Docker et upload sur un registre d'image). Ainsi, avant même d'effectuer une revue de code, il est possible de s'assurer que tous les tests passent et donc que les modifications sont rétro-compatibles.
+
+Lorsque la branche est validée (Revue de code et QA approuvées), des jobs permettent de déployer l'application sur les différents environnements (mise à jour des pods Kubernetes avec Helm Charts).
 
 ---
 
