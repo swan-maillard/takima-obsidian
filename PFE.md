@@ -282,32 +282,116 @@ Un nouveau besoin est ressorti de ce module d'entretien. Un rôle important au s
 
 #### **Cahier des charges**
 
-Les améliorations souhaitées comprenaient :
+Le premier besoin spécifié par les TOM était donc d'avoir une vue d'ensemble de l'avancement des entretiens pour chaque manager. Concrètement, le dashboard des managers doit afficher - en dessous de chaque manager - leur nombre d'entretiens en cours, en retard ou à venir avec les consultants qu'il encadre. Ces statistiques doivent être affichées pour les 3 types d'entretiens suivants :
+- les entretiens d'objectifs,
+- les entretiens professionnels,
+- les entretiens de suivi.
 
-- **Refonte UX** : interface plus claire avec filtres et affichage par consultant
-    
-- **Ajout de typage** des entretiens pour faciliter leur suivi (Objectif / Suivi / Professionnel / Annuel)
-    
-- **Historisation** des modifications (audit log)
-    
-- **Amélioration du PDF export** pour les entretiens
-    
+Il doit également être possible de filtrer les managers en fonction des types d'entretiens en retard. La liste doit être triée selon le plus grand nombre d'entretiens professionnels en retard. Cela permettra aux TOM d'avoir un meilleur suivi des managers en période d'entretiens, et de pouvoir relancer ceux qui ont trop de retards.
+
+En addition de cette vue globale des managers, les TOM voudraient avoir des statistiques plus détaillées sur le profil des managers. Pour chacun de leurs consultants managés, le profil doit afficher - pour chacun des 3 types d'entretiens énoncés précédemment - les informations suivantes :
+- Si l'entretien est à venir, dans combien de temps il doit avoir lieu.
+- Si l'entretien est en retard, de combien de temps il est en retard.
+- Si l'entretien est en cours, à quelle étape il se trouve.
+
+Après avoir pris connaissance de ce besoin initial, il a fallu définir un cahier des charges plus précis. Pour cela, j'ai participé à plusieurs réunions avec les TOM afin de discuter des différents cas de figure à gérer. Nous nous sommes rapidement rendu compte que la définition du besoin était plus difficile à rédiger que prévu. En effet, tous les types d'entretiens diffèrent dans leurs comportements, et ont chacun des subtilités propres.
+
+Pour nous aider dans la rédaction du cahier des charges, nous avons défini des scénarios concrets auquel se référer pour chaque cas de figure. Cela nous a permit de mieux imaginer tous les scénarios possibles et de ne pas oublier de cas limites. Cette manière de faire est également idéale en prévision de la rédaction des tests unitaires et des tests d'intégration.
+
+Pour chacun des types d'entretien, nous avons donc défini les règles suivantes à implémenter :
+
+- **Entretien d'objectif (EO) :**
+	- Règles...
+
+- **Entretien professionnel (EP) :**
+	- Règles...
+
+- **Entretien de suivi (ES) :**
+	- Règles...
 
 #### **Conception technique**
 
-La structure de la base a été revue pour introduire une **entité `EntretienType`**. Un système d’`AuditLog` générique a été mis en place côté back pour historiser les actions critiques (création, modification, suppression).
+La conception technique étant guidée par un besoin fonctionnel fort, de par le cahier des charges très détaillé, j'ai décidé d'utiliser une approche de Test-Driven-Development (TDD) côté back-end. Le TDD est une bonne pratique de développement, permettant de produire un résultat fonctionnel plus rapidement en minimisant l'apparition de bugs. Cette approche demande cependant de la rigueur, et force à correctement définir les besoins fonctionnels en amont. Il s'agit d'un bon entraînement pour moi qui ai en général l'habitude de commencer à développer directement tête baissée, puis de régler les bugs lorsqu'ils apparaissent, inévitablement.
 
-Côté front, le composant React a été refactoré pour utiliser `React Hook Form` et des hooks personnalisés, facilitant la lisibilité et la maintenance.
+Le principe du TDD est le suivant :
+1. **Rédaction de tests qui échouent** :  
+    On commence par écrire des **tests unitaires** qui expriment clairement ce que le code _doit faire_, sans encore l’avoir implémenté. Par exemple : "Si un manager n’a pas créé l’entretien d’objectif prévu pour l’année en cours, alors l’état doit être ‘en retard’". À ce stade, les tests échouent logiquement.
+    
+2. **Développement pour faire passer les tests** :  
+    Ensuite, on développe **juste ce qu’il faut** pour que les tests passent. Pas de logique inutile ou d’optimisation prématurée : uniquement ce qui permet de faire valider la règle.
+    
+3. **Ré-factorisation du code** :  
+    Une fois tous les tests passés, on repasse sur le code pour le **ré-factoriser**, le simplifier, ou le découper en fonctions plus lisibles – tout en s’assurant que les tests continuent de passer.
+
+Pour ce besoin fonctionnel, je n'ai pas eu besoin de créer de créer ou modifier les entités en base de données puisque toutes les informations nécessaires étaient déjà disponible. Les entités et leurs propriétés principales que j'ai dû utiliser sont les suivantes :
+- **manager**
+	- `user_id` (référence à l'utilisateur concerné)
+- **users_link**
+	- `parent_id` (référence au manager)
+	- `child_id` (référence à l'employé managé)
+	- `career_tracking` (type de suivi de carrière de l'employé : standard, allégé ou RH)
+- **event**
+	- `creator` (référence au créateur de l'entretien, en l'occurrence le manager)
+	- `subject` (référence au sujet de l'entretien, en l'occurrence le consultant)
+	- `event_type` (type de l'événement : entretien d'objectif, professionnel, de suivi, etc.)
+	- `event_state` (état de l'événement : brouillon, rédaction, terminé, etc.)
+	- `end_date` (date de fin de l'événement, null si non terminé)
+- **campaign**
+	- `event_type` (type de l'événement concerné par la campagne : entretien d'objectif, professionnel, etc.)
+	- `start_date` (date de début de la campagne)
+	- `end_date` (date de fin de la campagne, null si non terminée)
+
+Les pages du dashboard manager et des profils manager existants déjà, je n'ai pas eu besoin de concevoir les endpoints API ni les composants React, mais seulement à y apporter des modifications afin d'y ajouter les informations concernant les états des entretiens pour chaque manager et employé managé.
+
+J'ai également dû créer les composants React pour les filtres portant sur les types d'entretiens en retard, et sur la possibilité de dissocier les nombres d'EP en EP2 et EP6 (afin de faire la distinction entre les Entretiens Professionnels effectués tous les 2 ans et ceux effectués tous les 6 ans, plus importants). La logique de ces filtres a également dû être portée côté back.
 
 #### **Développement**
 
-Le projet a été réparti sur deux sprints. Une migration Flyway a été introduite pour adapter la base de données. La logique métier a été découplée dans des services dédiés pour améliorer la testabilité.
+Le développement de cette nouvelle fonctionnalité a duré environ **un mois**, réparti sur plusieurs sprints. Dès le début du développement, j’ai pu bénéficier de **retours réguliers de la part des TOM**, que ce soit via des échanges informels ou plus formellement lors des **Sprint Reviews**. Cela m’a permis d’itérer rapidement sur les écrans, d’ajuster la logique métier, et surtout de m’assurer que les spécificités métiers complexes autour des entretiens étaient bien respectées.
+
+La plus grande difficulté rencontrée a été d’ordre **technique et organisationnelle**. Dans un premier temps, j’ai voulu **tout gérer dans une seule requête SQL**, avec un grand nombre de jointures, de branchement des différents cas et de sous-requêtes, afin de traiter tous les calculs (états, retards, filtres) directement côté base de données. L’idée initiale était d’avoir une solution optimisée et rapide.
+
+Mais je me suis rapidement heurté à plusieurs limites :
+- La requête était **difficile à lire** et donc à maintenir.
+- Le moindre bug ou ajustement prenait énormément de temps à localiser.
+- Impossible de **tester indépendamment chaque règle** métier.
+- Le code backend devenait un simple relais sans logique, ce qui le rendait **très rigide**.
+
+Face à cela, j’ai fait le choix de **découper la logique**, en gardant :
+- Une **requête SQL plus simple** et efficace, qui retourne tous les entretiens d’un manager avec les données brutes nécessaires.
+- Puis de **déléguer la logique métier au backend**, dans un service mieux découpé, testable, et plus facile à faire évoluer.
+
+Bien que j'ai perdu du temps à passer d'une solution à l'autre, je pense avoir fait le bon choix en changeant de stratégie, car ça m’a fait gagner en clarté, et m’a permis de garder la main sur chaque règle en cas d’évolution future. Cela m'a également permis de mettre en place une plus grande couverture de tests unitaires et ainsi de pouvoir s'assurer que chaque bric de la fonctionnalité fonctionnent toujours correctement, même en cas de modification du comportement d'un type d'entretien.
+
+Le développement côté front-end n'a pas posé de problèmes notables.
 
 #### **Tests et validation**
-
+- Stratégie de tests :
+    
+    - Tests unitaires (back) sur les nouveaux services.
+        
+    - Tests d’intégration sur les parcours d’utilisation.
+        
+    - Tests front avec Jest/React Testing Library si applicable.
+        
+- Déploiement en environnement de staging pour recette par les TOM.
+    
+- Collecte des retours utilisateurs :
+    
+    - Corrections ou ajustements demandés.
+        
+    - Satisfaction générale sur la clarté de la nouvelle vue.
 
 #### **Evolutions futures**
-
+- Intégration des campagnes d’entretien professionnels dans le module de campagne.
+    
+- Possibilité d’exporter les données d’entretien (CSV, PDF) pour les RH ou la direction.
+    
+- Ajout de notifications automatiques pour relancer les managers en cas de retard.
+    
+- Centralisation des documents (feedbacks + entretiens) dans une vue chronologique par consultant.
+    
+- Meilleure intégration mobile pour les managers en déplacement.
 
 ### **3.3 Optimisation des pipelines CI/CD**
 
