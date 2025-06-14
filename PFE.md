@@ -563,20 +563,26 @@ Lorsque l'on compile une application, ses dépendances et librairies sont télé
 
 Prenons un exemple : Lorsque l'on construit une application front-end avec Node.js, on spécifie des dépendances dans le fichier `package.json`. La commande `npm install` permet d'installer toutes ces dépendances dans le dossier `node_modules/`. La pipeline effectue les jobs suivants :
 -  **install dependencies** : installe les dépendances en exécutant la commande `npm install`
-- **build** : compile l'application, *nécessite les dépendances*
-- **tests** : effectue les tests unitaires et d'integration, *nécessite les dépendances*
+- **build** : compile l'application
+- **tests** : effectue les tests unitaires et d'integration*
 - **sonarqube check** : effectue une analyse statique du code
 - **package** : crée une image Docker de l'application et la stocke sur Gitlab
 - **deploy** : déploie l'image Docker sur un environnement (dev, preprod ou prod)
 
-Comme on peut le voir, les jobs de **build** et de **tests** ont besoin des dépendances, et on ne veut pas avoir à les télécharger pendant les deux jobs. La solution est donc d'ajouter du cache au niveau du job **install dependencies** afin de stocker le contenu du `node_modules/` :
+Comme on peut le voir, les dépendances sont déjà téléchargées par le job `install dependencies`, et on ne veut pas avoir à les re-télécharger pendant au cours des jobs suivants. La solution qui avait été mise en place était donc d'ajouter du cache au niveau de chaque job afin de récupérer le contenu de `node_modules/` du cache et, s'il le cache est vide, d'installer les dépendances et de le stocker en cache. En spécifiant une clé correspondant à l'identifiant de la pipeline, les différents jobs d'une même pipeline peuvent donc se partager le cache :
 
 ```yaml
 cache:
+	key: IDENTIFIANT_DE_LA_PIPELINE
 	paths:
 		- node_modules/
+	policy: pull-push
 ```
 
+Sauf que cette façon de configurer le cache pose des problèmes :
+- Tout d'abord, seuls les jobs de `build` et de `tests` ont besoin des dépendances. Ajouter le cache aux jobs suivants est inutile, ils perdront du temps à compresser et décompresser le cache pour rien.
+- Ensuite, la stratégie de cache utilisée par défaut est celle de `pull-push`. Le job va récupérer le cache et le décompresse. S'il n'existe pas, alors il installe les dépendances. Puis, dans les deux cas, les dépendances sont compressées et renvoyées au cache, même si le cache existait déjà. Cela rajoute une étape de compression inutile pour `build`et `tests` puisqu'ils n'effectuent pas de modification sur les dépendances. Pour régler ça, il faut changer la stratégie de ces deux jobs en `pull` afin d'uniquement décompresser le cache. Seul le job d'`install dependencies` conserve la stratégie de `pull-push`.
+- 
 
 Plusieurs stratégies ont été testées pour accélérer les pipelines :
 
