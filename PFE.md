@@ -582,18 +582,35 @@ cache:
 Sauf que cette façon de configurer le cache pose des problèmes :
 - Tout d'abord, seuls les jobs de `build` et de `tests` ont besoin des dépendances. Ajouter le cache aux jobs suivants est inutile, ils perdront du temps à compresser et décompresser le cache pour rien.
 - Ensuite, la stratégie de cache utilisée par défaut est celle de `pull-push`. Le job va récupérer le cache et le décompresse. S'il n'existe pas, alors il installe les dépendances. Puis, dans les deux cas, les dépendances sont compressées et renvoyées au cache, même si le cache existait déjà. Cela rajoute une étape de compression inutile pour `build`et `tests` puisqu'ils n'effectuent pas de modification sur les dépendances. Pour régler ça, il faut changer la stratégie de ces deux jobs en `pull` afin d'uniquement décompresser le cache. Seul le job d'`install dependencies` conserve la stratégie de `pull-push`.
-- 
+- Enfin, en définissant la clé via l'identifiant de la pipeline, le cache est uniquement partagé au sein d'une même pipeline. Or, les dépendances restent souvent inchangées, et l'idéal serait que toutes les pipelines ayant les mêmes dépendances puissent réutiliser le cache. Puisque les dépendances sont définies dans le fichier `package.json`, on peut simplement hacher le contenu du fichier et utiliser ce hash en tant que clé.
 
-Plusieurs stratégies ont été testées pour accélérer les pipelines :
+Ainsi, on peut optimiser la gestion du cache ainsi :
 
-- **Cache de dépendances Maven et Node** selon le hash du fichier `pom.xml` ou `package-lock.json`
-    
-- **Utilisation de Docker layer caching** sur runners auto-hébergés
-    
-- **Minimisation des jobs parallèles inutiles**
-    
+```yaml
+cache:
+	key:
+        files:
+          - package.json
+	paths:
+		- node_modules/
+	policy: pull-push (install dependencies) OU pull (build et tests)
+```
 
-Des benchmarks ont été menés sur des branches de test, en comparant les temps d'exécution sur plusieurs runs successifs.
+
+De la même manière pour le projet **HUI-API** qui utilise le gestionnaire de dépendances **gradle**, les dépendances sont spécifiées dans le fichier `build.gradle.kts` et les dépendances sont téléchargées dans le dossier `gradle/caches/`, donc on peut définir le cache suivant :
+
+```yaml
+cache:
+	key:
+        files:
+          - build.gradle.kts
+	paths:
+		- gradle/caches/
+	policy: pull-push (install dependencies) OU pull (build et tests)
+```
+
+
+J'ai également effectué quelques optimisations lors de la génération d'image Docker, en utilisant une image de base légère et minimale dite `alpine`. Cependant la simple optimisation du cache était déjà significativement efficace.
 
 #### **Résultats et gains mesurés**
 
