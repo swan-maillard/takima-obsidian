@@ -553,7 +553,30 @@ Vous aurez pu remarquer que l'on précise le tag `@1.1.10` derrière le nom du c
 
 L'annexe A montre le contenu du `.gitlab-ci.yml` de Hui-Front avant d'avoir implémenté les Gitlab Components.
 
-#### **Benchmark des stratégies de caching**
+#### **Optimisations des performances**
+
+Une fois le code ré-factorisé, j'ai commencé à me pencher sur les problèmes de performances. Une mauvaise configuration des jobs de pipelines peut causer des baisses non-négligeables de performances, mais ce n'est pas évident de savoir quelles configurations causent ces lenteurs. J'ai donc commencé à investiguer les logs des différents jobs des pipelines afin de déterminer les goulots d'étranglements.
+
+Je me suis rapidement rendu compte que les jobs ralentissaient significativement au moment de transférer et de télécharger le cache depuis un serveur cloud. Avant d'aller plus loin, il faut comprendre comment fonctionne le cache dans les pipelines.
+
+Lorsque l'on compile une application, ses dépendances et librairies sont téléchargées. Plus un projet est gros, et plus son nombre de dépendances a des chances d'augmenter, et donc de prendre plus de temps à télécharger. Lors de l'exécution d'une pipeline, chaque job crée un nouvel environnement dans lequel effectuer ses tâches. Pour éviter d'avoir à re-télécharger les dépendances à chaque job, on met en place une stratégie de cache afin de stocker les dépendances téléchargées lors du premier job, et ainsi de pouvoir les réutiliser durant les autres jobs. Dans notre cas, le cache est stocké dans un serveur Amazon S3 (service de stockage managé dans le cloud). Avant d'être envoyé dans le S3, le cache est compressé par Gitlab, puis décompressé au moment de le récupérer. Cependant, ces opérations de compression et de décompression peuvent prendre un certain temps notamment quand les dépendances sont lourdes, et si le cache n'est pas correctement configuré, il peut facilement perdre tout son intérêt.
+
+Prenons un exemple : Lorsque l'on construit une application front-end avec Node.js, on spécifie des dépendances dans le fichier `package.json`. La commande `npm install` permet d'installer toutes ces dépendances dans le dossier `node_modules/`. La pipeline effectue les jobs suivants :
+-  **install dependencies** : installe les dépendances en exécutant la commande `npm install`
+- **build** : compile l'application, *nécessite les dépendances*
+- **tests** : effectue les tests unitaires et d'integration, *nécessite les dépendances*
+- **sonarqube check** : effectue une analyse statique du code
+- **package** : crée une image Docker de l'application et la stocke sur Gitlab
+- **deploy** : déploie l'image Docker sur un environnement (dev, preprod ou prod)
+
+Comme on peut le voir, les jobs de **build** et de **tests** ont besoin des dépendances, et on ne veut pas avoir à les télécharger pendant les deux jobs. La solution est donc d'ajouter du cache au niveau du job **install dependencies** afin de stocker le contenu du `node_modules/` :
+
+```yaml
+cache:
+	paths:
+		- node_modules/
+```
+
 
 Plusieurs stratégies ont été testées pour accélérer les pipelines :
 
