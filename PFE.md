@@ -662,17 +662,18 @@ Après avoir présenté ces résultats, j'ai été amené à généraliser les o
 
 Une fois les components créés, j'ai accompagné les projets dans la migration de leur configuration `.gitlab-ci.yml` afin d'adopter les nouvelles pipelines.
 
-#### **Bonnes pratiques DevOps mises en place**
+#### **Rédaction de documentation**
 
+Pour garantir la pérennité de mon travail et faciliter leur adoption pour les prochains projets, j'ai rédigé une documentation complète. Cette documentation a plusieurs objectifs :
+- Détailler la structure du projet `gitlab-components`, l'utilité de mettre en place les components, comment versionner les pipelines, ainsi que le rôle respectif des components publics et privés
+- Détailler individuellement la structure de chaque component public, quels inputs peuvent être spécifiés, quelles valeurs sont autorisées, et comment régler les problèmes récurrents que j'ai pu rencontrer.
+- Fournir un guide de migration pour passer de sa configuration `.gitlab-ci.yml` vers l'utilisation des components.
 
-- **Linting YAML** et validation automatique des pipelines via GitLab CI Lint
-    
-- **Tagging systématique des images Docker**
-    
-- **Documentation** des composants partagés pour les futurs projets
-    
-- Mise en place d’un **guide de contribution DevOps** interne pour l’équipe HUI
+Voici un exemple de la documentation détaillant la liste de components publics :
+![](https://lh7-rt.googleusercontent.com/slidesz/AGV_vUcK2_Bs8TZIJmnnjp1j-SqxsUs7oKmZss7s4U-yPovF9cnZLPbtOcd2paXQdLDoqt9V6-n0SS0qaubJKv5tORyUJUcyEGq34I5vxhGVI70Lt2cKDONC6MQNk9AzFHNIeL80xtB1=s2048?key=2z088As1guQ-ZA8-niVywg)
 
+Et voici un exemple de la documentation détaillant le fonctionnement du component `frontend-node` et de comment l'intégrer à son projet :
+![](https://lh7-rt.googleusercontent.com/slidesz/AGV_vUdmxUYDuSL1inSwzglyuTg91X9RY1B6n_imt3ECyf4vVr0rM0EslyStBsrLjSKRWDI8pMtWdNE7nyb3CM5fStatnL_e1H2VfQD15FpODgHRMo81O35shBfqPXKYLppWP-1HbDAU9g=s2048?key=2z088As1guQ-ZA8-niVywg "Screenshot From 2025-05-09 22-11-58.png")
 
 ---
 
