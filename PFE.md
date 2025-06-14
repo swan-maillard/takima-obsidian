@@ -61,14 +61,18 @@ Les deux mois suivants la Welcome Pool, j'ai eu la chance de participer à la fo
 Cette formation était structurée autour d'un fil rouge : le développement back et front, la mise en place de pipelines CI/CD et le déploiement d'une application web de marketplace. Chaque chapitre était décomposée en cours théoriques, en pratique individuelle, et ponctuée par des revues de code de la part de consultants expérimentés.
 
 Nous avons ainsi été formé sur les technologies suivantes :
-
 - **Dev / DevOps** : Git, Docker, Docker Compose, GitLab CI/CD, TDD, tests unitaires
-
 - **Back-end** : Java, Maven, REST APIs, Spring (Boot, MVC, Data), Hibernate, JPA, PostgreSQL, Flyway
-
 - **Front-end** : JavaScript/TypeScript, React, Angular
 
 Les cours et les revues de code étaient assurées par des développeurs seniors qui partageaient non seulement leurs compétences techniques, mais aussi leurs années de bonnes pratiques concrètes.
+
+A la fin de la formation, j'ai dû effectuer une simulation de présentation client de la market place fonctionnelle et déployée sur serveur que j'ai développé en intégralité durant les 2 mois.
+
+![](https://lh7-rt.googleusercontent.com/slidesz/AGV_vUfXmQAMKhMJ7ctr5-OW5g-9IBZ9bMjva53-c2KvPqdGnpiRpKYDWTgh4hkZdmpay6iy4PsDQCgSjQEw5NL8Sx5-Okeo3E_iC10spyZN3GjRqUtAD9H69yk8F581GVP8FWMqPq3Wyg=s2048?key=_wr7buDxjlhSrQDWgzosB7PO)
+Capture d'écran de la page d'accueil de la Market Place
+
+
 Bien que cette formation ne fasse pas à proprement parler de mon Projet de Fin d'Etudes, elle a largement consolidé mon socle technique et m'a permis d'acquérir de nombreux bons réflexes.
 
 ### **1.3 Intégration au projet HUI
@@ -131,6 +135,10 @@ HUI est une application monolithique reposant sur des stacks modernes :
 
 - **Monitoring et qualité de code** : **Sentry** est utilisé pour la gestion des erreurs en prod, **SonarQube** pour l'analyse statique de la qualité de code (duplication, couverture de tests, etc.), et **ArgoCD** et **Rancher** assurent le suivi des pods SonarQube sur les différents environnements (dev, preprod et prod).
 
+Voici un diagramme résumant les technologies utilisées dans l'application :
+
+![[Pasted image 20250614180130.png]]
+
 
 Lorsque j'ai rejoint le projet, HUI était déjà déployée fonctionnelle, déployée en production et utilisée. Les modules suivants étaient déjà en place :
 
@@ -144,8 +152,13 @@ Lorsque j'ai rejoint le projet, HUI était déjà déployée fonctionnelle, dép
 
 - Une **page consultant** récapitulant toutes les informations liées à un consultant, comme ses formations, ses derniers entretiens, ses événements marquants, etc.
 
-- Une liaison avec des systèmes tiers, notamment avec le micro-service interne **AppUser** qui fait la connexion entre les outils Takima et **SAP**, mais également avec le micro-service interne **Messaging** qui gère l'envoi des mails. Des outils externes comme **Google Apps** et **HelloSign** pour les signatures électroniques sont également intégrés à HUI. Enfin, HUI intègre **Keycloak** pour déléguer la gestion de l'authentification et des rôles / permissions.
+- Une liaison avec des systèmes tiers, notamment avec le micro-service interne **AppUser** qui fait la connexion entre les outils Takima et **SAP**, mais également avec le micro-service interne **Messaging** qui gère l'envoi des mails. Des outils externes comme **Google API** et **HelloSign** pour les signatures électroniques sont également intégrés à HUI. Enfin, HUI intègre **Keycloak** pour déléguer la gestion de l'authentification et des rôles / permissions.
 
+Voici le schéma d'architecture C4 qui décrit le contexte autour de HUI, ses composants principaux, et avec quels systèmes l'application interagit :
+
+![[Pasted image 20250614180450.png]]
+
+Un diagramme C4 plus détaillé, centré sur les couches services et contrôleurs de HUI est également disponible en Annexe.
 
 ### **2.4 Pratiques DevOps et CI/CD en entreprise**
 
@@ -584,6 +597,14 @@ Sauf que cette façon de configurer le cache pose des problèmes :
 - Ensuite, la stratégie de cache utilisée par défaut est celle de `pull-push`. Le job va récupérer le cache et le décompresse. S'il n'existe pas, alors il installe les dépendances. Puis, dans les deux cas, les dépendances sont compressées et renvoyées au cache, même si le cache existait déjà. Cela rajoute une étape de compression inutile pour `build`et `tests` puisqu'ils n'effectuent pas de modification sur les dépendances. Pour régler ça, il faut changer la stratégie de ces deux jobs en `pull` afin d'uniquement décompresser le cache. Seul le job d'`install dependencies` conserve la stratégie de `pull-push`.
 - Enfin, en définissant la clé via l'identifiant de la pipeline, le cache est uniquement partagé au sein d'une même pipeline. Or, les dépendances restent souvent inchangées, et l'idéal serait que toutes les pipelines ayant les mêmes dépendances puissent réutiliser le cache. Puisque les dépendances sont définies dans le fichier `package.json`, on peut simplement hacher le contenu du fichier et utiliser ce hash en tant que clé.
 
+![[Pasted image 20250614181803.png]]
+Schéma de la gestion du cache non-optimisée : chaque job pull et push
+
+
+![[Pasted image 20250614181843.png]]
+Schéma de la gestion du cache optimisée : seuls les opérations nécessaires sont effectuées
+
+
 Ainsi, on peut optimiser la gestion du cache ainsi :
 
 ```yaml
@@ -610,9 +631,15 @@ cache:
 ```
 
 
+![[Pasted image 20250614182134.png]]
+Meilleure gestion de la clé du cache avec le fichier de dépendances
+
+
 J'ai également effectué quelques optimisations lors de la génération d'image Docker, en utilisant une image de base légère et minimale dite `alpine`. Cependant la simple optimisation du cache était déjà significativement efficace.
 
 #### **Résultats et gains mesurés**
+
+
 
 - **Réduction du temps moyen de build de 12 à 7 minutes**
     
@@ -683,15 +710,10 @@ J'ai également effectué quelques optimisations lors de la génération d'image
 
 ## **Annexes** _(non comptabilisées dans les 30 pages)_
 
-- Captures d’écran des interfaces
-    
-- Diagrammes (ex : architecture, pipelines GitLab)
-    
-- Extraits de code pertinents
-    
-- Exemples de requêtes ou de configurations
-    
-- Résultats bruts de benchmarks
+- Diagramme C4 des composants de Hui
+ ![[Pasted image 20250614180736.png]]
+
+
 
 `.gitlab-ci.yml` de **HUI-Front** avant Gitlab Components
 ```yaml
