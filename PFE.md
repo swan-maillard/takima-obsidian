@@ -337,6 +337,10 @@ Le principe du TDD est le suivant :
 3. **Ré-factorisation du code** :  
     Une fois tous les tests passés, on repasse sur le code pour le **ré-factoriser**, le simplifier, ou le découper en fonctions plus lisibles – tout en s’assurant que les tests continuent de passer.
 
+![[Pasted image 20250614185436.png]]
+Schéma expliquant le Test Driven Development
+
+
 Pour ce besoin fonctionnel, je n'ai pas eu besoin de créer de créer ou modifier les entités en base de données puisque toutes les informations nécessaires étaient déjà disponible. Les entités et leurs propriétés principales que j'ai dû utiliser sont les suivantes :
 - **manager**
 	- `user_id` (référence à l'utilisateur concerné)
@@ -473,6 +477,10 @@ Lorsque je suis arrivé sur HUI, cette démarche DevOps était implémentée via
 - **Packaging du code** en image Docker, stockée dans un container Gitlab, 
 - **Déploiement** vers un environnement (développement, préproduction, production).
 
+![](https://lh7-rt.googleusercontent.com/slidesz/AGV_vUdoCDvrwQUA4U-CgjUCDRQS3o1UgeMOkbXYZJ6kE0UNR__SW9qWbabgU0Z4B8tYesirEKPBavR39VQktNH7AiIUaUfurPBn80So98JncPR9yWiLYmFay_eaTj9bFfkRf_Y-NBDqLg=s2048?key=2z088As1guQ-ZA8-niVywg)
+Schéma décrivant les pipelines CI/CD
+
+
 Pour chaque projet, les pipelines sont définies dans des fichiers de configuration `.gitlab-ci.yml` décrivant les différentes étapes à exécuter. Chaque étape s'appelle un "job". Dans le cas de HUI, deux fichiers de configuration sont donc définis, pour l'API et pour le front-end.
 
 Cependant, nous nous sommes rendu compte que les pipelines existantes souffraient de plusieurs défauts majeurs. Principalement, leur lenteur d'exécution. Pour HUI, les pipelines pouvaient prendre jusqu'à 30 minutes d'exécution. Dans un contexte agile, avec des livraisons fréquentes - et donc des lancements fréquents de pipelines - une telle lenteur d'exécution est un vrai frein à la productivité. Pour chaque nouvelle fonctionnalité, les pipelines sont lancées au minimum 3 fois : 
@@ -577,7 +585,7 @@ Lorsque l'on compile une application, ses dépendances et librairies sont télé
 Prenons un exemple : Lorsque l'on construit une application front-end avec Node.js, on spécifie des dépendances dans le fichier `package.json`. La commande `npm install` permet d'installer toutes ces dépendances dans le dossier `node_modules/`. La pipeline effectue les jobs suivants :
 -  **install dependencies** : installe les dépendances en exécutant la commande `npm install`
 - **build** : compile l'application
-- **tests** : effectue les tests unitaires et d'integration*
+- **tests** : effectue les tests unitaires et d'integration
 - **sonarqube check** : effectue une analyse statique du code
 - **package** : crée une image Docker de l'application et la stocke sur Gitlab
 - **deploy** : déploie l'image Docker sur un environnement (dev, preprod ou prod)
@@ -639,16 +647,23 @@ J'ai également effectué quelques optimisations lors de la génération d'image
 
 #### **Résultats et gains mesurés**
 
+Les résultats obtenus par ces optimisations des pipelines ont  dépassé mes espérances. Bien que les résultats soient variables d'un jour à l'autre - en fonction de la charge du runner (le runner est le serveur sur lequel tournent les pipelines) puisque tous les projets internes de Takima utilisent les mêmes runners - j'ai pu calculer une moyenne des gains en performances pour l'API et le front-end de HUI.
+
+Pour l'API, nous sommes passés d'une durée de pipeline de 20 minutes en moyenne à 12-13 minutes. Il s'agit d'une amélioration de 38%.
+![[Pasted image 20250614190549.png]]
+Moyenne des gains en performance sur les pipelines de l'API
 
 
-- **Réduction du temps moyen de build de 12 à 7 minutes**
-    
-- **Réduction du nombre de fichiers `.gitlab-ci.yml` par projet (de 3 à 1)**
-    
-- **Moins de 30% d’échecs dus à des erreurs transitoires de CI**
-    
+Pour le front-end, nous sommes passés d'une durée de pipeline de 20 minutes en moyenne à 3 minutes environ. Il s'agit d'une amélioration de 85%. Cette amélioration est particulièrement impressionnante, et ça montre bien à quel point une simple configuration de quelques lignes peut faire toute la différence.
+![[Pasted image 20250614190718.png]]
+Moyenne des gains en performance sur les pipelines du front-end
+
+Après avoir présenté ces résultats, j'ai été amené à généraliser les optimisations de pipelines sur tous les projets dans l'infrastructure de Takima. Grâce à la centralisation et ré-factorisation des Gitlab Components effectuées, généraliser les configurations des pipelines a été plutôt rapide. J'ai simplement eu à créer de nouveaux components publics pour prendre en charge les autres technologies utilisées dans les projets.
+
+Une fois les components créés, j'ai accompagné les projets dans la migration de leur configuration `.gitlab-ci.yml` afin d'adopter les nouvelles pipelines.
 
 #### **Bonnes pratiques DevOps mises en place**
+
 
 - **Linting YAML** et validation automatique des pipelines via GitLab CI Lint
     
@@ -718,42 +733,13 @@ J'ai également effectué quelques optimisations lors de la génération d'image
 `.gitlab-ci.yml` de **HUI-Front** avant Gitlab Components
 ```yaml
 variables:
-  PATTERN_PREPARE: /.+prepare for next development iteration/
   RELEASE:
     value: minor
     description: 'major,minor,patch'
   TARGET_APP_NAME: front
   ALPINE_IMAGE: '${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/alpine:3.21.3'
   IMAGE_NAME: '${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/node:22'
-  FRAMEWORK: other
   DOCKERFILE_CUSTOM_ARGS: '--build-arg NODE_LTS_VERSION=22'
- 
- 
-workflow:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_TAG
-      variables:
-        TAG: $CI_COMMIT_TAG
-    - if: >-
-        ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master") &&
-        $CI_PIPELINE_SOURCE == "web"
-    - if: >-
-        $CI_COMMIT_BRANCH =~ /^hotfix.v*[0-9]+\.[0-9]+\.[0-9]+$/ &&
-        $CI_PIPELINE_SOURCE == "web"
-    - if: >-
-        $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH != "master" &&
-        $CI_PIPELINE_SOURCE == "web"
-      when: never
-    - if: >-
-        ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master" ||
-        $CI_COMMIT_BRANCH =~ /^hotfix.v*[0-9]+\.[0-9]+\.[0-9]+$/) &&
-        $CI_PIPELINE_SOURCE == "push"
-    - if: $CI_PIPELINE_SOURCE == "push"
-      when: never
-    - if: $CI_COMMIT_BRANCH
-      variables:
-        TAG: snapshot-$CI_COMMIT_SHORT_SHA
 
 
 stages:
@@ -769,49 +755,13 @@ stages:
 install:
   interruptible: true
   stage: "install dependencies \U0001F503"
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-      variables:
-        TAG: snapshot-$CI_COMMIT_SHORT_SHA
-    - if: $CI_COMMIT_TAG
-      variables:
-        TAG: $CI_COMMIT_TAG
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "web"
-      when: never
-    - if: $CI_COMMIT_BRANCH
-      variables:
-        TAG: snapshot-$CI_COMMIT_SHORT_SHA
   image: $IMAGE_NAME
   cache:
-    - key:
-        files:
-          - yarn.lock
-      fallback_keys:
-        - '${CI_PROJECT_NAME}-node'
+    - key: '${CI_PROJECT_NAME}-node'
       paths:
         - node_modules/
-      policy: pull-push
-      when: on_success
-  before_script:
-    - |
-      if [ $FRAMEWORK = "nextjs" ]; then
-        echo "DOCKERFILE_PATH=dockerfiles/frontend/Dockerfile-nextjs-node-alpine" >> vars.env
-      elif [ $FRAMEWORK = "nuxt" ]; then
-        echo "DOCKERFILE_PATH=dockerfiles/frontend/Dockerfile-nuxt-node-alpine" >> vars.env
-      else
-        echo "DOCKERFILE_PATH=dockerfiles/frontend/Dockerfile-nginx-rootless" >> vars.env
-      fi
-    - |
-      if [ $FRAMEWORK = "angular" ]; then
-        echo "TEST_IMAGE_NAME=${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/trion/ng-cli-karma:19.2.4" >> vars.env
-      else
-        echo "TEST_IMAGE_NAME=$IMAGE_NAME" >> vars.env
-      fi
   script:
-    - 'if [ "yarn" == "npm" ]; then npm ci --prefer-offline; fi'
-    - 'if [ "yarn" == "yarn" ]; then yarn install --frozen-lockfile; fi'
+    - yarn install
   artifacts:
     reports:
       dotenv:
@@ -828,31 +778,11 @@ build:
     - job: install
       artifacts: true
       optional: true
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-      variables:
-        TAG: snapshot-$CI_COMMIT_SHORT_SHA
-    - if: $CI_COMMIT_TAG
-      variables:
-        TAG: $CI_COMMIT_TAG
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "web"
-      when: never
-    - if: $CI_COMMIT_BRANCH
-      variables:
-        TAG: snapshot-$CI_COMMIT_SHORT_SHA
   image: $IMAGE_NAME
   cache:
-    - key:
-        files:
-          - yarn.lock
-      fallback_keys:
-        - '${CI_PROJECT_NAME}-node'
+    - key: '${CI_PROJECT_NAME}-node'
       paths:
         - node_modules/
-      policy: pull
-      when: on_success
   script:
     - yarn run build
   artifacts:
@@ -873,31 +803,11 @@ test:
       optional: true
     - job: build
       artifacts: true
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-      variables:
-        TAG: snapshot-$CI_COMMIT_SHORT_SHA
-    - if: $CI_COMMIT_TAG
-      variables:
-        TAG: $CI_COMMIT_TAG
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "web"
-      when: never
-    - if: $CI_COMMIT_BRANCH
-      variables:
-        TAG: snapshot-$CI_COMMIT_SHORT_SHA
-  image: $TEST_IMAGE_NAME
+  image: $IMAGE_NAME
   cache:
-    - key:
-        files:
-          - yarn.lock
-      fallback_keys:
-        - '${CI_PROJECT_NAME}-node'
+    - key: '${CI_PROJECT_NAME}-node'
       paths:
         - node_modules/
-      policy: pull
-      when: on_success
   script:
     - 'yarn run test:ci'
   tags:
@@ -911,16 +821,7 @@ sonarqube-check:
   image: >-
     ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/sonarsource/sonar-scanner-cli:11.2.1.1844_7.0.2
   variables:
-    SONAR_PROJECT_KEY: none
-    SONAR_USER_HOME: '${CI_PROJECT_DIR}/.sonar'
-    SONAR_EXCLUSIONS: ''
-    SONAR_COVERAGE_EXCLUSIONS: ''
-    GIT_DEPTH: '0'
     SIZE: large
-  cache:
-    key: $CI_PROJECT_NAME-$CI_JOB_NAME
-    paths:
-      - .sonar/cache
   needs:
     - job: install
       artifacts: true
@@ -933,29 +834,8 @@ sonarqube-check:
   dependencies:
     - build
     - test
-  rules:
-    - if: $SONAR_PROJECT_KEY == "none"
-      when: never
-    - - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-        variables:
-          TAG: snapshot-$CI_COMMIT_SHORT_SHA
-      - if: $CI_COMMIT_TAG
-        variables:
-          TAG: $CI_COMMIT_TAG
-      - if: $CI_PIPELINE_SOURCE == "schedule"
-        when: never
-      - if: $CI_PIPELINE_SOURCE == "web"
-        when: never
-      - if: $CI_COMMIT_BRANCH
-        variables:
-          TAG: snapshot-$CI_COMMIT_SHORT_SHA
   script:
-    - >-
-      sonar-scanner -Dsonar.projectKey=${SONAR_PROJECT_KEY}
-      -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.token=${SONAR_TOKEN}
-      -Dsonar.qualitygate.wait=true -Dsonar.exclusions=${SONAR_EXCLUSIONS}
-      -Dsonar.coverage.exclusions=${SONAR_COVERAGE_EXCLUSIONS}
-      -Dsonar.coverage.jacoco.xmlReportPaths= -Dsonar.verbose=true
+    - sonar-scanner
   allow_failure: true
   tags:
     - compute
@@ -963,42 +843,16 @@ sonarqube-check:
   
   
 package:
-  image:
-    name: 'registry.takima.io/school/proxy/kaniko:1.23.2'
-    entrypoint:
-      - ''
-  variables:
-    DOCKERFILE_TEMPLATE_TOKEN: $CI_DOCKERFILE_TEMPLATE_TOKEN
-  before_script:
-    - mkdir -p /kaniko/.docker
-    - >-
-      echo
-      "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}"
-      > /kaniko/.docker/config.json
-    - >-
-      export DOCKERFILE_PATH_ENCODED=$(echo $DOCKERFILE_PATH | sed
-      's/[/]/%2F/g')
-    - 'export CREATED_DATE=$(date -u +''%Y-%m-%dT%H:%M:%SZ'')'
-    - export
-    - >-
-      if ! false ; then wget --header "PRIVATE-TOKEN:
-      $DOCKERFILE_TEMPLATE_TOKEN"
-"https://gitlab.takima.io/api/v4/projects/794/repository/files/$DOCKERFILE_PATH_ENCODED/raw?ref=main"
-      -P $CI_PROJECT_DIR -O Dockerfile ; fi
+  image: 'registry.takima.io/school/proxy/kaniko:1.23.2'
+  cache:
+    - key: '${CI_PROJECT_NAME}-node'
+      paths:
+        - node_modules/
   script: |
     /kaniko/executor \
           --context $CI_PROJECT_DIR \
           --dockerfile $CI_PROJECT_DIR/Dockerfile \
           --build-arg ARTIFACT_PATH="build" \
-          --build-arg CREATED_DATE="$CREATED_DATE" \
-          --build-arg AUTHORS="anonymous" \
-          --build-arg PROJECT_URL=$CI_PROJECT_URL \
-          --build-arg DOCUMENTATION_URL="" \
-          --build-arg SOURCE_URL="" \
-          --build-arg VERSION="$TAG" \
-          --build-arg VENDOR="Takima" \
-          --build-arg TITLE="" \
-          --build-arg DESCRIPTION="" \
           --destination $CI_REGISTRY_IMAGE:$TAG \
           --destination $CI_REGISTRY_IMAGE:latest \
           --cache=true \
@@ -1018,71 +872,15 @@ package:
     - job: sonarqube-check
       artifacts: false
       optional: true
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-      variables:
-        TAG: snapshot-$CI_COMMIT_SHORT_SHA
-    - if: $CI_COMMIT_TAG
-      variables:
-        TAG: $CI_COMMIT_TAG
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "web"
-      when: never
-    - if: $CI_COMMIT_BRANCH
-      variables:
-        TAG: snapshot-$CI_COMMIT_SHORT_SHA
-  
-    
-'prepare:release':
-  stage: "package \U0001F4E6"
-  allow_failure: true
-  before_script:
-    - rm -Rf $CI_PROJECT_NAME
-    - >-
-      git clone --depth 1 --branch $CI_DEFAULT_BRANCH
-      https://${CI_CLONE_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
-    - cd $CI_PROJECT_NAME && pwd
-    - git config --global user.email "$CI_PROJECT_NAME@takima.fr"
-    - git config --global user.name "$CI_PROJECT_NAME"
-  script:
-    - git fetch --tags
-    - PREVIOUS_TAG=$(git describe --always --abbrev=0 $CI_COMMIT_TAG^)
-    - >-
-      echo "## [$CI_COMMIT_TAG] ($(date '+%Y-%m-%d'))" >
-      $CI_PROJECT_DIR/release.description
-    - 'PATTERN=''^(v.*|([0-9]+.[0-9]+.[0-9]+$))'''
-    - |
-      if [[ "${PREVIOUS_TAG}" =~ ${PATTERN} ]];
-      then
-        echo "$(git log $PREVIOUS_TAG..$CI_COMMIT_TAG --no-merges --pretty=format:'*  %s' | awk '!/(.*gradle.+|.*npm.+|.*maven.+|.*changelog.*)/')" >> $CI_PROJECT_DIR/release.description
-      else
-        echo "$(git log $CI_COMMIT_TAG --no-merges --pretty=format:'*  %s' | awk '!/(.*gradle.+|.*npm.+|.*maven.+|.*changelog.*)/')" >> $CI_PROJECT_DIR/release.description
-      fi
-  artifacts:
-    paths:
-      - $CI_PROJECT_DIR/release.description
-  rules:
-    - if: $CI_COMMIT_TAG
-  image: $IMAGE_NAME
   
   
 'release:app':
   stage: release ⭐
-  before_script:
-    - rm -Rf $CI_PROJECT_NAME
-    - >-
-      git clone --depth 1 --branch $CI_COMMIT_BRANCH
-      https://${CI_CLONE_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
-    - cd $CI_PROJECT_NAME && pwd
-    - git config --global user.email "$CI_PROJECT_NAME@takima.fr"
-    - git config --global user.name "$CI_PROJECT_NAME"
-  rules:
-    - if: $RELEASE != "major" && $RELEASE != "minor" && $RELEASE != "patch"
-      when: never
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-    - if: $CI_PIPELINE_SOURCE == "web"
   image: $IMAGE_NAME
+  cache:
+    - key: '${CI_PROJECT_NAME}-node'
+      paths:
+        - node_modules/
   script: >
     npm config set tag-version-prefix ''
 
