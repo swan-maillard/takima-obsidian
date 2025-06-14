@@ -551,6 +551,8 @@ include:
 
 Vous aurez pu remarquer que l'on précise le tag `@1.1.10` derrière le nom du component utilisé. Ce tag permet de spécifier la version du component. En effet, les Gitlab Components permettent de versionner les fichiers de configurations, et ainsi de proposer des mises à jour de configurations rétro-compatibles pour les projets utilisant les pipelines.
 
+L'annexe A montre le contenu du `.gitlab-ci.yml` de Hui-Front avant d'avoir implémenté les Gitlab Components.
+
 #### **Benchmark des stratégies de caching**
 
 Plusieurs stratégies ont été testées pour accélérer les pipelines :
@@ -647,998 +649,402 @@ Des benchmarks ont été menés sur des branches de test, en comparant les temps
 
 `.gitlab-ci.yml` de **HUI-Front** avant Gitlab Components
 ```yaml
-package:
- image:
- name: registry.takima.io/school/proxy/kaniko:1.23.2
- entrypoint:
-  - ''
- variables:
-  DOCKERFILE_TEMPLATE_TOKEN: "$CI_DOCKERFILE_TEMPLATE_TOKEN"
- before_script:
- - mkdir -p /kaniko/.docker
- - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}"
-> /kaniko/.docker/config.json
- - export DOCKERFILE_PATH_ENCODED=$(echo $DOCKERFILE_PATH | sed 's/[/]/%2F/g')
- - export CREATED_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
- - export
- - 'if ! false ; then wget --header "PRIVATE-TOKEN: $DOCKERFILE_TEMPLATE_TOKEN" "https://gitlab.takima.io/api/v4/projects/794/repository/files/$DOCKERFILE_PATH_ENCODED/raw?ref=main"
- -P $CI_PROJECT_DIR -O Dockerfile ; fi'
-
- script: |
-/kaniko/executor \
---context $CI_PROJECT_DIR \
---dockerfile $CI_PROJECT_DIR/Dockerfile \
---build-arg ARTIFACT_PATH="build" \
---build-arg CREATED_DATE="$CREATED_DATE" \
---build-arg AUTHORS="anonymous" \
---build-arg PROJECT_URL=$CI_PROJECT_URL \
---build-arg DOCUMENTATION_URL="" \
---build-arg SOURCE_URL="" \
---build-arg VERSION="$TAG" \
---build-arg VENDOR="Takima" \
---build-arg TITLE="" \
---build-arg DESCRIPTION="" \
---destination $CI_REGISTRY_IMAGE:$TAG \
---destination $CI_REGISTRY_IMAGE:latest \
---cache=true \
-$DOCKERFILE_CUSTOM_ARGS
-
-tags:
-- packaging
-interruptible: true
-stage: "package \U0001F4E6"
-needs:
-- job: install
-artifacts: true
-optional: true
-
-- job: build
-
-artifacts: true
-
-- job: test
-
-artifacts: false
-
-- job: sonarqube-check
-
-artifacts: false
-
-optional: true
-
-rules:
-
-- if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
-
 variables:
-
-TAG: snapshot-$CI_COMMIT_SHORT_SHA
-
-- if: "$CI_COMMIT_TAG"
-
-variables:
-
-TAG: "$CI_COMMIT_TAG"
-
-- if: $CI_PIPELINE_SOURCE == "schedule"
-
-when: never
-
-- if: $CI_PIPELINE_SOURCE == "web"
-
-when: never
-
-- if: "$CI_COMMIT_BRANCH"
-
-variables:
-
-TAG: snapshot-$CI_COMMIT_SHORT_SHA
-
-".deploy":
-
-image: registry.takima.io/taki-infra/images/tools-ci-deploy:1.1
-
-environment:
-
-name: "$TARGET_ENV"
-
-variables:
-
-GIT_STRATEGY: none
-
-when: manual
-
-script: |
-
-curl -X POST \
-
--F token=$CI_JOB_TOKEN \
-
--F "ref=main" \
-
--F "variables[ACTION]=update_chart" \
-
--F "variables[TARGET_APP_NAME]=front" \
-
--F "variables[TARGET_TYPE]=$TARGET_TYPE" \
-
--F "variables[TARGET_APP_VERSION]=$TAG" \
-
--F "variables[TARGET_ENV]=$TARGET_ENV" \
-
-$TRIGGER_PIPELINE_URL
-
-deploy:dev:
-
-image: registry.takima.io/taki-infra/images/tools-ci-deploy:1.1
-
-environment:
-
-name: "$TARGET_ENV"
-
-variables:
-
-TARGET_TYPE: snapshot
-
-TARGET_ENV: dev
-
-when: manual
-
-script: |
-
-curl -X POST \
-
--F token=$CI_JOB_TOKEN \
-
--F "ref=main" \
-
--F "variables[ACTION]=update_chart" \
-
--F "variables[TARGET_APP_NAME]=front" \
-
--F "variables[TARGET_TYPE]=$TARGET_TYPE" \
-
--F "variables[TARGET_APP_VERSION]=$TAG" \
-
--F "variables[TARGET_ENV]=$TARGET_ENV" \
-
-$TRIGGER_PIPELINE_URL
-
-stage: "deploy \U0001F680"
-
-needs:
-
-- job: package
-
-artifacts: false
-
-rules:
-
-- if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
-
-variables:
-
-TAG: snapshot-$CI_COMMIT_SHORT_SHA
-
-- if: "$CI_COMMIT_TAG"
-
-variables:
-
-TAG: "$CI_COMMIT_TAG"
-
-- if: $CI_PIPELINE_SOURCE == "schedule"
-
-when: never
-
-- if: $CI_PIPELINE_SOURCE == "web"
-
-when: never
-
-- if: "$CI_COMMIT_BRANCH"
-
-variables:
-
-TAG: snapshot-$CI_COMMIT_SHORT_SHA
-
-deploy:preprod:
-
-image: registry.takima.io/taki-infra/images/tools-ci-deploy:1.1
-
-environment:
-
-name: "$TARGET_ENV"
-
-variables:
-
-TARGET_TYPE: release
-
-TARGET_ENV: preprod
-
-when: manual
-
-script: |
-
-curl -X POST \
-
--F token=$CI_JOB_TOKEN \
-
--F "ref=main" \
-
--F "variables[ACTION]=update_chart" \
-
--F "variables[TARGET_APP_NAME]=front" \
-
--F "variables[TARGET_TYPE]=$TARGET_TYPE" \
-
--F "variables[TARGET_APP_VERSION]=$TAG" \
-
--F "variables[TARGET_ENV]=$TARGET_ENV" \
-
-$TRIGGER_PIPELINE_URL
-
-stage: "deploy \U0001F680"
-
-needs:
-
-- job: package
-
-artifacts: false
-
-rules:
-
-- if: "$CI_COMMIT_TAG"
-
-variables:
-
-TAG: "$CI_COMMIT_TAG"
-
-deploy:prod:
-
-image: registry.takima.io/taki-infra/images/tools-ci-deploy:1.1
-
-environment:
-
-name: "$TARGET_ENV"
-
-variables:
-
-TARGET_TYPE: release
-
-TARGET_ENV: prod
-
-when: manual
-
-script: |
-
-curl -X POST \
-
--F token=$CI_JOB_TOKEN \
-
--F "ref=main" \
-
--F "variables[ACTION]=update_chart" \
-
--F "variables[TARGET_APP_NAME]=front" \
-
--F "variables[TARGET_TYPE]=$TARGET_TYPE" \
-
--F "variables[TARGET_APP_VERSION]=$TAG" \
-
--F "variables[TARGET_ENV]=$TARGET_ENV" \
-
-$TRIGGER_PIPELINE_URL
-
-stage: "deploy \U0001F680"
-
-needs:
-
-- job: package
-
-artifacts: false
-
-rules:
-
-- if: "$CI_COMMIT_TAG"
-
-variables:
-
-TAG: "$CI_COMMIT_TAG"
-
-variables:
-
-PATTERN_PREPARE: "/.+prepare for next development iteration/"
-
-RELEASE:
-
-value: minor
-
-description: major,minor,patch
-
-TARGET_APP_NAME: front
-
-ALPINE_IMAGE: "${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/alpine:3.21.3"
-
-IMAGE_NAME: "${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/node:22"
-
-FRAMEWORK: other
-
-DOCKERFILE_CUSTOM_ARGS: "--build-arg NODE_LTS_VERSION=22"
-
+  PATTERN_PREPARE: /.+prepare for next development iteration/
+  RELEASE:
+    value: minor
+    description: 'major,minor,patch'
+  TARGET_APP_NAME: front
+  ALPINE_IMAGE: '${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/alpine:3.21.3'
+  IMAGE_NAME: '${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/node:22'
+  FRAMEWORK: other
+  DOCKERFILE_CUSTOM_ARGS: '--build-arg NODE_LTS_VERSION=22'
+ 
+ 
 workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_COMMIT_TAG
+      variables:
+        TAG: $CI_COMMIT_TAG
+    - if: >-
+        ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master") &&
+        $CI_PIPELINE_SOURCE == "web"
+    - if: >-
+        $CI_COMMIT_BRANCH =~ /^hotfix.v*[0-9]+\.[0-9]+\.[0-9]+$/ &&
+        $CI_PIPELINE_SOURCE == "web"
+    - if: >-
+        $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH != "master" &&
+        $CI_PIPELINE_SOURCE == "web"
+      when: never
+    - if: >-
+        ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master" ||
+        $CI_COMMIT_BRANCH =~ /^hotfix.v*[0-9]+\.[0-9]+\.[0-9]+$/) &&
+        $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_PIPELINE_SOURCE == "push"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      variables:
+        TAG: snapshot-$CI_COMMIT_SHORT_SHA
 
-rules:
-
-- if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
-
-- if: "$CI_COMMIT_TAG"
-
-variables:
-
-TAG: "$CI_COMMIT_TAG"
-
-- if: ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master") && $CI_PIPELINE_SOURCE
-
-== "web"
-
-- if: $CI_COMMIT_BRANCH =~ /^hotfix.v*[0-9]+\.[0-9]+\.[0-9]+$/ && $CI_PIPELINE_SOURCE
-
-== "web"
-
-- if: $CI_COMMIT_BRANCH != "main" && $CI_COMMIT_BRANCH != "master" && $CI_PIPELINE_SOURCE
-
-== "web"
-
-when: never
-
-- if: ($CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH
-
-=~ /^hotfix.v*[0-9]+\.[0-9]+\.[0-9]+$/) && $CI_PIPELINE_SOURCE == "push"
-
-- if: $CI_PIPELINE_SOURCE == "push"
-
-when: never
-
-- if: "$CI_COMMIT_BRANCH"
-
-variables:
-
-TAG: snapshot-$CI_COMMIT_SHORT_SHA
 
 stages:
-
-- ".pre"
-
-- "install dependencies \U0001F503"
-
-- "build \U0001F528"
-
-- "test \U0001F9EA"
-
-- sonarqube-check
-
-- "package \U0001F4E6"
-
-- release ⭐
-
-- "deploy \U0001F680"
-
-- ".post"
-
-".rulesRun":
-
-rules:
-
-- if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
-
-variables:
-
-TAG: snapshot-$CI_COMMIT_SHORT_SHA
-
-- if: "$CI_COMMIT_TAG"
-
-variables:
-
-TAG: "$CI_COMMIT_TAG"
-
-- if: $CI_PIPELINE_SOURCE == "schedule"
-
-when: never
-
-- if: $CI_PIPELINE_SOURCE == "web"
-
-when: never
-
-- if: "$CI_COMMIT_BRANCH"
-
-variables:
-
-TAG: snapshot-$CI_COMMIT_SHORT_SHA
-
+  - "install dependencies \U0001F503"
+  - "build \U0001F528"
+  - "test \U0001F9EA"
+  - sonarqube-check
+  - "package \U0001F4E6"
+  - release ⭐
+  - "deploy \U0001F680"
+ 
+ 
 install:
-
-interruptible: true
-
-stage: "install dependencies \U0001F503"
-
-rules:
-
-- if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
-
-variables:
-
-TAG: snapshot-$CI_COMMIT_SHORT_SHA
-
-- if: "$CI_COMMIT_TAG"
-
-variables:
-
-TAG: "$CI_COMMIT_TAG"
-
-- if: $CI_PIPELINE_SOURCE == "schedule"
-
-when: never
-
-- if: $CI_PIPELINE_SOURCE == "web"
-
-when: never
-
-- if: "$CI_COMMIT_BRANCH"
-
-variables:
-
-TAG: snapshot-$CI_COMMIT_SHORT_SHA
-
-image: "$IMAGE_NAME"
-
-cache:
-
-- key:
-
-files:
-
-- yarn.lock
-
-fallback_keys:
-
-- "${CI_PROJECT_NAME}-node"
-
-paths:
-
-- node_modules/
-
-policy: pull-push
-
-when: on_success
-
-before_script:
-
-- |
-
-if [ $FRAMEWORK = "nextjs" ]; then
-
-echo "DOCKERFILE_PATH=dockerfiles/frontend/Dockerfile-nextjs-node-alpine" >> vars.env
-
-elif [ $FRAMEWORK = "nuxt" ]; then
-
-echo "DOCKERFILE_PATH=dockerfiles/frontend/Dockerfile-nuxt-node-alpine" >> vars.env
-
-else
-
-echo "DOCKERFILE_PATH=dockerfiles/frontend/Dockerfile-nginx-rootless" >> vars.env
-
-fi
-
-- |
-
-if [ $FRAMEWORK = "angular" ]; then
-
-echo "TEST_IMAGE_NAME=${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/trion/ng-cli-karma:19.2.4" >> vars.env
-
-else
-
-echo "TEST_IMAGE_NAME=$IMAGE_NAME" >> vars.env
-
-fi
-
-script:
-
-- if [ "yarn" == "npm" ]; then npm ci --prefer-offline; fi
-
-- if [ "yarn" == "yarn" ]; then yarn install --frozen-lockfile; fi
-
-artifacts:
-
-reports:
-
-dotenv:
-
-- vars.env
-
-tags:
-
-- compute
-
-- large
-
+  interruptible: true
+  stage: "install dependencies \U0001F503"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      variables:
+        TAG: snapshot-$CI_COMMIT_SHORT_SHA
+    - if: $CI_COMMIT_TAG
+      variables:
+        TAG: $CI_COMMIT_TAG
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      variables:
+        TAG: snapshot-$CI_COMMIT_SHORT_SHA
+  image: $IMAGE_NAME
+  cache:
+    - key:
+        files:
+          - yarn.lock
+      fallback_keys:
+        - '${CI_PROJECT_NAME}-node'
+      paths:
+        - node_modules/
+      policy: pull-push
+      when: on_success
+  before_script:
+    - |
+      if [ $FRAMEWORK = "nextjs" ]; then
+        echo "DOCKERFILE_PATH=dockerfiles/frontend/Dockerfile-nextjs-node-alpine" >> vars.env
+      elif [ $FRAMEWORK = "nuxt" ]; then
+        echo "DOCKERFILE_PATH=dockerfiles/frontend/Dockerfile-nuxt-node-alpine" >> vars.env
+      else
+        echo "DOCKERFILE_PATH=dockerfiles/frontend/Dockerfile-nginx-rootless" >> vars.env
+      fi
+    - |
+      if [ $FRAMEWORK = "angular" ]; then
+        echo "TEST_IMAGE_NAME=${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/trion/ng-cli-karma:19.2.4" >> vars.env
+      else
+        echo "TEST_IMAGE_NAME=$IMAGE_NAME" >> vars.env
+      fi
+  script:
+    - 'if [ "yarn" == "npm" ]; then npm ci --prefer-offline; fi'
+    - 'if [ "yarn" == "yarn" ]; then yarn install --frozen-lockfile; fi'
+  artifacts:
+    reports:
+      dotenv:
+        - vars.env
+  tags:
+    - compute
+    - large
+    
+    
 build:
-
-interruptible: true
-
-stage: "build \U0001F528"
-
-needs:
-
-- job: install
-
-artifacts: true
-
-optional: true
-
-rules:
-
-- if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
-
-variables:
-
-TAG: snapshot-$CI_COMMIT_SHORT_SHA
-
-- if: "$CI_COMMIT_TAG"
-
-variables:
-
-TAG: "$CI_COMMIT_TAG"
-
-- if: $CI_PIPELINE_SOURCE == "schedule"
-
-when: never
-
-- if: $CI_PIPELINE_SOURCE == "web"
-
-when: never
-
-- if: "$CI_COMMIT_BRANCH"
-
-variables:
-
-TAG: snapshot-$CI_COMMIT_SHORT_SHA
-
-image: "$IMAGE_NAME"
-
-cache:
-
-- key:
-
-files:
-
-- yarn.lock
-
-fallback_keys:
-
-- "${CI_PROJECT_NAME}-node"
-
-paths:
-
-- node_modules/
-
-policy: pull
-
-when: on_success
-
-script:
-
-- yarn run build
-
-artifacts:
-
-expire_in: 1 hour
-
-paths:
-
-- build
-
-tags:
-
-- compute
-
-- large
-
+  interruptible: true
+  stage: "build \U0001F528"
+  needs:
+    - job: install
+      artifacts: true
+      optional: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      variables:
+        TAG: snapshot-$CI_COMMIT_SHORT_SHA
+    - if: $CI_COMMIT_TAG
+      variables:
+        TAG: $CI_COMMIT_TAG
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      variables:
+        TAG: snapshot-$CI_COMMIT_SHORT_SHA
+  image: $IMAGE_NAME
+  cache:
+    - key:
+        files:
+          - yarn.lock
+      fallback_keys:
+        - '${CI_PROJECT_NAME}-node'
+      paths:
+        - node_modules/
+      policy: pull
+      when: on_success
+  script:
+    - yarn run build
+  artifacts:
+    expire_in: 1 hour
+    paths:
+      - build
+  tags:
+    - compute
+    - large
+    
+    
 test:
-
-interruptible: true
-
-stage: "test \U0001F9EA"
-
-needs:
-
-- job: install
-
-artifacts: true
-
-optional: true
-
-- job: build
-
-artifacts: true
-
-rules:
-
-- if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
-
-variables:
-
-TAG: snapshot-$CI_COMMIT_SHORT_SHA
-
-- if: "$CI_COMMIT_TAG"
-
-variables:
-
-TAG: "$CI_COMMIT_TAG"
-
-- if: $CI_PIPELINE_SOURCE == "schedule"
-
-when: never
-
-- if: $CI_PIPELINE_SOURCE == "web"
-
-when: never
-
-- if: "$CI_COMMIT_BRANCH"
-
-variables:
-
-TAG: snapshot-$CI_COMMIT_SHORT_SHA
-
-image: "$TEST_IMAGE_NAME"
-
-cache:
-
-- key:
-
-files:
-
-- yarn.lock
-
-fallback_keys:
-
-- "${CI_PROJECT_NAME}-node"
-
-paths:
-
-- node_modules/
-
-policy: pull
-
-when: on_success
-
-script:
-
-- yarn run test:ci
-
-tags:
-
-- compute
-
-- extra_large
-
+  interruptible: true
+  stage: "test \U0001F9EA"
+  needs:
+    - job: install
+      artifacts: true
+      optional: true
+    - job: build
+      artifacts: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      variables:
+        TAG: snapshot-$CI_COMMIT_SHORT_SHA
+    - if: $CI_COMMIT_TAG
+      variables:
+        TAG: $CI_COMMIT_TAG
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      variables:
+        TAG: snapshot-$CI_COMMIT_SHORT_SHA
+  image: $TEST_IMAGE_NAME
+  cache:
+    - key:
+        files:
+          - yarn.lock
+      fallback_keys:
+        - '${CI_PROJECT_NAME}-node'
+      paths:
+        - node_modules/
+      policy: pull
+      when: on_success
+  script:
+    - 'yarn run test:ci'
+  tags:
+    - compute
+    - extra_large
+    
+    
 sonarqube-check:
-
-interruptible: true
-
-stage: sonarqube-check
-
-image: "${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/sonarsource/sonar-scanner-cli:11.2.1.1844_7.0.2"
-
-variables:
-
-SONAR_PROJECT_KEY: none
-
-SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
-
-SONAR_EXCLUSIONS: ''
-
-SONAR_COVERAGE_EXCLUSIONS: ''
-
-GIT_DEPTH: '0'
-
-SIZE: large
-
-cache:
-
-key: "$CI_PROJECT_NAME-$CI_JOB_NAME"
-
-paths:
-
-- ".sonar/cache"
-
-needs:
-
-- job: install
-
-artifacts: true
-
-optional: true
-
-- job: build
-
-artifacts: true
-
-optional: true
-
-- job: test
-
-artifacts: true
-
-dependencies:
-
-- build
-
-- test
-
-rules:
-
-- if: $SONAR_PROJECT_KEY == "none"
-
-when: never
-
-- - if: "$CI_PIPELINE_SOURCE == 'merge_request_event'"
-
-variables:
-
-TAG: snapshot-$CI_COMMIT_SHORT_SHA
-
-- if: "$CI_COMMIT_TAG"
-
-variables:
-
-TAG: "$CI_COMMIT_TAG"
-
-- if: $CI_PIPELINE_SOURCE == "schedule"
-
-when: never
-
-- if: $CI_PIPELINE_SOURCE == "web"
-
-when: never
-
-- if: "$CI_COMMIT_BRANCH"
-
-variables:
-
-TAG: snapshot-$CI_COMMIT_SHORT_SHA
-
-script:
-
-- sonar-scanner -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.host.url=${SONAR_HOST_URL}
-
--Dsonar.token=${SONAR_TOKEN} -Dsonar.qualitygate.wait=true -Dsonar.exclusions=${SONAR_EXCLUSIONS}
-
--Dsonar.coverage.exclusions=${SONAR_COVERAGE_EXCLUSIONS} -Dsonar.coverage.jacoco.xmlReportPaths=
-
--Dsonar.verbose=true
-
-allow_failure: true
-
-tags:
-
-- compute
-
-- "$SIZE"
-
-prepare:release:
-
-stage: "package \U0001F4E6"
-
-allow_failure: true
-
-before_script:
-
-- rm -Rf $CI_PROJECT_NAME
-
-- git clone --depth 1 --branch $CI_DEFAULT_BRANCH https://${CI_CLONE_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
-
-- cd $CI_PROJECT_NAME && pwd
-
-- git config --global user.email "$CI_PROJECT_NAME@takima.fr"
-
-- git config --global user.name "$CI_PROJECT_NAME"
-
-script:
-
-- git fetch --tags
-
-- PREVIOUS_TAG=$(git describe --always --abbrev=0 $CI_COMMIT_TAG^)
-
-- echo "## [$CI_COMMIT_TAG] ($(date '+%Y-%m-%d'))" > $CI_PROJECT_DIR/release.description
-
-- PATTERN='^(v.*|([0-9]+.[0-9]+.[0-9]+$))'
-
-- |
-
-if [[ "${PREVIOUS_TAG}" =~ ${PATTERN} ]];
-
-then
-
-echo "$(git log $PREVIOUS_TAG..$CI_COMMIT_TAG --no-merges --pretty=format:'* %s' | awk '!/(.*gradle.+|.*npm.+|.*maven.+|.*changelog.*)/')" >> $CI_PROJECT_DIR/release.description
-
-else
-
-echo "$(git log $CI_COMMIT_TAG --no-merges --pretty=format:'* %s' | awk '!/(.*gradle.+|.*npm.+|.*maven.+|.*changelog.*)/')" >> $CI_PROJECT_DIR/release.description
-
-fi
-
-artifacts:
-
-paths:
-
-- "$CI_PROJECT_DIR/release.description"
-
-rules:
-
-- if: "$CI_COMMIT_TAG"
-
-image: "$IMAGE_NAME"
-
-release:app:
-
-stage: release ⭐
-
-before_script:
-
-- rm -Rf $CI_PROJECT_NAME
-
-- git clone --depth 1 --branch $CI_COMMIT_BRANCH https://${CI_CLONE_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
-
-- cd $CI_PROJECT_NAME && pwd
-
-- git config --global user.email "$CI_PROJECT_NAME@takima.fr"
-
-- git config --global user.name "$CI_PROJECT_NAME"
-
-rules:
-
-- if: $RELEASE != "major" && $RELEASE != "minor" && $RELEASE != "patch"
-
-when: never
-
-- if: $CI_PIPELINE_SOURCE == "schedule"
-
-- if: $CI_PIPELINE_SOURCE == "web"
-
-image: "$IMAGE_NAME"
-
-script: "npm config set tag-version-prefix ''\nappver=( $( node -p \"require('./package.json').version.replace('-SNAPSHOT','')\"
-
-| tr . '\\n' ) )\n\ncase $RELEASE in \n major) RELEASE_VERSION=$((appver[0]+1)).0.0
-
-\n NEW_VERSION=$((appver[0]+1)).1.0-SNAPSHOT\n ;;\n minor) RELEASE_VERSION=$((appver[0])).$((appver[1])).$((appver[2]))
-
-\n NEW_VERSION=$((appver[0])).$((appver[1]+1)).0-SNAPSHOT\n ;;\n patch)
-
-RELEASE_VERSION=$((appver[0])).$((appver[1])).$((appver[2])) \n NEW_VERSION=$((appver[0])).$((appver[1])).$((appver[2]+1))-SNAPSHOT\n
-
-\ ;;\nesac\n\nnpm version $RELEASE_VERSION --tag-version-prefix='v' --git-tag-version
-
--m \"[yarn-release-plugin] prepare release v%s\"\ngit push --tags\n\nnpm version
-
-$NEW_VERSION --no-git-tag-version \ngit commit -am \"[yarn-release-plugin] prepare
-
-for next development iteration\"\ngit push origin $CI_COMMIT_BRANCH\n"
-
-release:gitlab:
-
-stage: release ⭐
-
-image: registry.gitlab.com/gitlab-org/release-cli:v0.13.0
-
-needs:
-
-- job: prepare:release
-
-artifacts: true
-
-release:
-
-tag_name: "$CI_COMMIT_TAG"
-
-name: Release $CI_COMMIT_TAG
-
-description: release.description
-
-script:
-
-- echo "Release for $CI_PROJECT_NAME ! New version is $CI_COMMIT_TAG "
-
-rules:
-
-- if: "$CI_COMMIT_TAG"
-
-create:hotfix:
-
-stage: release ⭐
-
-when: manual
-
-variables:
-
-HOTFIX_BRANCH_NAME: hotfix/$CI_COMMIT_TAG
-
-before_script:
-
-- rm -Rf $CI_PROJECT_NAME
-
-- git clone --depth 1 --branch $CI_COMMIT_TAG https://${CI_CLONE_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
-
-- cd $CI_PROJECT_NAME && pwd
-
-- git config --global user.email "$CI_PROJECT_NAME@takima.fr"
-
-- git config --global user.name "$CI_PROJECT_NAME"
-
-- git checkout -b $HOTFIX_BRANCH_NAME
-
-rules:
-
-- if: "$CI_COMMIT_TAG"
-
-image: "$IMAGE_NAME"
-
-script: |-
-
-appver=( $( node -p "require('./package.json').version" | tr . '\n' ) )
-
-NEW_VERSION=$((appver[0])).$((appver[1])).$((appver[2]+1))-SNAPSHOT
-
-npm version $NEW_VERSION --no-git-tag-version
-
-git commit -am "[yarn-release-plugin] prepare for next development iteration"
-
-git push origin $HOTFIX_BRANCH_NAME
-
-".set_dockerfile_path": |
-
-if [ $FRAMEWORK = "nextjs" ]; then
-
-echo "DOCKERFILE_PATH=dockerfiles/frontend/Dockerfile-nextjs-node-alpine" >> vars.env
-
-elif [ $FRAMEWORK = "nuxt" ]; then
-
-echo "DOCKERFILE_PATH=dockerfiles/frontend/Dockerfile-nuxt-node-alpine" >> vars.env
-
-else
-
-echo "DOCKERFILE_PATH=dockerfiles/frontend/Dockerfile-nginx-rootless" >> vars.env
-
-fi
-
-".set_test_image_name": |
-
-if [ $FRAMEWORK = "angular" ]; then
-
-echo "TEST_IMAGE_NAME=${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/trion/ng-cli-karma:19.2.4" >> vars.env
-
-else
-
-echo "TEST_IMAGE_NAME=$IMAGE_NAME" >> vars.env
-
-fi
-
-".node-cache":
-
-key:
-
-files:
-
-- yarn.lock
-
-fallback_keys:
-
-- "${CI_PROJECT_NAME}-node"
-
-paths:
-
-- node_modules/
-
-policy: pull
-
-when: on_success
+  interruptible: true
+  stage: sonarqube-check
+  image: >-
+    ${CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX}/sonarsource/sonar-scanner-cli:11.2.1.1844_7.0.2
+  variables:
+    SONAR_PROJECT_KEY: none
+    SONAR_USER_HOME: '${CI_PROJECT_DIR}/.sonar'
+    SONAR_EXCLUSIONS: ''
+    SONAR_COVERAGE_EXCLUSIONS: ''
+    GIT_DEPTH: '0'
+    SIZE: large
+  cache:
+    key: $CI_PROJECT_NAME-$CI_JOB_NAME
+    paths:
+      - .sonar/cache
+  needs:
+    - job: install
+      artifacts: true
+      optional: true
+    - job: build
+      artifacts: true
+      optional: true
+    - job: test
+      artifacts: true
+  dependencies:
+    - build
+    - test
+  rules:
+    - if: $SONAR_PROJECT_KEY == "none"
+      when: never
+    - - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+        variables:
+          TAG: snapshot-$CI_COMMIT_SHORT_SHA
+      - if: $CI_COMMIT_TAG
+        variables:
+          TAG: $CI_COMMIT_TAG
+      - if: $CI_PIPELINE_SOURCE == "schedule"
+        when: never
+      - if: $CI_PIPELINE_SOURCE == "web"
+        when: never
+      - if: $CI_COMMIT_BRANCH
+        variables:
+          TAG: snapshot-$CI_COMMIT_SHORT_SHA
+  script:
+    - >-
+      sonar-scanner -Dsonar.projectKey=${SONAR_PROJECT_KEY}
+      -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.token=${SONAR_TOKEN}
+      -Dsonar.qualitygate.wait=true -Dsonar.exclusions=${SONAR_EXCLUSIONS}
+      -Dsonar.coverage.exclusions=${SONAR_COVERAGE_EXCLUSIONS}
+      -Dsonar.coverage.jacoco.xmlReportPaths= -Dsonar.verbose=true
+  allow_failure: true
+  tags:
+    - compute
+    - $SIZE
+  
+  
+package:
+  image:
+    name: 'registry.takima.io/school/proxy/kaniko:1.23.2'
+    entrypoint:
+      - ''
+  variables:
+    DOCKERFILE_TEMPLATE_TOKEN: $CI_DOCKERFILE_TEMPLATE_TOKEN
+  before_script:
+    - mkdir -p /kaniko/.docker
+    - >-
+      echo
+      "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}"
+      > /kaniko/.docker/config.json
+    - >-
+      export DOCKERFILE_PATH_ENCODED=$(echo $DOCKERFILE_PATH | sed
+      's/[/]/%2F/g')
+    - 'export CREATED_DATE=$(date -u +''%Y-%m-%dT%H:%M:%SZ'')'
+    - export
+    - >-
+      if ! false ; then wget --header "PRIVATE-TOKEN:
+      $DOCKERFILE_TEMPLATE_TOKEN"
+"https://gitlab.takima.io/api/v4/projects/794/repository/files/$DOCKERFILE_PATH_ENCODED/raw?ref=main"
+      -P $CI_PROJECT_DIR -O Dockerfile ; fi
+  script: |
+    /kaniko/executor \
+          --context $CI_PROJECT_DIR \
+          --dockerfile $CI_PROJECT_DIR/Dockerfile \
+          --build-arg ARTIFACT_PATH="build" \
+          --build-arg CREATED_DATE="$CREATED_DATE" \
+          --build-arg AUTHORS="anonymous" \
+          --build-arg PROJECT_URL=$CI_PROJECT_URL \
+          --build-arg DOCUMENTATION_URL="" \
+          --build-arg SOURCE_URL="" \
+          --build-arg VERSION="$TAG" \
+          --build-arg VENDOR="Takima" \
+          --build-arg TITLE="" \
+          --build-arg DESCRIPTION="" \
+          --destination $CI_REGISTRY_IMAGE:$TAG \
+          --destination $CI_REGISTRY_IMAGE:latest \
+          --cache=true \
+          $DOCKERFILE_CUSTOM_ARGS
+  tags:
+    - packaging
+  interruptible: true
+  stage: "package \U0001F4E6"
+  needs:
+    - job: install
+      artifacts: true
+      optional: true
+    - job: build
+      artifacts: true
+    - job: test
+      artifacts: false
+    - job: sonarqube-check
+      artifacts: false
+      optional: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      variables:
+        TAG: snapshot-$CI_COMMIT_SHORT_SHA
+    - if: $CI_COMMIT_TAG
+      variables:
+        TAG: $CI_COMMIT_TAG
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "web"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+      variables:
+        TAG: snapshot-$CI_COMMIT_SHORT_SHA
+  
+    
+'prepare:release':
+  stage: "package \U0001F4E6"
+  allow_failure: true
+  before_script:
+    - rm -Rf $CI_PROJECT_NAME
+    - >-
+      git clone --depth 1 --branch $CI_DEFAULT_BRANCH
+      https://${CI_CLONE_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
+    - cd $CI_PROJECT_NAME && pwd
+    - git config --global user.email "$CI_PROJECT_NAME@takima.fr"
+    - git config --global user.name "$CI_PROJECT_NAME"
+  script:
+    - git fetch --tags
+    - PREVIOUS_TAG=$(git describe --always --abbrev=0 $CI_COMMIT_TAG^)
+    - >-
+      echo "## [$CI_COMMIT_TAG] ($(date '+%Y-%m-%d'))" >
+      $CI_PROJECT_DIR/release.description
+    - 'PATTERN=''^(v.*|([0-9]+.[0-9]+.[0-9]+$))'''
+    - |
+      if [[ "${PREVIOUS_TAG}" =~ ${PATTERN} ]];
+      then
+        echo "$(git log $PREVIOUS_TAG..$CI_COMMIT_TAG --no-merges --pretty=format:'*  %s' | awk '!/(.*gradle.+|.*npm.+|.*maven.+|.*changelog.*)/')" >> $CI_PROJECT_DIR/release.description
+      else
+        echo "$(git log $CI_COMMIT_TAG --no-merges --pretty=format:'*  %s' | awk '!/(.*gradle.+|.*npm.+|.*maven.+|.*changelog.*)/')" >> $CI_PROJECT_DIR/release.description
+      fi
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/release.description
+  rules:
+    - if: $CI_COMMIT_TAG
+  image: $IMAGE_NAME
+  
+  
+'release:app':
+  stage: release ⭐
+  before_script:
+    - rm -Rf $CI_PROJECT_NAME
+    - >-
+      git clone --depth 1 --branch $CI_COMMIT_BRANCH
+      https://${CI_CLONE_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git
+    - cd $CI_PROJECT_NAME && pwd
+    - git config --global user.email "$CI_PROJECT_NAME@takima.fr"
+    - git config --global user.name "$CI_PROJECT_NAME"
+  rules:
+    - if: $RELEASE != "major" && $RELEASE != "minor" && $RELEASE != "patch"
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "web"
+  image: $IMAGE_NAME
+  script: >
+    npm config set tag-version-prefix ''
+
+    appver=( $( node -p
+    "require('./package.json').version.replace('-SNAPSHOT','')" | tr . '\n' ) )
+
+
+    case $RELEASE in 
+      major) RELEASE_VERSION=$((appver[0]+1)).0.0 
+             NEW_VERSION=$((appver[0]+1)).1.0-SNAPSHOT
+      ;;
+      minor) RELEASE_VERSION=$((appver[0])).$((appver[1])).$((appver[2])) 
+             NEW_VERSION=$((appver[0])).$((appver[1]+1)).0-SNAPSHOT
+      ;;
+      patch) RELEASE_VERSION=$((appver[0])).$((appver[1])).$((appver[2])) 
+             NEW_VERSION=$((appver[0])).$((appver[1])).$((appver[2]+1))-SNAPSHOT
+      ;;
+    esac
+
+
+    npm version $RELEASE_VERSION --tag-version-prefix='v' --git-tag-version -m
+    "[yarn-release-plugin] prepare release v%s"
+
+    git push --tags
+
+
+    npm version $NEW_VERSION --no-git-tag-version 
+
+    git commit -am "[yarn-release-plugin] prepare for next development
+    iteration"
+
+    git push origin $CI_COMMIT_BRANCH
 ```
