@@ -3,7 +3,7 @@
 title: 
 style: nestedList # TOC style (nestedList|nestedOrderedList|inlineFirstLevel)
 minLevel: 0 # Include headings from the specified level
-maxLevel: 3 # Include headings up to the specified level
+maxLevel: 4 # Include headings up to the specified level
 includeLinks: true # Make headings clickable
 hideWhenEmpty: false # Hide TOC if no headings are found
 debugInConsole: false # Print debug info in Obsidian console
@@ -356,58 +356,128 @@ Mais je me suis rapidement heurté à plusieurs limites :
 - La requête était **difficile à lire** et donc à maintenir.
 - Le moindre bug ou ajustement prenait énormément de temps à localiser.
 - Impossible de **tester indépendamment chaque règle** métier.
-- Le code backend devenait un simple relais sans logique, ce qui le rendait **très rigide**.
+- Le code back-end devenait un simple relais sans logique, ce qui le rendait **très rigide**.
 
 Face à cela, j’ai fait le choix de **découper la logique**, en gardant :
 - Une **requête SQL plus simple** et efficace, qui retourne tous les entretiens d’un manager avec les données brutes nécessaires.
-- Puis de **déléguer la logique métier au backend**, dans un service mieux découpé, testable, et plus facile à faire évoluer.
+- Puis de **déléguer la logique métier au back-end**, dans un service mieux découpé, testable, et plus facile à faire évoluer.
 
 Bien que j'ai perdu du temps à passer d'une solution à l'autre, je pense avoir fait le bon choix en changeant de stratégie, car ça m’a fait gagner en clarté, et m’a permis de garder la main sur chaque règle en cas d’évolution future. Cela m'a également permis de mettre en place une plus grande couverture de tests unitaires et ainsi de pouvoir s'assurer que chaque bric de la fonctionnalité fonctionnent toujours correctement, même en cas de modification du comportement d'un type d'entretien.
 
 Le développement côté front-end n'a pas posé de problèmes notables.
 
-#### **Tests et validation**
-- Stratégie de tests :
-    
-    - Tests unitaires (back) sur les nouveaux services.
-        
-    - Tests d’intégration sur les parcours d’utilisation.
-        
-    - Tests front avec Jest/React Testing Library si applicable.
-        
-- Déploiement en environnement de staging pour recette par les TOM.
-    
-- Collecte des retours utilisateurs :
-    
-    - Corrections ou ajustements demandés.
-        
-    - Satisfaction générale sur la clarté de la nouvelle vue.
+Voici une version enrichie et développée des sections **Résultats** et **Évolutions futures**, avec davantage de détails, d'analyse et de profondeur.
 
-#### **Evolutions futures**
-- Intégration des campagnes d’entretien professionnels dans le module de campagne.
+### **Résultats**
+
+La refonte du module des entretiens et l’ajout de vues spécifiques pour les TOM ont généré plusieurs **résultats significatifs**, tant sur le plan fonctionnel que technique.
+
+Grâce à la nouvelle vue d’ensemble, les TOM peuvent désormais **visualiser rapidement l’état d’avancement des entretiens**, par type et par manager. Ce tableau de bord, auparavant inexistant, est devenu un **outil central de pilotage RH** pour la direction managériale de Takima.
+
+- Les TOM sont en mesure d’identifier les managers qui n’ont pas planifié ou finalisé certains entretiens.
     
-- Possibilité d’exporter les données d’entretien (CSV, PDF) pour les RH ou la direction.
+- Ils peuvent prioriser leurs relances, en filtrant par type d’entretien (EO, EP, ES) et par niveau de retard.
     
-- Ajout de notifications automatiques pour relancer les managers en cas de retard.
+- Cette fonctionnalité a permis une **meilleure coordination entre managers et TOM**, notamment pendant les périodes de campagnes.
+
+Avant cette amélioration, le suivi des entretiens nécessitait **des extractions manuelles**, voire le croisement de données depuis des fichiers Google Sheets. Désormais :
+
+- Toutes les données sont **centralisées dans HUI**, et **actualisées automatiquement**.
     
-- Centralisation des documents (feedbacks + entretiens) dans une vue chronologique par consultant.
+- Les managers peuvent voir en un coup d'œil les actions à entreprendre.
     
-- Meilleure intégration mobile pour les managers en déplacement.
+- Le **temps passé à relancer ou rechercher des informations a été réduit** de manière significative.
+
+Le projet a aussi été l’occasion de **mettre en œuvre des méthodes de développement robustes**, comme le TDD (Test-Driven Development) et le découpage clair des responsabilités back/front. Cette rigueur s’est traduite par :
+
+- Une **meilleure couverture de tests**, limitant les régressions.
+    
+- Une **logique métier centralisée** et plus facile à maintenir.
+    
+- Une **base technique saine** pour les évolutions futures.
+
+
+Dès sa mise en ligne, le module a été **rapidement adopté par les TOM**, qui ont exprimé leur satisfaction lors des sprint reviews. Plusieurs retours positifs ont été notés :
+
+- Simplicité d’usage, avec des interfaces **intuitives et bien intégrées**.
+    
+- Gain de visibilité sur les enjeux managériaux et RH.
+    
+- Une **relation renforcée entre managers et direction** grâce à une meilleure transparence des suivis.
+
+
+### **Évolutions futures**
+
+Bien que le module soit déjà pleinement fonctionnel et adopté, plusieurs pistes d’évolution ont été identifiées pour **renforcer encore son utilité, sa portée et son ergonomie**.
+
+À ce jour, seules les campagnes d’**entretiens d’objectifs** sont automatisées. Étendre le système aux **entretiens professionnels** permettrait de :
+
+- Planifier automatiquement les entretiens obligatoires tous les deux ans (et tous les six ans).
+    
+- Gérer efficacement les échéances légales via des dates de campagne spécifiques.
+    
+- Soulager les managers de la création manuelle des événements.
+
+
+Permettre l’**export des entretiens au format CSV ou PDF** offrirait plusieurs avantages :
+
+- Générer des bilans consolidés pour la direction ou les RH.
+    
+- Préparer plus facilement les revues RH annuelles ou les audits.
+    
+- Fournir un **accès hors ligne** aux données en cas de besoin.
+    
+
+Une évolution plus poussée pourrait même inclure un **tableau de bord exportable dynamique**, avec des graphiques ou des visualisations (camemberts, histogrammes).
+
+Aujourd’hui, la relance des managers reste un processus manuel effectué par les TOM. Ajouter un **système de notifications automatiques** (email, Slack, voire intégration dans les calendriers) permettrait de :
+
+- Réduire le nombre d’oubli ou de retard.
+    
+- Automatiser les relances à J-15, J-5 ou en cas de non-signature.
+    
+- Maintenir un rythme régulier dans la tenue des entretiens.
+
+
+Centraliser tous les **documents liés aux entretiens et feedbacks** dans une timeline unique par collaborateur permettrait de :
+
+- Suivre l’évolution d’un employé dans le temps (objectifs, feedbacks, mobilité…).
+    
+- Préparer les entretiens professionnels et bilans à 6 ans avec un historique riche.
+    
+- Donner plus de contexte aux managers, notamment en cas de changement de référent.
 
 ### **3.3 Optimisation des pipelines CI/CD**
 
 #### **Analyse de l’existant**
 
-Les pipelines GitLab CI initiaux étaient :
+Les différents projets internes à Takima - dont HUI - ont été mis en place avec une démarche de DevOps en tête. Concrètement, la volonté de Takima était de mettre en place des processus d'intégration continue (CI) et de déploiement continu (CD) afin d'automatiser au maximum le cycle de vie des projets, de la phase de développement jusqu'à la mise en production. L'objectif principal est de minimiser les erreurs humaines, d’accélérer les itérations de développement en se concentrant uniquement sur l'essentiel, et de garantir une meilleure qualité de livraison.
 
-- **Longs à exécuter** (~12 minutes en moyenne)
-    
-- **Redondants** (copie de logique entre différents jobs)
-    
-- **Peu maintenables** (fichiers `.gitlab-ci.yml` lourds et peu factorisés)
-    
+Lorsque je suis arrivé sur HUI, cette démarche DevOps était implémentée via la création de **pipelines CI/CD**. Ces pipelines définissaient une suite de tâches automatisées via Gitlab CI. Au moment de pousser des modifications de code sur Gitlab, une pipeline est automatiquement lancée afin d’exécuter les tâches suivantes :
+- **Compilation** de l’application (build),
+- **Exécution des tests** (unitaires et intégration),
+- **Analyse statique du code** (qualité, couverture de code),
+- **Packaging du code** en image Docker, stockée dans un container Gitlab, 
+- **Déploiement** vers un environnement (développement, préproduction, production).
 
-#### **Réorganisation avec GitLab Components**
+Pour chaque projet, les pipelines sont définies dans des fichiers de configuration `.gitlab-ci.yml` décrivant les différentes étapes à exécuter. Chaque étape s'appelle un "job". Dans le cas de HUI, deux fichiers de configuration sont donc définis, pour l'API et pour le front-end.
+
+Cependant, nous nous sommes rendu compte que les pipelines existantes souffraient de plusieurs défauts majeurs. Principalement, leur lenteur d'exécution. Pour HUI, les pipelines pouvaient prendre jusqu'à 30 minutes d'exécution. Dans un contexte agile, avec des livraisons fréquentes - et donc des lancements fréquents de pipelines - une telle lenteur d'exécution est un vrai frein à la productivité. Pour chaque nouvelle fonctionnalité, les pipelines sont lancées au minimum 3 fois : 
+- Avant une revue de code lorsque la fonctionnalité est terminée,
+- Avant une QA (assurance qualité) au moment de déployer en environnement de développement,
+- Avant de fusionner avec la branche principale, lorsque la fonctionnalité est acceptée.
+
+En plus de cela, si des retours apportés en revue de code ou en QA nécessitent des changements de code, une nouvelle pipeline sera lancée lorsque les modifications seront effectuées.
+
+En addition à la baisse de productivité de l'équipe, ces temps d'attente sont également démotivants et peuvent jouer sur le moral de l'équipe. Personnellement, j'étais reluctant à effectuer des QA sur les tickets de mes collègues car je savais que cela impliquerait de lancer une pipeline.
+
+Un autre point négatif de ces pipelines est la redondance des fichiers de configuration et leur manque de maintenabilité. Beaucoup de logique similaires sont copiées entre les différents `.gitlab-ci.yml`.
+
+Etant intéressé par les problématiques DevOps en entreprise, Takima m'a proposé de me pencher sur le sujet d'optimiser les pipelines afin de réduire les temps d'exécution, et de généraliser les définitions des différents jobs afin de centraliser la logique et d'améliorer ainsi la maintenabilité des pipelines. L'idée était dans un premier temps d'apporter ces améliorations au projet HUI, puis dans un second temps - si ces modifications apportent un gain réel - d'étendre l'optimisation des pipelines à tous les projets internes.
+
+#### **Réorganisation avec Gitlab Components**
+
+Dans sa dernière version (v18.0), Gitlab a introduit les **Gitlab Components**. Les Components permettent d'extraire la logique des configurations CI/CD en templates réutilisables et modulaires.
 
 Takima a amorcé la migration vers les **GitLab CI Components**, une fonctionnalité permettant de créer des templates réutilisables. J’ai participé à :
 
