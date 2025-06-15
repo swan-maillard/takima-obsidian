@@ -69,7 +69,7 @@ Les cours et les revues de code étaient assurées par des développeurs seniors
 
 A la fin de la formation, j'ai dû effectuer une simulation de présentation client de la market place fonctionnelle et déployée sur serveur que j'ai développé en intégralité durant les 2 mois.
 
-![](https://lh7-rt.googleusercontent.com/slidesz/AGV_vUfXmQAMKhMJ7ctr5-OW5g-9IBZ9bMjva53-c2KvPqdGnpiRpKYDWTgh4hkZdmpay6iy4PsDQCgSjQEw5NL8Sx5-Okeo3E_iC10spyZN3GjRqUtAD9H69yk8F581GVP8FWMqPq3Wyg=s2048?key=_wr7buDxjlhSrQDWgzosB7PO)
+![[Pasted image 20250615120526.png]]
 Capture d'écran de la page d'accueil de la Market Place
 
 
@@ -395,8 +395,6 @@ Bien que j'ai perdu du temps à passer d'une solution à l'autre, je pense avoir
 
 Le développement côté front-end n'a pas posé de problèmes notables.
 
-Voici une version enrichie et développée des sections **Résultats** et **Évolutions futures**, avec davantage de détails, d'analyse et de profondeur.
-
 ### **Résultats**
 
 La refonte du module des entretiens et l’ajout de vues spécifiques pour les TOM ont généré plusieurs **résultats significatifs**, tant sur le plan fonctionnel que technique.
@@ -489,7 +487,7 @@ Lorsque je suis arrivé sur HUI, cette démarche DevOps était implémentée via
 - **Packaging du code** en image Docker, stockée dans un container Gitlab, 
 - **Déploiement** vers un environnement (développement, préproduction, production).
 
-![](https://lh7-rt.googleusercontent.com/slidesz/AGV_vUdoCDvrwQUA4U-CgjUCDRQS3o1UgeMOkbXYZJ6kE0UNR__SW9qWbabgU0Z4B8tYesirEKPBavR39VQktNH7AiIUaUfurPBn80So98JncPR9yWiLYmFay_eaTj9bFfkRf_Y-NBDqLg=s2048?key=2z088As1guQ-ZA8-niVywg)
+![[Pasted image 20250615120458.png]]
 Schéma décrivant les pipelines CI/CD
 
 
