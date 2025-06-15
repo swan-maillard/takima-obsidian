@@ -247,25 +247,37 @@ Enfin, côté front-end, il a fallu créer de nouveaux composants. Le framework 
 
 #### **Développement**
 
-Le développement du module a duré environ deux mois. J’ai avancé progressivement en suivant les user stories définies au début du projet, en lien avec les utilisateurs finaux. Chaque fonctionnalité était liée à un ticket Jira qu’on estimait pendant les poker plannings. Pas mal d’allers-retours ont été nécessaires, surtout pour ajuster certains comportements métiers ou l’interface, en fonction des retours à la fin de chaque sprint.
+Le développement du module de feedback a pris environ deux mois. Une des particularité du développement en agilité est que le besoin est parfois amené à changer, sur des détails mais également sur des trames entières d'user stories. Il est donc nécessaire d'être flexible et de ne pas être trop attaché au code puisqu'il peut être amener à changer ou disparaître. Pas mal d'allers-retours ont été nécessaires pour ajuster certains comportements métiers et détails d'interfaces, mais l'avantage d'avoir des sprint reviews toutes les 2 semaines est que le client peut rapidement se rendre compte lorsque le développement ne va pas dans la direction souhaitée.
 
-Un des points un peu techniques a été l’intégration de l’éditeur Notion-like. On voulait vraiment garder l’expérience de rédaction qu’ont les managers dans Notion, donc j’ai dû chercher un éditeur React qui permette ça, et le customiser pour qu’il gère les cas qu’on voulait : mise en forme, tags, extraits de code, etc. L’import CSV a aussi demandé pas mal d’attention, notamment pour convertir proprement le contenu au format Notion-like.
+Un des points un peu techniques sur ce module a été l'intégration d'un éditeur Notion-like, afin de garder l'expérience de rédaction des managers sur Notion. J'ai pu trouver une dépendance externe compatible avec React qui intègre déjà un éditeur de texte enrichi au format Notion : **BlockNote**. La difficulté était cependant le stockage et traitement du texte. Puisqu'il est enrichi, le texte est généré dans un format JSON spécifique et un peu complexe. Il faut donc pouvoir stocker ce texte au format JSON, mais également effectuer tout type de validation sur son contenu :
+- Le contenu du texte est-il vide ?
+- Combien de caractères ont été écrits ?
 
-La gestion des rôles (créateur, rapporteur, validateur) et des transitions d’état entre brouillon, validé, refusé, etc., a été un autre sujet important. Il fallait que tout soit cohérent, sans laisser la possibilité de contourner les règles par erreur ou oubli.
+Enfin, il fallait également pouvoir convertir une chaîne simple de caractère au bon format JSON lors de l'import CSV de feedbacks.
+
+En Annexe, un exemple montrant comment un texte enrichi Notion-like est représenté en JSON.
 
 #### **Tests et validation**
 
-Côté qualité, j’ai suivi la politique de couverture de tests à 80 %, mesurée avec SonarQube. Les tests unitaires ont été écrits pour les services et les repositories côté back. J’ai aussi ajouté des tests front pour vérifier que les bons éléments s’affichaient selon le rôle de l’utilisateur, et que les actions déclenchaient bien les bons appels API.
+En théorie, Takima s'engage auprès des clients à respecter une politique "0 bugs". Cela ne signifie pas que l'on ne produit jamais de bugs, loin de là, mais l'on doit s'assurer de ne pas faire passer de bugs en production. Bien que je sois sur un projet interne et que l'apparition de bugs en production soit moins critique, nous devons tout de même respecter cet engagement afin de prendre de bonnes habitudes.
 
-En plus des tests automatisés, j’ai fait des tests manuels complets sur l’environnement de staging, en simulant les différents parcours utilisateurs (création, validation, refus, etc.). Chaque ticket passait aussi par une phase de code review et de QA avec un autre membre de l’équipe. En théorie, on vise zéro bug en prod, mais dans la réalité il y a eu quelques petits retours après le déploiement. Heureusement, les retours des managers ont été rapides, ce qui a permis de corriger rapidement.
+Afin de s'assurer de ne pas laisser passer de bugs, nous suivons les règles suivantes :
+- Les tests unitaires doivent couvrir au minimum 80% du code. Cette couverture de code est mesurée lors de l'analyse statique du code via SonarQube, et si elle est en dessous de 80% la fonctionnalité ne passe pas.
+- En plus des tests automatisés, chaque ticket Jira passe également par une phase de code review et de QA (Assurance Qualité) par d'autres membres de l'équipe. Cela permet d'avoir une vision extérieure du code et d'effectuer des tests manuels des différents parcours utilisateurs sur un environnement similaire de celui de production.
+- Enfin, l'outil Sentry permet de nous transmettre des alertes lorsqu'une erreur survient sur un environnement de dev, preprod ou prod. Chaque jour un membre de l'équipe est désigné en tant que firefighter afin de suivre ces alertes Sentry et de régler les problèmes au plus vite, avant qu'ils ne soient remontés par des utilisateurs.
 
-Le module est maintenant en prod, et les managers ont commencé à l’utiliser pour suivre les consultants. Les premiers retours sont globalement positifs, notamment sur l’ergonomie de la page de validation.
+Malgré cet engagement "0 bugs", nous avons reçu quelques retours après déploiement en production, mais nous avons pu les régler rapidement.
+
+Le module de feedback est maintenant en production, et a commencé a être utilisé. Les premiers retours sont globalement positifs, même s'il reste toujours des améliorations à effectuer et des idées de nouvelles fonctionnalités.
 
 #### **Évolutions futures**
 
-À terme, l’idée serait d’intégrer les feedbacks dans les entretiens annuels et les entretiens d’objectifs. Ça permettrait aux managers d’avoir une vue directe des retours précédents pendant la préparation de l’entretien, et de mieux suivre l’évolution du consultant dans le temps.
 
-Une autre évolution prévue concerne le système de validation. Aujourd’hui, un feedback ne peut être modifié que par une seule personne à la fois, ce qui peut vite devenir bloquant. On réfléchit à un système qui permettrait à plusieurs validateurs d’intervenir en parallèle sans conflit (genre gestion de verrou ou édition concurrente). Il y a aussi l’idée d’ajouter des stats ou des indicateurs globaux à partir des feedbacks, mais ça demandera sans doute une autre phase de conception.
+À terme, l'intérêt des feedbacks serait de pouvoir les intégrer dans les entretiens d'objectifs et les entretiens professionnels. Cela permettrait aux managers d'avoir une vue directe des retours précédents, de l'évolution du consultant, et des potentielles alertes. Pour le moment, les feedbacks ne sont pas encore intégrés au module d'entretiens, mais lorsque le besoin aura été correctement défini, cette fonctionnalité sera rajoutée au backlog (le backlog correspond à la liste des tâches à effectuer dans Jira).
+
+Une autre évolution prévue concerne l'amélioration du système de validation. Actuellement, si deux validateurs essayent de valider des feedbacks en même temps, ils ne verront pas les validations de l'autre. Cela peut causer des problèmes des concurrences, notamment la validation d'un feedback déjà validé ou refusé. Il faudrait réfléchir à un système qui permettrait à plusieurs validateurs d'intervenir en parallèle sans conflit.
+
+Enfin, l'idée de rajouter des statistiques sur les feedbacks a été remontée. Il faudrait par exemple voir le nombre de feedbacks écrits par un manager, ainsi que le nombre de consultants ayant reçus des feedbacks. Cela demandera également une autre phase de conception.
 
 ### **3.2 Amélioration du module des entretiens**
 
@@ -679,16 +691,13 @@ Et voici un exemple de la documentation détaillant le fonctionnement du compone
 
 ## **4. Réflexions sur les enjeux environnementaux et sociétaux** 
 
-- Réduction de l’empreinte carbone par l’optimisation des pipelines CI/CD
-    
-- Contribution à une meilleure qualité de vie au travail via les outils RH internes
-    
-- Accessibilité numérique : prise en compte dans les interfaces
-    
-- Sécurité des données RH : enjeu éthique et réglementaire
-    
-- Impacts du numérique responsable dans le cadre d’un développement interne
-    
+Bien que mon PFE ne porte pas spécifiquement sur des problématiques environnementales ou sociétales, je pense que mon travail a tout de même permis d'apporter des bénéfices indirects à Takima.
+
+Tout d'abord, l'optimisation des pipelines CI/CD est un pas en avant en matière de sobriété numérique et de développement responsable. En accélérant l'exécution des pipelines, en limitant la génération de cache inutile, en permettant une réutilisation significative du cache entre les différents jobs et les différentes pipelines, et en utilisant des images Docker plus légères, on réduit inévitablement la consommation des ressources serveur. Même si cette démarche s'inscrit avant tout dans une démarche d'optimisation, elle a pour effet de limiter l'impact environnemental de Takima et invite à effectuer d'autres démarches de ce genre.
+
+Ensuite, l'amélioration de HUI en y implémentant un module de feedback et un meilleur suivi des entretiens contribue à améliorer l'expérience des employés à Takima. Cela permet de mieux suivre leur carrière et de pouvoir récompenser leurs efforts, tout en fluidifiant le travail des managers. Bien entendu, je n'ai développé qu'un outil et les résultats dépendront de l'utilisation qui en sera fait, mais ça peut participer à rendre l'accompagnement des consultants plus humain et bienveillant.
+
+Enfin, la gestion des feedbacks a nécessité une réflexion quant au respect de l'éthique et des normes en matière de données personnelles. Les feedbacks peuvent contenir des informations sensibles, et j'ai dû prendre cela en compte lors du développement : messages de sensibilisation lors de la création d'un feedback afin d'éviter les jugements de valeur, contrôle et validation des feedbacks, et suppression automatique des retours non conformes. Ces mesures permettent de garantir un traitement plus éthique des informations, et conforme aux normes RGPD.
 
 ---
 
@@ -730,8 +739,149 @@ Et voici un exemple de la documentation détaillant le fonctionnement du compone
  ![[Pasted image 20250614180736.png]]
 
 
+- Texte enrichi Notion-like et sa représentation JSON 
+ ![[Pasted image 20250615102011.png]]
+```json
+[
+  {
+    "id": "994e7e78-acd4-4573-96da-fa1d3fa0b9a0",
+    "type": "heading",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "level": 1
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Titre 1",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "3f625e60-b004-41f5-bddc-bfbccc066412",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Liste :",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "c5d5c819-5fbb-409a-9662-bc93a4de58ff",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "A",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "952d89ad-5b05-472e-87cb-d64547fcf4c1",
+    "type": "bulletListItem",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "B",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "e6a25eb2-a0a2-4cec-b872-6dd170bf4fdf",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  },
+  {
+    "id": "e62d1139-59fd-418a-ac3e-71ba99bad0fb",
+    "type": "heading",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left",
+      "level": 1
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Titre 2",
+        "styles": {}
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "0ce9739a-6a65-4ae1-9eb6-2b030a438f10",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [
+      {
+        "type": "text",
+        "text": "Ceci est un texte en ",
+        "styles": {}
+      },
+      {
+        "type": "text",
+        "text": "gras",
+        "styles": {
+          "bold": true
+        }
+      }
+    ],
+    "children": []
+  },
+  {
+    "id": "d63aabb8-c244-4494-8684-346b8859c399",
+    "type": "paragraph",
+    "props": {
+      "textColor": "default",
+      "backgroundColor": "default",
+      "textAlignment": "left"
+    },
+    "content": [],
+    "children": []
+  }
+]
+```
 
-`.gitlab-ci.yml` de **HUI-Front** avant Gitlab Components
+
+
+- `.gitlab-ci.yml` de **HUI-Front** avant Gitlab Components
 ```yaml
 variables:
   RELEASE:
