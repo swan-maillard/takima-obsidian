@@ -71,6 +71,47 @@
 		- *"Je vous ai présenté la plupart de mes expériences, n'hésitez pas si vous avez des question"*
 
 
+
+Bonjour,
+
+Je m'appelle Swan et je suis développeur full-stack, avec tout de même une dominante back-end avec Spring Boot en Java et en Kotlin. Côté front je suis le plus à l'aise avec React et Vue mais j'ai également eu l'occasion de réaliser des projets en Angular. A côté je suis aussi intéressé par tous les sujets DevOps.
+Au delà de la technique, j'aime avoir une composante sociale importante dans mon travail, et avec mes clients.
+
+J'ai commencé à développer assez jeune avec des projets perso, ce qui m'a conduit à intégrer l'INSA Lyon dans le département informatique. L'INSA est une école d'ingénieur plutôt exigeante où j'ai développé de la méthode, de la rigueur et des bases scientifiques et techniques solides. En parallèle des études j'ai lancé mon auto-entreprise en tant que développeur full-stack, ce qui m'a permis de construire un bon socle technique, de monter des projets de A à Z en développant mon autonomie et ma relation client. Etant assez curieux, j'ai exploré plusieurs stacks techniques au cours de mes projets perso et freelance, par exemple PHP et Symfony, Node.js, Python, Vue.js.
+
+Après mes études, j'ai rejoint Takima pour leur exigence technique. Ayant déjà une bonne expérience technique et autonomie, je voulais développer les bonnes pratiques et aller plus en profondeur sur la partie théorique. J'ai eu le chance de suivre leur formation intensive de trois mois, encadrée par des développeurs seniors. On y a abordé les fondamentaux théoriques et techniques du développement back-end, front-end et du DevOps. Des XP effectuaient régulièrement des revues de code ce qui m'a permis de rapidement adopter un bon nombre de réflexes professionnels.
+
+
+
+Ensuite, j’ai travaillé sur différents projets, parfois en **équipe agile** (SCRUM, Kanban), parfois en **autonomie complète**.  
+À chaque fois, on partait d’un **besoin utilisateur bien défini**, pour concevoir des solutions utiles, performantes et maintenables.
+
+**Côté stack technique** :
+
+- Back-end : **Spring Boot**, **Hibernate**, API REST
+    
+- Front-end : **React**, parfois avec TypeScript
+    
+- DevOps : **Docker**, **GitLab CI**, **monitoring**, et déploiement sur cloud ou on-premise
+    
+
+J’ai aussi eu à faire des **choix techniques structurants**, que je suis capable de défendre et de justifier.
+
+J’ai conçu, développé, et mis en production plusieurs modules et applications, en soignant la **qualité du code**, la **documentation**, et la **transmission à l’équipe suivante**.  
+Je parle de mon rôle avec le **"je"**, mais toujours dans une **logique collective**.
+
+Un exemple concret : sur un de mes projets, un chef de projet m’a remercié pour la qualité de mon travail, qui a permis de **diviser par deux le temps de traitement d’un processus métier**.  
+C’est ce genre de résultat dont je suis fier, car il montre l’impact concret de ce qu’on développe.
+
+Bien sûr, tout n’a pas toujours été parfait : j’ai aussi connu des erreurs, comme une mauvaise estimation de charge.  
+Mais je les vois comme des opportunités d’apprendre : j’en ai tiré des leçons sur la **communication**, la **planification**, et la **validation continue avec les utilisateurs**.
+
+Enfin, même après mon départ d’un projet, je veille à **laisser un code propre, bien documenté**, et je reste disponible pour assurer une **transition fluide**.
+
+Voilà pour l’essentiel de mon parcours.  
+Je serais ravi de répondre à vos questions si vous souhaitez que je développe certains points !
+
+
 ---
 
 # Questions
