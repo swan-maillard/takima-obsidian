@@ -1,7 +1,7 @@
 ---
 cover: "[[spring.png]]"
 ---
-# 💠Table of Contents
+	# 💠Table of Contents
 ```table-of-contents
 title: 
 style: nestedList # TOC style (nestedList|nestedOrderedList|inlineFirstLevel)
@@ -191,6 +191,19 @@ A **Servlet** is a **server-side Java component** that runs inside a **Servlet c
       }
   }
   ```
+
+Or
+```java
+@ControllerAdvice
+public class ExceptionConfiguration {
+
+  @ResponseStatus(HttpStatus.CONFLICT)
+  @ExceptionHandler(RuntimeException.class)
+  public void handleConflict(RuntimeException e) throws RuntimeException {
+      // Provide your general exception handling here
+  }
+}
+```
 
 ## 5. Performance Optimization
 

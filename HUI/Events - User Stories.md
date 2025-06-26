@@ -9,15 +9,98 @@
 # 2. Goals Interview (EO)
 ## Overview
 - A **Goals Interview (EO)** is required **every year**, during a **campaign** period.
-- If **no previous EO campaign** exists, the campaign starts on next **1st October**.
-- If there **was a previous EO campaign**, the next campaign starts **1 year after the last campaign start date**.
-- An employee is **late** if the **last completed EO** was **before the current campaign start date**
-- If there is **no ongoing campaign**, the employee is **not late**.
-- A **new hire is never late**.
-- A new hire participates to the next campaign if his hiring date is between **1st February and 31st March**
-- A **new hire** participates in:
-	- The **current year’s campaign** if hired between **1st February and 31st March**
-	- The **next year’s campaign** if hired **before 1st February** or **after 31st March**
+- By default, the campaign starts on next **1st October**.
+- If a campaign is already planned, it starts at it's start date.
+- A consultant participates to the campaign if he's in the company for 6 months or more.
+- If a consultant doesn't participate to the campaign, he will participate to the one the following year.
+- If a consultant is during an ongoing campaign:
+	- His previous completed event was before the campaign : he's late
+	- His previous completed event is during the campaign : he's not late - following campaign on next 1st october
+- If the campaign has ended and the consultant has not done his event during, he's late.
+
+### Objective:
+Ensure each eligible consultant completes one **Goals Interview (EO)** per year during a defined **campaign period** (typically starting October 1st).
+
+### **Campaign Schedule Logic**
+
+1. **Default Campaign Start**:  
+    If no campaign is currently planned in the system, the campaign starts on the **next October 1st** after today.
+    
+2. **Planned Campaign**:  
+    If a campaign exists (retrieved from the DB), its `startDate` and `endDate` are used.
+    
+3. **Next Campaign Date**:
+    - If the campaign is in the **future** (starts after today): return that future campaign’s start date.
+    - If the campaign is **missing**: return the next default October 1st date.
+
+### **Consultant Eligibility**
+
+- A consultant is **eligible** to participate in a campaign if they have been employed for **6 months or more** by the campaign start date.
+    
+- If **not eligible**, the consultant will wait for the **next year's campaign**, by default October 1st + INTERVAL (here, 1 year).
+
+### **Event Completion Rules**
+
+When a campaign **exists** and the consultant is **eligible**:
+
+| Scenario                        | Conditions                                                                                                             | Outcome                                                     |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| ✅ **Completed on time**         | `previousEventEndDate` is **after** campaign `startDate`                                                               | Return **next campaign start date** (next Oct 1st)          |
+| ❌ **Late but campaign ongoing** | `previousEventEndDate` is **null or before** campaign `startDate` AND today is **before or within** campaign `endDate` | Return **campaign start date** (so event can still be done) |
+| ❌ **Late and campaign ended**   | `previousEventEndDate` is **null or before** campaign `startDate` AND today is **after** campaign `endDate`            | Return **campaign end date** (indicating it’s overdue)      |
+
+### **No Campaign Planned**
+
+- If **no campaign exists** in the system but the consultant is eligible:
+    - Return the **next default campaign start** (next October 1st).
+        
+- If consultant is **not eligible**, return the **next campaign start + INTERVAL**.
+
+---
+
+### 📋 **Test Matrix Design Based on Above Rules**
+
+| Case | Campaign Exists | Hiring Date                            | `previousEventEndDate` | Today’s Date    | Expected Outcome            |
+| ---- | --------------- | -------------------------------------- | ---------------------- | --------------- | --------------------------- |
+| 1    | ✅               | >6 months before campaign              | ✅ during campaign      | During campaign | Next campaign start         |
+| 2    | ✅               | >6 months before campaign              | ❌ before campaign      | During campaign | Campaign start              |
+| 3    | ✅               | >6 months before campaign              | ❌ before campaign      | After campaign  | Campaign end                |
+| 4    | ✅               | <6 months before campaign              | ❌                      | Before campaign | Next campaign + interval    |
+| 5    | ❌               | >6 months before next default campaign | ❌                      | Any time        | Next default campaign start |
+| 6    | ❌               | <6 months before next default campaign | ❌                      | Any time        | Next default + interval     |
+| 7    | ✅ future        | >6 months before campaign              | ❌                      | Before campaign | Future campaign start       |
+| 8    | ✅ future        | <6 months before campaign              | ❌                      | Before campaign | Future campaign + interval  |
+
+### **Edge Cases to Test**
+
+- Hiring exactly 6 months before campaign → Eligible.
+    
+- `previousEventEndDate == campaignStartDate` → Not "after", so **not on time**.
+    
+- No previous event but campaign ongoing → Still eligible → return campaign start.
+    
+- `campaign.endDate == today` → Still considered ongoing.
+    
+- `previousEventEndDate == today` → On time only if today is after `campaignStartDate`.
+
+| Cas | Campagne | Date d’embauche         | `previousEventEndDate`        | Date actuelle           | Éligible ? | État de l’événement | Résultat attendu                            |
+| --- | -------- | ----------------------- | ----------------------------- | ----------------------- | ---------- | ------------------- | ------------------------------------------- |
+| 1   | ✅        | > 6 mois avant campagne | ✅ après `startDate`           | Pendant campagne        | ✅          | ✅ À jour            | `nextCampaignStartDate` (campagne suivante) |
+| 2   | ✅        | > 6 mois avant campagne | ❌ avant `startDate`           | Pendant campagne        | ✅          | ❌ En retard         | `campaignStartDate` (peut encore le faire)  |
+| 3   | ✅        | > 6 mois avant campagne | ❌ avant `startDate`           | Après campagne          | ✅          | ❌ En retard         | `campaignEndDate` (campagne terminée)       |
+| 4   | ✅        | < 6 mois avant campagne | ❌                             | Avant campagne          | ❌          | ✅ À jour            | `nextDefaultCampaignStart`                  |
+| 5   | ❌        | > 6 mois avant 01/10    | ❌                             | N’importe quand         | ✅          | ❌ En retard         | `nextDefaultCampaignStart` (01/10 prochain) |
+| 6   | ❌        | < 6 mois avant 01/10    | ❌                             | N’importe quand         | ❌          | ❌ Inapplicable      | `nextDefaultCampaignStart`                  |
+| 7   | ✅ future | > 6 mois avant campagne | ❌                             | Avant campagne          | ✅          | ❌ Pas encore fait   | `campaignStartDate`                         |
+| 8   | ✅ future | < 6 mois avant campagne | ❌                             | Avant campagne          | ❌          | ❌ Inapplicable      | `nextDefaultCampaignStart`                  |
+| 9   | ✅        | Exactement 6 mois avant | ❌                             | Avant campagne          | ✅          | ❌ Pas encore fait   | `campaignStartDate`                         |
+| 10  | ✅        | 1 jour < 6 mois avant   | ❌                             | Avant campagne          | ❌          | ❌ Inapplicable      | `nextDefaultCampaignStart`                  |
+| 11  | ✅        | > 6 mois                | == `startDate`                | Pendant campagne        | ✅          | ❌ En retard         | `campaignStartDate`                         |
+| 12  | ✅        | > 6 mois                | == `today` (pendant campagne) | Pendant campagne        | ✅          | ✅ À jour            | `nextCampaignStartDate`                     |
+| 13  | ✅        | > 6 mois                | null                          | Pendant campagne        | ✅          | ❌ Non réalisé       | `campaignStartDate`                         |
+| 14  | ✅        | > 6 mois                | null                          | Après campagne          | ✅          | ❌ Non réalisé       | `campaignEndDate`                           |
+| 15  | ✅        | > 6 mois                | ✅ après `startDate`           | Après campagne          | ✅          | ✅ À jour            | `nextCampaignStartDate`                     |
+| 16  | ✅        | > 6 mois                | null                          | Aujourd’hui = `endDate` | ✅          | ❌ Non réalisé       | `campaignStartDate` (encore temps)          |
 
 ## Scenarios
 #### EO for New Hires

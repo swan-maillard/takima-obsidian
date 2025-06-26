@@ -100,12 +100,12 @@ There are five classes defined by the standard:
 
 # **💠 Request & Response Headers**  
 
-## 1. **Common Request Headers**:  
+## 1. **Common Request Headers**  
   - `Accept`: Defines expected response format (`application/json`, `application/xml`).  
   - `Content-Type`: Specifies request body format.  
   - `Authorization`: For authentication (e.g., `Bearer <token>`).  
   
-## 2. **Common Response Headers**:  
+## 2. **Common Response Headers** 
   - `Content-Type`: Format of the response body.  
   - `Cache-Control`: Caching directives.  
 
