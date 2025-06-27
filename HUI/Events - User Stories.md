@@ -85,22 +85,22 @@ When a campaign **exists** and the consultant is **eligible**:
 
 | Cas | Campagne | Date d’embauche         | `previousEventEndDate`        | Date actuelle           | Éligible ? | État de l’événement | Résultat attendu                            |
 | --- | -------- | ----------------------- | ----------------------------- | ----------------------- | ---------- | ------------------- | ------------------------------------------- |
-| 1   | ✅        | > 6 mois avant campagne | ✅ après `startDate`           | Pendant campagne        | ✅          | ✅ À jour            | `nextCampaignStartDate` (campagne suivante) |
-| 2   | ✅        | > 6 mois avant campagne | ❌ avant `startDate`           | Pendant campagne        | ✅          | ❌ En retard         | `campaignStartDate` (peut encore le faire)  |
-| 3   | ✅        | > 6 mois avant campagne | ❌ avant `startDate`           | Après campagne          | ✅          | ❌ En retard         | `campaignEndDate` (campagne terminée)       |
+| 1   | ✅        | > 6 mois avant campagne | après `startDate`             | Pendant campagne        | ✅          | ✅ À jour            | `nextCampaignStartDate` (campagne suivante) |
+| 2   | ✅        | > 6 mois avant campagne | avant `startDate`             | Pendant campagne        | ✅          | ❌ En retard         | `campaignStartDate` (peut encore le faire)  |
+| 3   | ✅        | > 6 mois avant campagne | avant `startDate`             | Après campagne          | ✅          | ❌ En retard         | `campaignEndDate` (campagne terminée)       |
 | 4   | ✅        | < 6 mois avant campagne | ❌                             | Avant campagne          | ❌          | ✅ À jour            | `nextDefaultCampaignStart`                  |
 | 5   | ❌        | > 6 mois avant 01/10    | ❌                             | N’importe quand         | ✅          | ❌ En retard         | `nextDefaultCampaignStart` (01/10 prochain) |
 | 6   | ❌        | < 6 mois avant 01/10    | ❌                             | N’importe quand         | ❌          | ❌ Inapplicable      | `nextDefaultCampaignStart`                  |
-| 7   | ✅ future | > 6 mois avant campagne | ❌                             | Avant campagne          | ✅          | ❌ Pas encore fait   | `campaignStartDate`                         |
-| 8   | ✅ future | < 6 mois avant campagne | ❌                             | Avant campagne          | ❌          | ❌ Inapplicable      | `nextDefaultCampaignStart`                  |
+| 7   | ✅        | > 6 mois avant campagne | ❌                             | Avant campagne          | ✅          | ❌ Pas encore fait   | `campaignStartDate`                         |
+| 8   | ✅        | < 6 mois avant campagne | ❌                             | Avant campagne          | ❌          | ❌ Inapplicable      | `nextDefaultCampaignStart`                  |
 | 9   | ✅        | Exactement 6 mois avant | ❌                             | Avant campagne          | ✅          | ❌ Pas encore fait   | `campaignStartDate`                         |
 | 10  | ✅        | 1 jour < 6 mois avant   | ❌                             | Avant campagne          | ❌          | ❌ Inapplicable      | `nextDefaultCampaignStart`                  |
 | 11  | ✅        | > 6 mois                | == `startDate`                | Pendant campagne        | ✅          | ❌ En retard         | `campaignStartDate`                         |
 | 12  | ✅        | > 6 mois                | == `today` (pendant campagne) | Pendant campagne        | ✅          | ✅ À jour            | `nextCampaignStartDate`                     |
-| 13  | ✅        | > 6 mois                | null                          | Pendant campagne        | ✅          | ❌ Non réalisé       | `campaignStartDate`                         |
-| 14  | ✅        | > 6 mois                | null                          | Après campagne          | ✅          | ❌ Non réalisé       | `campaignEndDate`                           |
-| 15  | ✅        | > 6 mois                | ✅ après `startDate`           | Après campagne          | ✅          | ✅ À jour            | `nextCampaignStartDate`                     |
-| 16  | ✅        | > 6 mois                | null                          | Aujourd’hui = `endDate` | ✅          | ❌ Non réalisé       | `campaignStartDate` (encore temps)          |
+| 13  | ✅        | > 6 mois                | ❌                             | Pendant campagne        | ✅          | ❌ Non réalisé       | `campaignStartDate`                         |
+| 14  | ✅        | > 6 mois                | ❌                             | Après campagne          | ✅          | ❌ Non réalisé       | `campaignEndDate`                           |
+| 15  | ✅        | > 6 mois                | après `startDate`             | Après campagne          | ✅          | ✅ À jour            | `nextCampaignStartDate`                     |
+| 16  | ✅        | > 6 mois                | ❌                             | Aujourd’hui = `endDate` | ✅          | ❌ Non réalisé       | `campaignStartDate` (encore temps)          |
 
 ## Scenarios
 #### EO for New Hires
