@@ -155,6 +155,27 @@ When a campaign **exists** and the consultant is **eligible**:
 - A new hire is **late for EP6** if it has been more than **6 years** since their **hiring date**.
 - If an **EP6** should take place the same year than an **EP**, then the **EP** is postponed of 2 years.
 
+| Cas | Campagne | Date d’embauche        | `previousEventEndDate`        | Date actuelle           | Séniorité ≥ 6 ans | EP6 récent ? | Éligible ? | État de l’événement | Résultat attendu                             |
+| --- | -------- | ---------------------- | ----------------------------- | ----------------------- | ----------------- | ------------ | ---------- | ------------------- | -------------------------------------------- |
+| 1   | ✅        | > 6 ans avant campagne | après `startDate`             | Pendant campagne        | ✅                 | ✅            | ✅          | ✅ À jour            | `nextDefaultCampaignStart`                   |
+| 2   | ✅        | > 6 ans avant campagne | avant `startDate`             | Pendant campagne        | ✅                 | ✅            | ✅          | ❌ En retard         | `campaignStartDate`                          |
+| 3   | ✅        | > 6 ans avant campagne | avant `startDate`             | Après campagne          | ✅                 | ✅            | ✅          | ❌ En retard         | `campaignEndDate`                            |
+| 4   | ✅        | < 6 ans avant campagne | ❌                             | Avant campagne          | ❌                 | ✅ (NA)       | ❌          | ✅ À jour            | `nextDefaultCampaignStart`                   |
+| 5   | ❌        | > 6 ans avant 01/06    | ❌                             | N’importe quand         | ✅                 | ✅            | ✅          | ✅ À jour            | `nextDefaultCampaignStart`                   |
+| 6   | ❌        | < 6 ans avant 01/06    | ❌                             | N’importe quand         | ❌                 | ✅ (NA)       | ❌          | ✅ À jour            | `nextDefaultCampaignStart`                   |
+| 7   | ✅        | > 6 ans avant campagne | ❌                             | Avant campagne          | ✅                 | ✅            | ✅          | ❌ Non réalisé       | `campaignStartDate`                          |
+| 8   | ✅        | < 6 ans avant campagne | ❌                             | Avant campagne          | ❌                 | ✅ (NA)       | ❌          | ✅ À jour            | `nextDefaultCampaignStart`                   |
+| 9   | ✅        | = 6 ans avant campagne | ❌                             | Avant campagne          | ✅                 | ❌            | ❌          | ❌ Non réalisé       | `null` (EP6 overdue, block PI)               |
+| 10  | ✅        | > 6 ans                | ❌                             | Avant campagne          | ✅                 | ❌            | ❌          | ❌ Non réalisé       | `null` (EP6 overdue, block PI)               |
+| 11  | ✅        | > 6 ans                | == `startDate`                | Pendant campagne        | ✅                 | ✅            | ✅          | ❌ En retard         | `campaignStartDate`                          |
+| 12  | ✅        | > 6 ans                | == `today` (pendant campagne) | Pendant campagne        | ✅                 | ✅            | ✅          | ✅ À jour            | `nextDefaultCampaignStart`                   |
+| 13  | ✅        | > 6 ans                | ❌                             | Pendant campagne        | ✅                 | ❌            | ❌          | ❌ Non réalisé       | `null` (EP6 overdue, block PI)               |
+| 14  | ✅        | > 6 ans                | ❌                             | Après campagne          | ✅                 | ❌            | ❌          | ❌ Non réalisé       | `null` (EP6 overdue, block PI)               |
+| 15  | ✅        | > 6 ans                | après `startDate`             | Après campagne          | ✅                 | ✅            | ✅          | ✅ À jour            | `nextDefaultCampaignStart`                   |
+| 16  | ✅        | > 6 ans                | ❌                             | Aujourd’hui = `endDate` | ✅                 | ❌            | ❌          | ❌ Non réalisé       | `null` (EP6 overdue, block PI)               |
+| 17  | ✅        | > 6 ans                | == 7 ans avant                | N’importe quand         | ✅                 | ❌            | ❌          | ❌ Non réalisé       | `null` (EP6 overdue, last EP6 > 6 years ago) |
+| 18  | ✅        | > 6 ans                | == 5 ans avant                | N’importe quand         | ✅                 | ✅            | ✅          | ✅ À jour            | `nextDefaultCampaignStart`                   |
+
 ## Scenarios
 #### EP for New Hires
 - I was hired the **01/01/2023**, we are the **01/08/2024**
