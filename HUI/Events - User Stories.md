@@ -23,6 +23,7 @@
 7. Si une campagne est **en cours** et que l'EO n'est pas fait, il est **en retard** et la date renvoyée est celle du **début de campagne**.
     
 8. Si une campagne est **terminée** et que l'EO n'est pas fait, il est **en retard** et la date renvoyée est celle de la **fin de campagne**.
+9. Si aucune campagne n'est planifiée mais que l'EO est en retard (+12 mois) alors on affiche un retard.
 
 ### Cas particuliers
 
