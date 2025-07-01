@@ -7,219 +7,94 @@
 - **Goals Campaign Inclusion Interval for new Hires** = 1st February to 31st March
 
 # 2. Goals Interview (EO)
-## Overview
-- A **Goals Interview (EO)** is required **every year**, during a **campaign** period.
-- By default, the campaign starts on next **1st October**.
-- If a campaign is already planned, it starts at it's start date.
-- A consultant participates to the campaign if he's in the company for 6 months or more.
-- If a consultant doesn't participate to the campaign, he will participate to the one the following year.
-- If a consultant is during an ongoing campaign:
-	- His previous completed event was before the campaign : he's late
-	- His previous completed event is during the campaign : he's not late - following campaign on next 1st october
-- If the campaign has ended and the consultant has not done his event during, he's late.
 
-### Objective:
-Ensure each eligible consultant completes one **Goals Interview (EO)** per year during a defined **campaign period** (typically starting October 1st).
-
-### **Campaign Schedule Logic**
-
-1. **Default Campaign Start**:  
-    If no campaign is currently planned in the system, the campaign starts on the **next October 1st** after today.
+1. **Un collaborateur est éligible à un EO** si **au moins 6 mois** se sont écoulés depuis sa **date d’embauche**.
     
-2. **Planned Campaign**:  
-    If a campaign exists (retrieved from the DB), its `startDate` and `endDate` are used.
+2. S’il n’a **jamais passé d’entretien d’objectifs**, c’est la **date d’embauche** qui sert de référence.
     
-3. **Next Campaign Date**:
-    - If the campaign is in the **future** (starts after today): return that future campaign’s start date.
-    - If the campaign is **missing**: return the next default October 1st date.
-
-### **Consultant Eligibility**
-
-- A consultant is **eligible** to participate in a campaign if they have been employed for **6 months or more** by the campaign start date.
+3. Le **prochain EO** doit se faire **tous les 12 mois** après le dernier réalisé (ou après la date d’embauche s’il n’y en a jamais eu).
     
-- If **not eligible**, the consultant will wait for the **next year's campaign**, by default October 1st + INTERVAL (here, 1 year).
+4. En présence d’une **campagne planifiée** (définie par `campaignStart`), l’EO peut (et doit) être rattaché à cette période.
+    
+5. En l’absence de campagne, on utilise une **date par défaut** : le **1er octobre** de l’année en cours (ou de l’année suivante si la date est déjà passée).
+    
+6. Si l’EO a déjà été fait dans la période de campagne, on reporte au **1er octobre de l’année suivante**.
+    
+7. Si une campagne est **en cours** et que l'EO n'est pas fait, il est **en retard** et la date renvoyée est celle du **début de campagne**.
+    
+8. Si une campagne est **terminée** et que l'EO n'est pas fait, il est **en retard** et la date renvoyée est celle de la **fin de campagne**.
 
-### **Event Completion Rules**
+### Cas particuliers
 
-When a campaign **exists** and the consultant is **eligible**:
+#### 📅 Campagne planifiée (présente dans le système)
 
-| Scenario                        | Conditions                                                                                                             | Outcome                                                     |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| ✅ **Completed on time**         | `previousEventEndDate` is **after** campaign `startDate`                                                               | Return **next campaign start date** (next Oct 1st)          |
-| ❌ **Late but campaign ongoing** | `previousEventEndDate` is **null or before** campaign `startDate` AND today is **before or within** campaign `endDate` | Return **campaign start date** (so event can still be done) |
-| ❌ **Late and campaign ended**   | `previousEventEndDate` is **null or before** campaign `startDate` AND today is **after** campaign `endDate`            | Return **campaign end date** (indicating it’s overdue)      |
+- **Entretien déjà réalisé pendant la campagne** → planifier le prochain à **1er octobre de l’année suivante**.
+    
+- **Entretien non réalisé, mais la campagne est en cours** → utiliser la **date de début de la campagne**.
+    
+- **Entretien non réalisé, et la campagne est terminée** → utiliser la **date de fin de la campagne**.
+    
+- **Entretien effectué exactement le jour de début de campagne** → considéré comme **réalisé à temps** → prochain entretien à 1er octobre année suivante.
 
-### **No Campaign Planned**
+#### 📅 Campagne non planifiée
 
-- If **no campaign exists** in the system but the consultant is eligible:
-    - Return the **next default campaign start** (next October 1st).
+- **Éligible + pas d’entretien** → date de l’événement = **date par défaut (1er octobre)**.
+    - Si aujourd’hui est **après** le 1er octobre → prendre l’année suivante.
         
-- If consultant is **not eligible**, return the **next campaign start + INTERVAL**.
-
----
-
-### 📋 **Test Matrix Design Based on Above Rules**
-
-| Case | Campaign Exists | Hiring Date                            | `previousEventEndDate` | Today’s Date    | Expected Outcome            |
-| ---- | --------------- | -------------------------------------- | ---------------------- | --------------- | --------------------------- |
-| 1    | ✅               | >6 months before campaign              | ✅ during campaign      | During campaign | Next campaign start         |
-| 2    | ✅               | >6 months before campaign              | ❌ before campaign      | During campaign | Campaign start              |
-| 3    | ✅               | >6 months before campaign              | ❌ before campaign      | After campaign  | Campaign end                |
-| 4    | ✅               | <6 months before campaign              | ❌                      | Before campaign | Next campaign + interval    |
-| 5    | ❌               | >6 months before next default campaign | ❌                      | Any time        | Next default campaign start |
-| 6    | ❌               | <6 months before next default campaign | ❌                      | Any time        | Next default + interval     |
-| 7    | ✅ future        | >6 months before campaign              | ❌                      | Before campaign | Future campaign start       |
-| 8    | ✅ future        | <6 months before campaign              | ❌                      | Before campaign | Future campaign + interval  |
-
-### **Edge Cases to Test**
-
-- Hiring exactly 6 months before campaign → Eligible.
+- **Pas encore éligible** → reporter au **1er octobre de l’année suivante**.
     
-- `previousEventEndDate == campaignStartDate` → Not "after", so **not on time**.
+-  **Éligible + entretien passé il y a plus d’un an** → planifier à la **date anniversaire** du dernier entretien (+12 mois).
     
-- No previous event but campaign ongoing → Still eligible → return campaign start.
-    
-- `campaign.endDate == today` → Still considered ongoing.
-    
-- `previousEventEndDate == today` → On time only if today is after `campaignStartDate`.
+- **Éligible + jamais passé d’entretien + embauché depuis > 1 an** → planifier à la **date d’embauche + 12 mois**.
 
-| Cas | Campagne | Date d’embauche         | `previousEventEndDate`        | Date actuelle           | Éligible ? | État de l’événement | Résultat attendu                            |
-| --- | -------- | ----------------------- | ----------------------------- | ----------------------- | ---------- | ------------------- | ------------------------------------------- |
-| 1   | ✅        | > 6 mois avant campagne | après `startDate`             | Pendant campagne        | ✅          | ✅ À jour            | `nextDefaultCampaignStart`                  |
-| 2   | ✅        | > 6 mois avant campagne | avant `startDate`             | Pendant campagne        | ✅          | ❌ En retard         | `campaignStartDate` (peut encore le faire)  |
-| 3   | ✅        | > 6 mois avant campagne | avant `startDate`             | Après campagne          | ✅          | ❌ En retard         | `campaignEndDate` (campagne terminée)       |
-| 4   | ✅        | < 6 mois avant campagne | ❌                             | Avant campagne          | ❌          | ✅ À jour            | `nextDefaultCampaignStart`                  |
-| 5   | ❌        | > 6 mois avant 01/10    | ❌                             | N’importe quand         | ✅          | ✅ À jour            | `nextDefaultCampaignStart` (01/10 prochain) |
-| 6   | ❌        | < 6 mois avant 01/10    | ❌                             | N’importe quand         | ❌          | ✅ À jour            | `nextDefaultCampaignStart`                  |
-| 7   | ✅        | > 6 mois avant campagne | ❌                             | Avant campagne          | ✅          | ❌ Pas encore fait   | `campaignStartDate`                         |
-| 8   | ✅        | < 6 mois avant campagne | ❌                             | Avant campagne          | ❌          | ✅ À jour            | `nextDefaultCampaignStart`                  |
-| 9   | ✅        | Exactement 6 mois avant | ❌                             | Avant campagne          | ✅          | ❌ Pas encore fait   | `campaignStartDate`                         |
-| 10  | ✅        | 1 jour < 6 mois avant   | ❌                             | Avant campagne          | ❌          | ✅ À jour            | `nextDefaultCampaignStart`                  |
-| 11  | ✅        | > 6 mois                | == `startDate`                | Pendant campagne        | ✅          | ❌ En retard         | `campaignStartDate`                         |
-| 12  | ✅        | > 6 mois                | == `today` (pendant campagne) | Pendant campagne        | ✅          | ✅ À jour            | `nextDefaultCampaignStart`                  |
-| 13  | ✅        | > 6 mois                | ❌                             | Pendant campagne        | ✅          | ❌ Non réalisé       | `campaignStartDate`                         |
-| 14  | ✅        | > 6 mois                | ❌                             | Après campagne          | ✅          | ❌ Non réalisé       | `campaignEndDate`                           |
-| 15  | ✅        | > 6 mois                | après `startDate`             | Après campagne          | ✅          | ✅ À jour            | `nextDefaultCampaignStart`                  |
-| 16  | ✅        | > 6 mois                | ❌                             | Aujourd’hui = `endDate` | ✅          | ❌ Non réalisé       | `campaignStartDate`                         |
 
-## Scenarios
-#### EO for New Hires
-- **Hired 15/02/2024**, current date: **01/10/2024**
-    - Participates in **2024 campaign**
-    - => **NOT LATE**
-    - => EO due **now**
-- **Hired 01/01/2024**, current date: **01/10/2024**
-    - Participates in **2025 campaign**
-    - => **NOT LATE**
-    - => EO due in **1 year**
-- **Hired 01/05/2024**, current date: **01/10/2024**
-    - Participates in **2025 campaign**
-    - => **NOT LATE**
-    - => EO due in **1 year**
-#### No previous EO campaign
-- **Hired 01/02/2023**, no complete EO campaign yet, current date: **01/08/2023**
-    - No campaign yet, first one will start **01/10/2023**
-    - => **NOT LATE**
-    - => EO due in **2 MONTHS**
-- **Hired 01/02/2023**, no complete EO campaign yet, current date: **01/12/2023**
-    - Ongoing campaign started **01/10/2023**, not terminated yet
-    - No EO completed
-    - => **LATE**
-    - => Late of **2 MONTHS**
-####  Existing previous EO campaign
-- Last EO campaign started **01/10/2022**, current date: **01/10/2023**
-    - New campaign starts **today (01/10/2023)**
-    - => **NOT LATE**
-    - => EO due **today**
-- Last EO campaign started **01/10/2022**, no EO completed since, current date: **01/12/2023**
-    - Current campaign started **01/10/2023**
-    - => **LATE**
-    - => Late of **2 MONTHS**
-- Last EO campaign started **01/10/2023**, EO completed on **01/10/2023**, current date: **01/09/2024**
-    - No ongoing campaign yet
-    - => **NOT LATE**
-    - => Next EO in **1 MONTH**
-- Last EO campaign started **01/10/2023**, last EO completed on **01/10/2023**, current date: **01/11/2024**
-    - Current campaign started **01/10/2024**
-    - => Late of **1 MONTH**
-- Last EO campaign started **01/10/2023**, last EO completed on **01/10/2022**, current date: **01/11/2024**
-    - Current campaign started **01/10/2024**
-    - => Late of **1 MONTH**
 # 3. Professional Interview (EP and EP6)
-## Overview
-- An **EP** must be conducted every **2 years**.
-- An **EP6** must be conducted every **6 years**, instead of the **EP**
-- An employee is **late for EP** if it has been more than **2 years** since the **last EP completed**.
-- A new hire is **late for EP** if it has been more than **2 years** since their **hiring date**.
-- An employee is **late for EP6** if it has been more than **6 years** since the **last EP6 completed**.
-- A new hire is **late for EP6** if it has been more than **6 years** since their **hiring date**.
-- If an **EP6** should take place the same year than an **EP**, then the **EP** is postponed of 2 years.
 
-| Cas | Campagne | Date d’embauche        | `previousEventEndDate`        | Date actuelle           | Séniorité ≥ 6 ans | EP6 récent ? | Éligible ? | État de l’événement | Résultat attendu                             |
-| --- | -------- | ---------------------- | ----------------------------- | ----------------------- | ----------------- | ------------ | ---------- | ------------------- | -------------------------------------------- |
-| 1   | ✅        | > 6 ans avant campagne | après `startDate`             | Pendant campagne        | ✅                 | ✅            | ✅          | ✅ À jour            | `nextDefaultCampaignStart`                   |
-| 2   | ✅        | > 6 ans avant campagne | avant `startDate`             | Pendant campagne        | ✅                 | ✅            | ✅          | ❌ En retard         | `campaignStartDate`                          |
-| 3   | ✅        | > 6 ans avant campagne | avant `startDate`             | Après campagne          | ✅                 | ✅            | ✅          | ❌ En retard         | `campaignEndDate`                            |
-| 4   | ✅        | < 6 ans avant campagne | ❌                             | Avant campagne          | ❌                 | ✅ (NA)       | ❌          | ✅ À jour            | `nextDefaultCampaignStart`                   |
-| 5   | ❌        | > 6 ans avant 01/06    | ❌                             | N’importe quand         | ✅                 | ✅            | ✅          | ✅ À jour            | `nextDefaultCampaignStart`                   |
-| 6   | ❌        | < 6 ans avant 01/06    | ❌                             | N’importe quand         | ❌                 | ✅ (NA)       | ❌          | ✅ À jour            | `nextDefaultCampaignStart`                   |
-| 7   | ✅        | > 6 ans avant campagne | ❌                             | Avant campagne          | ✅                 | ✅            | ✅          | ❌ Non réalisé       | `campaignStartDate`                          |
-| 8   | ✅        | < 6 ans avant campagne | ❌                             | Avant campagne          | ❌                 | ✅ (NA)       | ❌          | ✅ À jour            | `nextDefaultCampaignStart`                   |
-| 9   | ✅        | = 6 ans avant campagne | ❌                             | Avant campagne          | ✅                 | ❌            | ❌          | ❌ Non réalisé       | `null` (EP6 overdue, block PI)               |
-| 10  | ✅        | > 6 ans                | ❌                             | Avant campagne          | ✅                 | ❌            | ❌          | ❌ Non réalisé       | `null` (EP6 overdue, block PI)               |
-| 11  | ✅        | > 6 ans                | == `startDate`                | Pendant campagne        | ✅                 | ✅            | ✅          | ❌ En retard         | `campaignStartDate`                          |
-| 12  | ✅        | > 6 ans                | == `today` (pendant campagne) | Pendant campagne        | ✅                 | ✅            | ✅          | ✅ À jour            | `nextDefaultCampaignStart`                   |
-| 13  | ✅        | > 6 ans                | ❌                             | Pendant campagne        | ✅                 | ❌            | ❌          | ❌ Non réalisé       | `null` (EP6 overdue, block PI)               |
-| 14  | ✅        | > 6 ans                | ❌                             | Après campagne          | ✅                 | ❌            | ❌          | ❌ Non réalisé       | `null` (EP6 overdue, block PI)               |
-| 15  | ✅        | > 6 ans                | après `startDate`             | Après campagne          | ✅                 | ✅            | ✅          | ✅ À jour            | `nextDefaultCampaignStart`                   |
-| 16  | ✅        | > 6 ans                | ❌                             | Aujourd’hui = `endDate` | ✅                 | ❌            | ❌          | ❌ Non réalisé       | `null` (EP6 overdue, block PI)               |
-| 17  | ✅        | > 6 ans                | == 7 ans avant                | N’importe quand         | ✅                 | ❌            | ❌          | ❌ Non réalisé       | `null` (EP6 overdue, last EP6 > 6 years ago) |
-| 18  | ✅        | > 6 ans                | == 5 ans avant                | N’importe quand         | ✅                 | ✅            | ✅          | ✅ À jour            | `nextDefaultCampaignStart`                   |
+## EP
+1. **Un entretien professionnel (EP)** est requis tous les **2 ans**.
+    
+2. Un collaborateur devient **éligible à un EP** après **2 ans d’ancienneté**.
+    
+3. S’il n’a **jamais passé d’EP**, c’est la **date d’embauche** qui sert de référence.
+    
+4. Si un **EP6** est requis (entretien spécifique tous les 6 ans), il **prime sur l’EP** → dans ce cas, **on ne planifie pas d’EP** (`return null`).
+    
+5. En présence d'une **campagne planifiée** (`campaignStart`), l’EP peut être intégré à la campagne :
+    
+    - Si la campagne est **en cours**, et que le collaborateur est **éligible**, l’entretien est planifié à la **date de début de campagne**.
+        
+    - Si la personne n’est **pas éligible**, on calcule la **date théorique hors campagne** (1er juin 2 ans après le dernier EP / après l'embauche).
+    
+7. Si l’EP a déjà été fait dans la période de campagne, on reporte au **1er juin dans 2 ans**.
+    
+8. Si une campagne est **en cours** et que l'EP n'est pas fait, il est **en retard** et la date renvoyée est celle du **début de campagne**.
+    
+9. Si une campagne est **terminée** et que l'EP n'est pas fait, il est **en retard** et la date renvoyée est celle de la **fin de campagne**.
+    
+10. Si **aucune campagne n’est planifiée**, et le collaborateur est en retard de plus de 2 ans, alors son retard est :
+    
+    - À la date du **dernier EP + 2 ans** (si disponible).
+        
+    - Sinon, à la **date d’embauche + 2 ans**.
 
-## Scenarios
-#### EP for New Hires
-- I was hired the **01/01/2023**, we are the **01/08/2024**
-    - => I am **NOT LATE** for EP / EP6
-    - => Next EP in **1 YEAR and 5 MONTHS**
-    - => Next EP6 in **5 YEARS and 5 MONTHS**
-- I was hired the **01/01/2022**, we are the **01/01/2024**
-    - => I am **NOT LATE** for EP / EP6
-    - => Next EP **TODAY**
-    - => Next EP6 in **5 YEARS**
-- I was hired the **01/01/2021**, we are the **01/04/2024**
-    - => I am **LATE** for EP
-    - => I am **NOT LATE** for EP6
-    - => Late of **3 MONTHS** for EP
-    - => Next EP6 in **4 YEARS and 9 MONTHS**
-#### EP every 2 years
-- I completed the previous EP the **01/01/2022**, we are the **31/12/2023**
-    - => I am **NOT LATE** for EP / EP6
-    - => Next EP in **1 DAY**
-    - => Next EP6 in **4 YEARS
-- I completed the previous EP the **01/01/2022**, we are the **01/01/2024**
-    - => I am **NOT LATE** for EP / EP6
-    - => Next EP **TODAY**
-    - => Next EP6 in **4 YEARS**
-- I completed the previous EP the **01/01/2022**, we are the **02/01/2024**
-    - => I am **LATE** for EP
-    - => I am **NOT LATE** for EP6
-    - => Late of **1 DAY** for EP
-    - => Next EP6 in **4 YEARS**
-#### EP6 after 6 years
-- I was hired the **01/01/2018**, we are the **01/01/2024**
-	- => I am **NOT LATE** for EP / EP6
-	- => Next EP6 **TODAY**
-	- => Next EP in **2 YEARS**
-- I was hired the **01/01/2018**, we are the **01/01/2023**
-	- => I am **NOT LATE** for EP / EP6
-	- => Next EP6 in **1 YEAR**
-	- => Next EP in **3 YEARS**
-- I was hired the **01/01/2018**, we are the **01/01/2025**
-	- => I am **NOT LATE** for EP
-	- => I am **LATE** for EP6
-	- => Late of **1 YEAR** for EP6
-	- => Next EP in **1 YEAR**
+### Eligibilité & planification
 
+| Cas                                                               | Résultat attendu               |
+| ----------------------------------------------------------------- | ------------------------------ |
+| 📅 Campagne en cours, EP fait à temps                             | `defaultCampaignStart + 2 ans` |
+| 📅 Campagne en cours, EP non fait, collaborateur **éligible**     | `campaignStart`                |
+| 📅 Campagne en cours, EP non fait, collaborateur **non éligible** | `previousEventEndDate + 2 ans` |
+| 📅 Campagne en cours, pas d’EP, collaborateur éligible            | `campaignStart`                |
+| 📅 Campagne en cours, pas d’EP, collaborateur non éligible        | `hiringDate + 2 ans`           |
+| 📅 Campagne prévue, collaborateur éligible                        | `campaignStart`                |
+### Aucune campagne
+
+| Cas                                                          | Résultat attendu                             |
+| ------------------------------------------------------------ | -------------------------------------------- |
+| ❌ Aucune campagne, pas d’EP, collaborateur éligible          | `defaultCampaignStart`                       |
+| ❌ Aucune campagne, dernier EP > 2 ans                        | `previousEventEndDate + 2 ans`               |
+| ❌ Aucune campagne, jamais fait d’EP, embauché il y a > 2 ans | `hiringDate + 2 ans`                         |
+| ❌ Aucune campagne, EP6 requis                                | `null` (pas d’entretien professionnel prévu) |
 
 # 4. Follow-Up Interview (ES)
 
