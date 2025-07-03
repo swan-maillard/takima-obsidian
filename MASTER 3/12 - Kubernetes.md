@@ -312,15 +312,9 @@ A **Service** is a stable abstraction over a dynamic set of Pods. Pods can die a
 - **Load balancing**: Distributes traffic across matching Pods.
     
 - **Service types**:
-    
     - `ClusterIP` (default): Accessible only within the cluster.
-        
     - `NodePort`: Exposes the service on a static port across all nodes.
-        
     - `LoadBalancer`: Integrates with cloud provider to provision an external load balancer.
-        
-    - `ExternalName`: Maps a service to an external DNS name.
-        
 
 #### Example YAML (ClusterIP)
 
