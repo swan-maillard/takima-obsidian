@@ -464,6 +464,19 @@ Let’s say you have a frontend, a backend API, and a database. You might expose
 
 ---
 
+## 9. Operators
+
+- CRD
+	- Postgres
+	- ElasticSearch
+	- Certificate/issuer
+	- redis
+	- Grafana
+	- Gitlab
+	- ...
+
+---
+
 ## 10. Configuration and Secrets
 
 In Kubernetes, it's essential to keep your application configurations **decoupled from the container images**. This allows you to reuse the same image across environments (development, staging, production) by injecting different configurations as needed. Kubernetes provides two primary mechanisms to achieve this:
