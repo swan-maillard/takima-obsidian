@@ -6,11 +6,11 @@
     "emojiStyle": "native",
     "iconColor": null,
     "recentlyUsedIcons": [
+      "LiShipWheel",
       "LiHousePlug",
       "👔",
       "🗿",
-      "💃",
-      "LiScreenShare"
+      "💃"
     ],
     "recentlyUsedIconsSize": 5,
     "rules": [],
@@ -68,5 +68,9 @@
   "Misc": "💃",
   "HUI": "🗿",
   "Entretien client.md": "👔",
-  "MASTER 3/11 - Architectures.md": "LiHousePlug"
+  "MASTER 3/11 - Architectures.md": "LiHousePlug",
+  "MASTER 3/12 - Kubernetes.md": {
+    "iconName": "LiShipWheel",
+    "iconColor": "#0091eb"
+  }
 }
