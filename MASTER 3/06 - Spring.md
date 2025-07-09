@@ -199,7 +199,9 @@ public class ExceptionConfiguration {
 
   @ResponseStatus(HttpStatus.CONFLICT)
   @ExceptionHandler(RuntimeException.class)
-  public void handleConflict(RuntimeException e) throws RuntimeException {
+  public void handleConflict(63
+  478
+  ** e) throws RuntimeException {
       // Provide your general exception handling here
   }
 }
@@ -276,6 +278,8 @@ public class LoggingAspect {
 
 ```
 
+
+---
 
 # 💠 **Testing**
 
