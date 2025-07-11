@@ -6,7 +6,7 @@
     
 3. Le **prochain EO** doit se faire **tous les 12 mois** après le dernier réalisé (ou après la date d’embauche s’il n’y en a jamais eu).
     
-4. En présence d’une **campagne planifiée** (définie par `campaignStart`), l’EO peut (et doit) être rattaché à cette période.
+4. En présence d’une **campagne planifiée**, l’EO peut (et doit) être rattaché à cette période.
     
 5. En l’absence de campagne, on utilise une **date par défaut** : le **1er octobre** de l’année en cours (ou de l’année suivante si la date est déjà passée).
     
