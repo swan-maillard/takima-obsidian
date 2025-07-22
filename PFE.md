@@ -142,6 +142,8 @@ Voici un diagramme résumant les technologies utilisées dans l'application :
 
 Lorsque j'ai rejoint le projet, HUI était déjà déployée fonctionnelle, déployée en production et utilisée. Les modules suivants étaient déjà en place :
 
+![[Pasted image 20250615214655.png]]
+
 - Un module **d'encadrement** avec un suivi des managers, la possibilité d'assigner des managers aux consultants, d'assigner des coachs aux managers débutants, et enfin de programmer des formations en interne.
 
 - Un module de **campagne d'entretiens** afin de gérer les périodes durant lesquelles les entretiens ont lieu. Divers types d'entretiens sont gérés par HUI, comme les entretiens d'objectifs, les entretiens professionnels (tous les 2 et 6 ans), les entretiens de suivi, mais également les événements moins formels comme les "One to one", ou les team building.
@@ -270,6 +272,20 @@ Malgré cet engagement "0 bugs", nous avons reçu quelques retours après déplo
 
 Le module de feedback est maintenant en production, et a commencé a être utilisé. Les premiers retours sont globalement positifs, même s'il reste toujours des améliorations à effectuer et des idées de nouvelles fonctionnalités.
 
+## Résultats
+
+Voici les résultats du travail effectué sur le module de feedbacks. Une page permet de lister les feedbacks possibles (figure 1). Il est possible de créer un feedback (figure 2), ainsi que de le visualiser (figure 3).
+
+![[Pasted image 20250615215027.png]]
+
+![[Pasted image 20250615215130.png]]
+
+![[Pasted image 20250615215219.png]]
+
+Pour les utilisateurs possédant le rôle de validateur, une page de validation permet de naviguer parmi les feedbacks, et de les modifier, refuser ou valider.
+
+![[Pasted image 20250615215255.png]]
+
 #### **Évolutions futures**
 
 
@@ -323,18 +339,6 @@ En addition de cette vue globale des managers, les TOM voudraient avoir des stat
 Après avoir pris connaissance de ce besoin initial, il a fallu définir un cahier des charges plus précis. Pour cela, j'ai participé à plusieurs réunions avec les TOM afin de discuter des différents cas de figure à gérer. Nous nous sommes rapidement rendu compte que la définition du besoin était plus difficile à rédiger que prévu. En effet, tous les types d'entretiens diffèrent dans leurs comportements, et ont chacun des subtilités propres.
 
 Pour nous aider dans la rédaction du cahier des charges, nous avons défini des scénarios concrets auquel se référer pour chaque cas de figure. Cela nous a permit de mieux imaginer tous les scénarios possibles et de ne pas oublier de cas limites. Cette manière de faire est également idéale en prévision de la rédaction des tests unitaires et des tests d'intégration.
-
-Pour chacun des types d'entretien, nous avons donc défini les règles suivantes à implémenter :
-
-- **Entretien d'objectif (EO) :**
-	- Règles...
-
-- **Entretien professionnel (EP) :**
-	- Règles...
-
-- **Entretien de suivi (ES) :**
-	- Règles...
-
 #### **Conception technique**
 
 La conception technique étant guidée par un besoin fonctionnel fort, de par le cahier des charges très détaillé, j'ai décidé d'utiliser une approche de Test-Driven-Development (TDD) côté back-end. Le TDD est une bonne pratique de développement, permettant de produire un résultat fonctionnel plus rapidement en minimisant l'apparition de bugs. Cette approche demande cependant de la rigueur, et force à correctement définir les besoins fonctionnels en amont. Il s'agit d'un bon entraînement pour moi qui ai en général l'habitude de commencer à développer directement tête baissée, puis de régler les bugs lorsqu'ils apparaissent, inévitablement.
@@ -397,82 +401,15 @@ Le développement côté front-end n'a pas posé de problèmes notables.
 
 ### **Résultats**
 
-La refonte du module des entretiens et l’ajout de vues spécifiques pour les TOM ont généré plusieurs **résultats significatifs**, tant sur le plan fonctionnel que technique.
+Voici les résultats du mois de travail sur l'amélioration du module d'entretien. La page de dashboard managers qui permettait de visualiser tous les managers permet désormais de voir combien les statuts de leurs entretiens avec leurs consultants (figure 1 et 2). Bleu signifie qu'un entretien est en cours, vert qu'il est à venir, et rouge qu'il est en retard. Il est également possible de filtrer selon différents critères comme le nombre d'entretiens en retard.
 
-Grâce à la nouvelle vue d’ensemble, les TOM peuvent désormais **visualiser rapidement l’état d’avancement des entretiens**, par type et par manager. Ce tableau de bord, auparavant inexistant, est devenu un **outil central de pilotage RH** pour la direction managériale de Takima.
+![[Pasted image 20250615215559.png]]
 
-- Les TOM sont en mesure d’identifier les managers qui n’ont pas planifié ou finalisé certains entretiens.
-    
-- Ils peuvent prioriser leurs relances, en filtrant par type d’entretien (EO, EP, ES) et par niveau de retard.
-    
-- Cette fonctionnalité a permis une **meilleure coordination entre managers et TOM**, notamment pendant les périodes de campagnes.
+![[Pasted image 20250615215618.png]]
 
-Avant cette amélioration, le suivi des entretiens nécessitait **des extractions manuelles**, voire le croisement de données depuis des fichiers Google Sheets. Désormais :
+La page profil du manager, permet d'avoir plus de détails sur ses consultants, notamment l'état de chaque entretien (figure 1).
 
-- Toutes les données sont **centralisées dans HUI**, et **actualisées automatiquement**.
-    
-- Les managers peuvent voir en un coup d'œil les actions à entreprendre.
-    
-- Le **temps passé à relancer ou rechercher des informations a été réduit** de manière significative.
-
-Le projet a aussi été l’occasion de **mettre en œuvre des méthodes de développement robustes**, comme le TDD (Test-Driven Development) et le découpage clair des responsabilités back/front. Cette rigueur s’est traduite par :
-
-- Une **meilleure couverture de tests**, limitant les régressions.
-    
-- Une **logique métier centralisée** et plus facile à maintenir.
-    
-- Une **base technique saine** pour les évolutions futures.
-
-
-Dès sa mise en ligne, le module a été **rapidement adopté par les TOM**, qui ont exprimé leur satisfaction lors des sprint reviews. Plusieurs retours positifs ont été notés :
-
-- Simplicité d’usage, avec des interfaces **intuitives et bien intégrées**.
-    
-- Gain de visibilité sur les enjeux managériaux et RH.
-    
-- Une **relation renforcée entre managers et direction** grâce à une meilleure transparence des suivis.
-
-
-### **Évolutions futures**
-
-Bien que le module soit déjà pleinement fonctionnel et adopté, plusieurs pistes d’évolution ont été identifiées pour **renforcer encore son utilité, sa portée et son ergonomie**.
-
-À ce jour, seules les campagnes d’**entretiens d’objectifs** sont automatisées. Étendre le système aux **entretiens professionnels** permettrait de :
-
-- Planifier automatiquement les entretiens obligatoires tous les deux ans (et tous les six ans).
-    
-- Gérer efficacement les échéances légales via des dates de campagne spécifiques.
-    
-- Soulager les managers de la création manuelle des événements.
-
-
-Permettre l’**export des entretiens au format CSV ou PDF** offrirait plusieurs avantages :
-
-- Générer des bilans consolidés pour la direction ou les RH.
-    
-- Préparer plus facilement les revues RH annuelles ou les audits.
-    
-- Fournir un **accès hors ligne** aux données en cas de besoin.
-    
-
-Une évolution plus poussée pourrait même inclure un **tableau de bord exportable dynamique**, avec des graphiques ou des visualisations (camemberts, histogrammes).
-
-Aujourd’hui, la relance des managers reste un processus manuel effectué par les TOM. Ajouter un **système de notifications automatiques** (email, Slack, voire intégration dans les calendriers) permettrait de :
-
-- Réduire le nombre d’oubli ou de retard.
-    
-- Automatiser les relances à J-15, J-5 ou en cas de non-signature.
-    
-- Maintenir un rythme régulier dans la tenue des entretiens.
-
-
-Centraliser tous les **documents liés aux entretiens et feedbacks** dans une timeline unique par collaborateur permettrait de :
-
-- Suivre l’évolution d’un employé dans le temps (objectifs, feedbacks, mobilité…).
-    
-- Préparer les entretiens professionnels et bilans à 6 ans avec un historique riche.
-    
-- Donner plus de contexte aux managers, notamment en cas de changement de référent.
+![[Pasted image 20250615215734.png]]
 
 ### **3.3 Optimisation des pipelines CI/CD**
 
@@ -603,11 +540,11 @@ Prenons un exemple : Lorsque l'on construit une application front-end avec Node.
 Comme on peut le voir, les dépendances sont déjà téléchargées par le job `install dependencies`, et on ne veut pas avoir à les re-télécharger pendant au cours des jobs suivants. La solution qui avait été mise en place était donc d'ajouter du cache au niveau de chaque job afin de récupérer le contenu de `node_modules/` du cache et, s'il le cache est vide, d'installer les dépendances et de le stocker en cache. En spécifiant une clé correspondant à l'identifiant de la pipeline, les différents jobs d'une même pipeline peuvent donc se partager le cache :
 
 ```yaml
-cache:
-	key: IDENTIFIANT_DE_LA_PIPELINE
-	paths:
-		- node_modules/
-	policy: pull-push
+	cache:
+		key: IDENTIFIANT_DE_LA_PIPELINE
+		paths:
+			- node_modules/
+		policy: pull-push
 ```
 
 Sauf que cette façon de configurer le cache pose des problèmes :
@@ -701,35 +638,38 @@ Enfin, la gestion des feedbacks a nécessité une réflexion quant au respect de
 
 ## **5. Bilan personnel**
 
-- Compétences techniques acquises (React, GitLab CI/CD, DevOps, etc.)
-    
-- Compétences humaines et professionnelles (agilité, travail en équipe, gestion de projet)
-    
-- Réflexion sur la posture d’ingénieur dans une ESN
-    
-- Apports de cette expérience pour le futur professionnel
+Ce Projet de Fin d'Etudes, et plus généralement ce stage, que j'ai effectué à Takima a été extrêmement enrichissant sur le plan technique. L'objectif de Takima était clairement de m'offrir une courbe de progression bien supérieure à ce que j'aurai pu obtenir au cours d'un stage en autonomie. 
 
----
+J'ai pu consolider mes compétences en développement full-stack avec Java et Kotlin en utilisant le framework Spring Boot, ainsi qu'avec React pour le front-end. J'ai autant interagit avec le back et la base de données, qu'avec le front lors de la conception du module de feedbacks et l'amélioration du module d'entretien. J'ai reçu beaucoup de retours de la part des autres membres de mon équipe et ai ainsi pu développer de nombreuses bonnes pratiques. La politique "0 bugs" de Takima m'a également forcé à effectuer des tests unitaires et d'intégration poussés, et à prendre en main des outils tels que SonarQube et Sentry.
+
+J'ai également découvert l'aspect DevOps d'une entreprise, et j'ai particulièrement apprécié. Je suis reconnaissant que Takima m'ai fait suffisamment confiance pour me donner le sujet de la refonte et optimisation des pipelines CI/CD, car j'ai appris énormément. Le fait d'avoir obtenu des résultats autant significatifs est d'autant plus valorisant.
+
+Au-delà des aspects techniques, ce stage m’a permis de développer des compétences humaines essentielles. J'ai appris à travailler de manière agile avec les différentes cérémonies agiles, que j'ai parfois dû animer, et cela m'a appris à m'organiser, à prioriser les tâches et à m'adapter aux changements. J'ai dû apprendre à communiquer correctement, lors des sprint reviews où il fallait présenter les 2 semaines de travail à tout Takima, mais également dans la rédaction de documentations claires, ou lorsque je devais effectuer des revues de code sur les fonctionnalités de mes collègues.
+
+Enfin, j'ai pu prendre conscience que le rôle d'un ingénieur en ESN n'est pas seulement d'être bon techniquement, mais également de savoir comprendre un besoin, le retranscrire, s'adapter aux contextes, être capable de discuter avec des clients et d'être force de proposition.
 
 ## **6. Conclusion et perspectives**
 
-- Synthèse des apports du stage
-    
-- Impact global sur le projet HUI et pour Takima
-    
-- Limites du travail réalisé
-    
-- Pistes d’amélioration et de poursuite (ex : tests automatisés, analytics avancé, IA pour feedbacks RH...)
+Mon PFE à Takima a été une expérience complète et exigeante, dépassant de loin tous mes attendus. J'ai contribué à :
+- La création d'un module de feedbacks dans l'application HUI
+- L'amélioration du module des entretiens dans l'application HUI
+- La refonte et l'optimisation des pipelines CI/CD pour tous les projets internes
 
----
+Je pense avoir démontré ma capacité à mener des projets seul et en équipe, à analyser des besoins, et à apporter de la valeur à l'entreprise. Mon travail a permis d'apporter :
+- Un gain de productivité en optimisant les pipelines de tous les projets
+- Une meilleure standardisation de l'architecture DevOps de Takima
+- Un meilleur suivi des consultants grâce aux nouvelles fonctionnalités HUI
 
-## **Bibliographie**
+Ce stage a été un excellente transition entre mes études et le monde professionnel. Il m'a donné envie de travailler sur des projets à taille humaine où le social a autant de valeur que le technique. Bien que je ne poursuive pas mon début de carrière dans cette entreprise, je suis reconnaissant de tout ce que Takima m'a appris et de toute l'énergie et le temps qui m'a été consacré.
 
-- Toutes les ressources citées dans le rapport : articles, documentation technique, normes, blogs professionnels...
-    
-- Format cohérent (APA, IEEE ou autre)    
+# Remerciements
 
----
+Je tiens à remercier François-Pierre Chalopin et Olivier Duvois pour m'avoir fait confiance et m'avoir accueilli pendant 6 mois au sein de Takima. Merci à Victorien et Cyrielle pour m'avoir accompagné tout au long du processus de recrutement.
+Merci à toute l'équipe de l'engineering : Benjamin, Nicolas, Jonathan et Mathilde pour votre disponibilité tout au long du stage. Merci à tous les encadrants de la formation initiale qui ont pris de leur temps pour partager leurs connaissances et leur bonne humeur.
+Merci encore une fois à Jonathan pour avoir été un incroyable manager, toujours à l'écoute et prêt à aider. 
+Bien entendu, merci à tous les membres de HUI pour avoir rendu chaque jour un peu plus plaisant, pour avoir partagé leur expérience et leur entrain : merci à Clément, Sébastien, Jules, Xavier, Hugo, Thomas, Van, Marius et Chris.
+Aussi, merci à tous les autres stagiaires sans qui l'ambiance n'aurait pas été la même, pour ses parties de billard et de ces soirées coinche. Mention particulière à Clément, Mounir et Noah que ne n'ai pas censé de déconcentrer.
+Enfin, un grand merci à tout le staff, la direction des opérations, les commerciaux et les resources humaines qui ont tout fait pour que je passe le meilleur stage possible.
 
 ## **Annexes** _(non comptabilisées dans les 30 pages)_
 
